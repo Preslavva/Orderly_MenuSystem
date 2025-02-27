@@ -4,6 +4,8 @@
     {
         public int Id { get;}
         public MenuItem MenuItem { get; set; }
+
+        public Order Order { get; set; }
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
 

@@ -2,7 +2,7 @@
 {
     public class Nutrition
     {
-        public int Id { get; }
+        public int Id { get; set; }
         public NutritionName Name { get; set; }
         public decimal Value { get; set; }
 
@@ -18,5 +18,7 @@
             this.Name=name;
             this.Value = value;
         }
+
+        public Nutrition() { }
     }
 }
