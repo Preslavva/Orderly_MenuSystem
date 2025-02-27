@@ -36,7 +36,6 @@ namespace OrderlyTest.repos
                         int id = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
 
-
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"]));
                         orders.Add(new Order(id, table, orderTimestamp, orderStatus));
                     }
