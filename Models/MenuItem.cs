@@ -19,7 +19,7 @@ namespace OrderlyTest.Models
             this.Name = name;
             this.Description = description;
             this.Price = price;
-            this.IsAvailable = IsAvailable;
+            this.IsAvailable = isAvailable;
         }
 
         public MenuItem(int id,string name, string description, decimal price, bool isAvailable)
@@ -28,7 +28,7 @@ namespace OrderlyTest.Models
             this.Name = name;
             this.Description = description;
             this.Price = price;
-            this.IsAvailable = IsAvailable;
+            this.IsAvailable = isAvailable;
         }
     }
 }
