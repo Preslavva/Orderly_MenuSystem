@@ -6,6 +6,7 @@ namespace OrderlyTest.repos
 {
     public class MenuItemDB
     {
+        private const string connectionString = "Server=mssqlstud.fhict.local;Database=dbi547761;User Id=dbi547761s;Password=12345; Encrypt=True;TrustServerCertificate=True;";
         private readonly string _connectionString;
 
         public MenuItemDB(IConfiguration configuration)
@@ -13,7 +14,7 @@ namespace OrderlyTest.repos
             _connectionString = configuration.GetConnectionString("DefaultConnection")!;
         }
 
-        public static void AddMenuItem(string connectionString, string name, string description, decimal price, bool isAvailable, string picture)
+        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture)
         {
             try
             {
@@ -45,7 +46,7 @@ namespace OrderlyTest.repos
             }
         }
 
-        protected static List<MenuItem>? LoadMenuItems(string connectionString)
+        public List<MenuItem>? LoadMenuItems()
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
