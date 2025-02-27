@@ -14,21 +14,25 @@ namespace OrderlyTest.Models
 
         bool IsAvailable { get; set; }
 
-        public MenuItem(string name, string description, decimal price, bool isAvailable)
+        public string Picture { get; set; }
+
+        public MenuItem(string name, string description, decimal price, bool isAvailable, string picture)
         {
             this.Name = name;
             this.Description = description;
             this.Price = price;
             this.IsAvailable = isAvailable;
+            this.Picture = picture;
         }
 
-        public MenuItem(int id,string name, string description, decimal price, bool isAvailable)
+        public MenuItem(int id,string name, string description, decimal price, bool isAvailable, string picture)
         {
             this.Id = id;
             this.Name = name;
             this.Description = description;
             this.Price = price;
             this.IsAvailable = isAvailable;
+            this.Picture = picture;
         }
     }
 }
