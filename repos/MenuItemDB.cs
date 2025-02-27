@@ -1,13 +1,19 @@
 ﻿using OrderlyTest.Models;
 using Microsoft.Data.SqlClient;
 using System.Reflection;
+using System.Configuration;
 namespace OrderlyTest.repos
 {
     public class MenuItemDB
     {
-        private const string connectionString = "Server=mssqlstud.fhict.local;Database=dbi547761;User Id=dbi547761s;Password=12345; Encrypt=True;TrustServerCertificate=True;";
+        private readonly string _connectionString;
 
-        protected static void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture)
+        public MenuItemDB(IConfiguration configuration)
+        {
+            _connectionString = configuration.GetConnectionString("DefaultConnection")!;
+        }
+
+        public static void AddMenuItem(string connectionString, string name, string description, decimal price, bool isAvailable, string picture)
         {
             try
             {
@@ -39,7 +45,7 @@ namespace OrderlyTest.repos
             }
         }
 
-        protected static List<MenuItem>? LoadMenuItems()
+        protected static List<MenuItem>? LoadMenuItems(string connectionString)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
