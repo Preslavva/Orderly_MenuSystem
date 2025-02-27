@@ -10,7 +10,7 @@ namespace OrderlyTest.services
             {
                 QRCodeData qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q); 
                 PngByteQRCode qrCode = new PngByteQRCode(qrCodeData); 
-                return qrCode.GetGraphic(20); 
+                return qrCode.GetGraphic(15); 
             }
         }
     }
