@@ -16,6 +16,8 @@ namespace OrderlyTest.Models
 
         public string Picture { get; set; }
 
+        public List<Nutrition> Nutritions { get; set; }
+
         public MenuItem(string name, string description, decimal price, bool isAvailable, string picture)
         {
             this.Name = name;
@@ -23,6 +25,7 @@ namespace OrderlyTest.Models
             this.Price = price;
             this.IsAvailable = isAvailable;
             this.Picture = picture;
+            this.Nutritions = new List<Nutrition>();
         }
 
         public MenuItem(int id,string name, string description, decimal price, bool isAvailable, string picture)
@@ -33,6 +36,8 @@ namespace OrderlyTest.Models
             this.Price = price;
             this.IsAvailable = isAvailable;
             this.Picture = picture;
+            this.Nutritions = new List<Nutrition>();
+
         }
     }
 }
