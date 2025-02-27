@@ -18,5 +18,10 @@ namespace OrderlyTest.Controllers
             byte[] qrCodeImage = _qrCodeService.GenerateQRCode(url); 
             return File(qrCodeImage, "image/png"); 
         }
+
+        public IActionResult QrView()
+        {
+            return View();
+        }
     }
 }
