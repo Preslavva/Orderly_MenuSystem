@@ -22,12 +22,12 @@ namespace OrderlyTest.repos
                     string queryAddNutrition = @"insert into Nutrition([Name], Value)
                                                  values(@Name, @Value)";
 
-                    using (SqlCommand addMenuItem = new SqlCommand(queryAddNutrition, conn))
+                    using (SqlCommand addNutrition= new SqlCommand(queryAddNutrition, conn))
                     {
-                        addMenuItem.Parameters.AddWithValue("@Name", name);
-                        addMenuItem.Parameters.AddWithValue("@Value", value);
+                        addNutrition.Parameters.AddWithValue("@Name", name);
+                        addNutrition.Parameters.AddWithValue("@Value", value);
 
-                        addMenuItem.ExecuteNonQuery();
+                        addNutrition.ExecuteNonQuery();
                     }
                 }
             }
@@ -91,6 +91,42 @@ namespace OrderlyTest.repos
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod().Name}: {ex.Message}", ex);
             }
         }
+        public static List<Nutrition> GetAllNutritions(string connectionString)
+        {
+            List<Nutrition> nutritions = new List<Nutrition>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM Nutrition;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                nutritions.Add(new Nutrition
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
+                                    Value = reader.GetDecimal(2)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while retrieving all Nutritions: {ex.Message}", ex);
+            }
+
+            return nutritions;
+        }
+
 
         protected static List<Nutrition>? GetNutritionsForMenuItem(string connectionString, MenuItem menuItem)
         {

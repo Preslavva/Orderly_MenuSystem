@@ -84,5 +84,119 @@ namespace OrderlyTest.repos
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod().Name}: {ex.Message}", ex);
             }
         }
+
+        protected static void DeleteMenuItem(string connectionString,MenuItem menuItem)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string queryDeleteMenuItem = @"delete from MenuItem
+                                                   where Id = @Id";
+
+                    using (SqlCommand deleteMenuItem = new SqlCommand(queryDeleteMenuItem, conn))
+                    {
+                        deleteMenuItem.Parameters.AddWithValue("@Id", menuItem.Id);
+
+                        deleteMenuItem.ExecuteNonQuery();
+                        
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred while loading customers: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod().Name}: {ex.Message}", ex);
+            }
+        }
+
+        public static MenuItem? GetMenuItemById(string connectionString, MenuItem menuItem)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "SELECT * FROM MenuItem WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", menuItem.Id);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new MenuItem
+                                {
+                                    Id = reader.GetInt32(0),
+                                    Name = reader.GetString(1),
+                                    Description = reader.GetString(2),
+                                    Price = reader.GetDecimal(3),
+                                    IsAvailable = reader.GetBoolean(4),
+                                    Picture = reader.GetString(5)
+                                };
+                            }
+                        }
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while retrieving MenuItem: {ex.Message}", ex);
+            }
+        }
+        public static void ChangeMenuItemAvailability(string connectionString, MenuItem menuItem, bool isAvailable)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "UPDATE MenuItem SET IsAvailable = @IsAvailable WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", menuItem.Id);
+                        cmd.Parameters.AddWithValue("@IsAvailable", isAvailable);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while updating MenuItem availability: {ex.Message}", ex);
+            }
+        }
+        public static void UpdateMenuItemQuantity(string connectionString, MenuItem menuItem, int quantity)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    string query = "UPDATE MenuItem SET Quantity = @Quantity WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", menuItem.Id);
+                        cmd.Parameters.AddWithValue("@Quantity", quantity);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while updating MenuItem quantity: {ex.Message}", ex);
+            }
+        }
+
+
     }
 }
