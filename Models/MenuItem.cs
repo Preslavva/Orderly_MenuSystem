@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using Orderly.Models;
 
 namespace OrderlyTest.Models
 {
@@ -6,7 +7,7 @@ namespace OrderlyTest.Models
     {
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set;}
 
         public string Description { get; set; }
 
@@ -17,6 +18,7 @@ namespace OrderlyTest.Models
         public string Picture { get; set; }
 
         public int Quantity { get; set; }
+        public Continent Continent {get;set;}
 
         public List<Nutrition> Nutritions { get; set; }
 
