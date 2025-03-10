@@ -1,3 +1,6 @@
+using OrderlyTest.repos;
+using OrderlyTest.services;
+
 namespace OrderlyTest
 {
     public class Program
@@ -5,9 +8,13 @@ namespace OrderlyTest
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddSession();
+            builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddSingleton<CartServices>();
+            builder.Services.AddScoped<MenuItemDB>(); //ask the teacher
 
             var app = builder.Build();
 
@@ -21,6 +28,8 @@ namespace OrderlyTest
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSession();
 
             app.UseRouting();
 
