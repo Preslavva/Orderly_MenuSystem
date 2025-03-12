@@ -5,7 +5,7 @@ using System.Configuration;
 namespace OrderlyTest.repos
 {
     public class MenuItemDB
-    {
+    {/*
         private const string connectionString = "Server=mssqlstud.fhict.local;Database=dbi547761;User Id=dbi547761s;Password=12345; Encrypt=True;TrustServerCertificate=True;";
         private readonly string _connectionString;
 
@@ -198,6 +198,6 @@ namespace OrderlyTest.repos
             }
         }
 
-
+*/
     }
 }

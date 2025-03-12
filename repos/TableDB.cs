@@ -51,7 +51,7 @@ namespace Orderly.repos
 
                     while(dr.Read())
                     {
-                        tables.Add(new Table(Convert.ToInt32(dr["Id"]), dr["QrCode"].ToString()));
+                        tables.Add(new Table(Convert.ToInt32(dr["Id"]), (byte[])dr["QrCode"]));
                     }
                 }
             }

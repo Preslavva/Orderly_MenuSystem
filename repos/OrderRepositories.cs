@@ -31,13 +31,12 @@ namespace OrderlyTest.repos
                     {
          
                         int tableId = Convert.ToInt32(reader["TableId"]);
-                        Table table = new Table(tableId.ToString());
 
                         int id = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
 
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"]));
-                        orders.Add(new Order(id, table, orderTimestamp, orderStatus));
+                        orders.Add(new Order(id, tableId, orderTimestamp, orderStatus));
                     }
                 }
             }
@@ -60,7 +59,6 @@ namespace OrderlyTest.repos
                     if (reader.Read())
                     {
                         int tableId = Convert.ToInt32(reader["TableId"]);
-                        Table table = new Table(tableId.ToString());
 
                         int orderId = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
@@ -68,7 +66,7 @@ namespace OrderlyTest.repos
 
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"]));
 
-                        order = new Order(orderId, table, orderTimestamp, orderStatus);
+                        order = new Order(orderId, tableId, orderTimestamp, orderStatus);
                     }
                 }
             }

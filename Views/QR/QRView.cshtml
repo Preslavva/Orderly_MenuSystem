@@ -1,4 +1,13 @@
-﻿@{
-    int tableId = 1; 
-}
-<img src="@Url.Action("Generate", "QR", new { tableId = tableId })" alt="QR Code for Table @tableId">
+﻿@model List<Table>
+
+<h2>QR Codes for Tables</h2>
+
+<div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    @foreach (var table in Model)
+    {
+        <div style="text-align: center;">
+            <h3>Table @table.Id</h3>
+            <img src="data:image/png;base64,@Convert.ToBase64String(table.QrCode)" alt="QR Code for Table @table.Id" style="width: 200px; height: 200px;">
+        </div>
+    }
+</div>

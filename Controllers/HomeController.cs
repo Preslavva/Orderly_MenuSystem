@@ -21,7 +21,7 @@ namespace OrderlyTest.Controllers
 
         [HttpGet]
         public IActionResult Index()
-        {
+        {/*
            //List<MenuItem> menu = new List<MenuItem>();
             List<MenuItem> menu = new List<MenuItem>()
             {
@@ -29,6 +29,8 @@ namespace OrderlyTest.Controllers
             };
             ViewBag.CartCount = _cartServices.GetCartCount();
             return View(menu);
+            */
+            return View();
         }
 
         [HttpGet]

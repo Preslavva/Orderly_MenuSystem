@@ -2,19 +2,15 @@
 {
     public class Table
     {
-        public int Id { get; }
-        public string QrCode { get; }
+        public int Id { get; set; }
+        public byte[] QrCode { get; set; }
 
-        public Table(int id, string qrCode)
+        public Table(int id, byte[] qrCode)
         {
-            this.Id = id;
-            this.QrCode = qrCode;
+            Id = id;
+            QrCode = qrCode;
         }
 
-        public Table(string qrCode)
-        {
-            this.QrCode=qrCode;
-        }
 
     }
 }
