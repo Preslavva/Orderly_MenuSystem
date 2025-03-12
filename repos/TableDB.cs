@@ -19,13 +19,12 @@ namespace Orderly.repos
                 conn.Open();
 
                 string queryAddTable = """
-                            INSERT INTO Table(Id, QrCode) 
-                            VALUES (@Id, @QrCode)
+                            INSERT INTO [Table] (QrCode) 
+                            VALUES (@QrCode)
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
-                    cmdAddTable.Parameters.AddWithValue("@Id", table.Id);
                     cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode); ;
 
                     cmdAddTable.ExecuteNonQuery();
@@ -42,7 +41,7 @@ namespace Orderly.repos
                 conn.Open();
 
                 string queryGetTables = """
-                            SELECT * FROM Table
+                            SELECT * FROM [Table]
                         """;
 
                 using (SqlCommand cmdGetTables = new SqlCommand(queryGetTables, conn))

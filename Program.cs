@@ -1,3 +1,4 @@
+using Orderly.repos;
 using OrderlyTest.repos;
 using OrderlyTest.services;
 
@@ -15,6 +16,8 @@ namespace OrderlyTest
 
             builder.Services.AddSingleton<CartServices>();
             builder.Services.AddScoped<MenuItemDB>(); //ask the teacher
+            builder.Services.AddTransient<QRCodeService>();
+            builder.Services.AddTransient<TableDB>();
 
             var app = builder.Build();
 

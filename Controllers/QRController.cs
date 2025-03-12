@@ -20,10 +20,10 @@ namespace OrderlyTest.Controllers
         {
             var tables = new[]
          {
-            new Table(1, _qrCodeService.GenerateQRCode($"https://yourwebsite.com/order?tableId=1")),
-            new Table(2, _qrCodeService.GenerateQRCode($"https://yourwebsite.com/order?tableId=2")),
-            new Table(3, _qrCodeService.GenerateQRCode($"https://yourwebsite.com/order?tableId=3")),
-            new Table(4, _qrCodeService.GenerateQRCode($"https://yourwebsite.com/order?tableId=4"))
+            new Table(1, _qrCodeService.GenerateQRCode($"https://localhost:7196/Home/Index?tableId=1")),
+            new Table(2, _qrCodeService.GenerateQRCode($"https://localhost:7196/Home/Index?tableId=2")),
+            new Table(3, _qrCodeService.GenerateQRCode($"https://localhost:7196/Home/Index?tableId=3")),
+            new Table(4, _qrCodeService.GenerateQRCode($"https://localhost:7196/Home/Index?tableId=4"))
         };
 
             foreach (var table in tables)

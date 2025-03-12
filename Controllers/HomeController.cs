@@ -20,17 +20,15 @@ namespace OrderlyTest.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
-        {/*
+        public IActionResult Index(int tableId)
+        {
            //List<MenuItem> menu = new List<MenuItem>();
             List<MenuItem> menu = new List<MenuItem>()
             {
-                new MenuItem("burger", "some burger", 2.5m,true, "image")
+                new MenuItem()
             };
             ViewBag.CartCount = _cartServices.GetCartCount();
             return View(menu);
-            */
-            return View();
         }
 
         [HttpGet]
