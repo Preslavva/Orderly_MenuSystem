@@ -874,6 +874,9 @@ button.accept-policy {
         font-size:xx-large
     }
 
+    .continent button {
+        color: black;
+    }
  
 }
 

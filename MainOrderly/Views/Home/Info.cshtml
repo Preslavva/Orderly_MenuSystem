@@ -24,7 +24,14 @@
                 {
                     <div class="col-6 col-md-3">
                         <img src="/images/@(nutrient.Name).png" alt="@nutrient.Name"> <br>
-                        @nutrient.Value @nutrient.Name
+                        @if (@nutrient.Name == NutritionName.Carbs || @nutrient.Name == NutritionName.Protein || @nutrient.Name == NutritionName.Fats)
+                        {
+                            @($"{nutrient.Name} {nutrient.Value} g")
+                        }
+                        else
+                        {
+                            @($"{nutrient.Name} {nutrient.Value} Kcal")
+                        }
                     </div>
                 }
             </div>
