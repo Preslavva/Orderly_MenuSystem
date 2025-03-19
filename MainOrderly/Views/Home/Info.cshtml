@@ -1,0 +1,35 @@
+﻿@model MenuItem
+
+
+
+@{
+    ViewData["Title"] =  "Info Page";
+}
+<div class="container d-flex justify-content-center align-items-center">
+    <div class="card food-card shadow-lg">
+        <a asp-controller="Home" asp-action="Index">
+            <button type="button" class="btn-close close-button" aria-label="Close"></button>
+        </a>
+
+        <div class="image-container2">
+            <img src="@Model.Picture" alt="@Model.Name">
+        </div>
+
+        <div class="card-body2">
+            <h1 class="card-title">@Model.Name</h1>
+            <p class="card-text">@Model.Description</p>
+
+            <div class="nutritions row text-center">
+                @foreach (var nutrient in ViewBag.Nutritions)
+                {
+                    <div class="col-6 col-md-3">
+                        <img src="/images/@(nutrient.Name).png" alt="@nutrient.Name"> <br>
+                        @nutrient.Value @nutrient.Name
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+

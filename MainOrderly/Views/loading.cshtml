@@ -1,0 +1,33 @@
+﻿@{
+
+    ViewData["Title"] = "Test Page";
+    var tableId = ViewBag.TableId;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aboreto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <title>Splash Screen</title>
+</head>
+<body>
+    
+    <!-- Loader container -->
+    <div id="loader">
+        <img class="img-fluid" src="~/Images/logo.png" />
+        <div id="fancy-text">
+            WORLD OF FLAVORS ON YOUR PLATE
+        </div>
+        <div id="progress-bar"></div>
+    </div>
+    <script>
+        // Wait for 3 seconds, then redirect to the Home/Index page
+        setTimeout(function() {
+            window.location.href = '@Url.Action("Index", "Home",new{tableId = tableId})';
+        }, 3000);
+    </script>
+</body>
+</html>
