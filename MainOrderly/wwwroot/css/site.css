@@ -27,6 +27,7 @@ html {
     background-color: transparent;
     background-image: none;
     background-blend-mode:multiply;
+    margin-left:50px;
 }
 
 .cart {
