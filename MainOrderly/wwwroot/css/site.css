@@ -311,17 +311,30 @@ meta[name = "format-detection"]
 
 .image-container2 {
     margin-top: 25px;
-    height: 70vh;
+    height: 70vh; 
     overflow: hidden;
     margin-bottom: 1px;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
 }
 
     .image-container2 img {
         width: 100%;
         height: 100%;
-        object-fit: fill; 
-        
+        object-fit: cover; 
     }
+
+@media (max-width: 768px) {
+    .image-container2 {
+        height: 50vh; 
+    }
+
+        .image-container2 img {
+            object-fit: contain; 
+        }
+}
+
 
 .card-body2 {
     margin-top: 1px;
