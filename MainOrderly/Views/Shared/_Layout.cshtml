@@ -11,29 +11,29 @@
 </head>
 <body>
     <header>
-        
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"></a>
-               
+              
                 @if (ViewData["Page"] == "Order overview")
                 {
-                    <a class="navbar-brand mx-auto" asp-area="" asp-controller="Home" asp-action="Index">
+                    <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="Home" asp-action="Index">
                         <i class="bi bi-caret-left"></i>
                     </a>
                 }
+             
                 @if (ViewData["Page"] == "Order summary")
                 {
-
-                    <a class="navbar-brand mx-auto" asp-area="" asp-controller="Cart" asp-action="OrderList">
+                    <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="Cart" asp-action="OrderList">
                         <i class="bi bi-caret-left"></i>
                     </a>
                 }
 
+               
                 <a class="navbar-brand mx-auto" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/images/logo.png" alt="Logo" class="logo">
                 </a>
 
+                <!-- Cart Icon -->
                 <a class="cart position-relative" asp-area="" asp-controller="Cart" asp-action="OrderList">
                     <img src="~/images/cart.png" alt="Cart" class="cart-img">
                     @if (TempData["CartCount"] != null && int.TryParse(TempData["CartCount"].ToString(), out int cartCount) && cartCount > 0)
@@ -45,12 +45,9 @@
                     }
                 </a>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                    </ul>
-                </div>
             </div>
         </nav>
+        
     </header>
     <div class="container">
         <main role="main" class="pb-3">

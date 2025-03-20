@@ -22,9 +22,12 @@ html {
 .logo {
     width: 100px;
     height: 100px;
-    mix-blend-mode: multiply;
+    top: 10px; /* Adjust the position from the top */
+    left: 10px; /* Adjust the position from the left */   
+    background-color: transparent;
+    background-image: none;
+    background-blend-mode:multiply;
 }
-
 
 .cart {
     display: inline-block;
@@ -881,15 +884,55 @@ button.accept-policy {
         height:  45vh;
     }
 
-    #fancy-text{
+    #fancy-text {
         font-family: 'Aboreto', cursive;
         color: #6B705C;
-        font-size:xx-large
+        font-size: xx-large
     }
 
     .continent button {
         color: black;
     }
- 
+
+    .navbar-brand {
+        position: relative;
+        z-index: 1; /* Ensure logo stays above other content */
+    }
+
+    .navbar .position-absolute {
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 0; /* Position the arrows behind the logo */
+    }
+
+    .cart {
+        display: inline-block;
+        position: relative;
+    }
+
+    .cart-img {
+        height: 60px;
+        width: auto;
+        mix-blend-mode: multiply;
+    }
+
+    .badge {
+        font-size: 12px;
+        padding: 4px 6px;
+        top: 5px !important;
+        start: 85% !important;
+        transform: translate(-50%, -50%);
+        min-width: 18px;
+        min-height: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #6B705C;
+    }
+
+    .navbar-collapse .navbar-nav {
+        justify-content: center; /* Make sure items are centered */
+    }
+
 }
 
