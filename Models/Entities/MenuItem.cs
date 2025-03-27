@@ -1,4 +1,5 @@
 ﻿using Models.Enums;
+using System.ComponentModel;
 using System.Net.Http.Headers;
 
 namespace Models.Entities
@@ -17,24 +18,21 @@ namespace Models.Entities
 
         public string Picture { get; set; }
 
-        public int Quantity { get; set; }
-
-        public Continent Continent { get; set; }
+        public Category Category { get; set; }
         public List<Nutrition> Nutritions { get; set; }
 
-        public MenuItem(string name, string description, decimal price, bool isAvailable, string picture, int quantity, Continent continent)
+        public MenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category)
         {
             Name = name;
             Description = description;
             Price = price;
             IsAvailable = isAvailable;
             Picture = picture;
-            Quantity = quantity;
-            Continent = continent;
+            Category = category;
             Nutritions = new List<Nutrition>();
         }
 
-        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, int quantity, Continent continent)
+        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category)
         {
             Id = id;
             Name = name;
@@ -42,8 +40,7 @@ namespace Models.Entities
             Price = price;
             IsAvailable = isAvailable;
             Picture = picture;
-            Quantity = quantity;
-            Continent = continent;
+            Category = category;
             Nutritions = new List<Nutrition>();
 
         }
