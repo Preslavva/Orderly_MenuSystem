@@ -20,8 +20,12 @@ namespace MainOrderly.WebApp.Controllers
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
 
+            kitchenOrderManager.SetNewOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.NEW_ORDER));
+            kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING));
+            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED));
+
             CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
-                           
+                                   
             return View("~/Views/Kitchen/Dashboard.cshtml", viewModel);
         }
 
