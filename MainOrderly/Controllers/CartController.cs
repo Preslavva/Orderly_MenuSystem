@@ -24,7 +24,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             ViewData["Page"] = "Order overview";
             Dictionary<MenuItem, int> cart = GetOrderList();
-            List<OrderViewModel> model = cart.Select(item => OrderViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
@@ -49,7 +49,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             ViewData["Page"] = "Order summary";
             Dictionary<MenuItem, int> cart = GetOrderList();
-            List<OrderViewModel> model = cart.Select(item => OrderViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
             return View(model);
         }

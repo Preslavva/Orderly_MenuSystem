@@ -1,27 +1,32 @@
-﻿using System.Globalization;
-using Models.Entities;
+﻿using Models.Entities;
+using Models.Enums;
 
 namespace MainOrderly.WebApp.ViewModels
 {
     public class OrderViewModel
     {
         public int Id { get; set; }
-        public string Picture { get; set; }
-        public string Name { get; set; }
-        public decimal ItemPrice { get; set; }
+        public int Table { get; set; }
+        public DateTime OrderTimestamp { get; set; }
+        public OrderStatus Status { get; set; }
         public int Quantity { get; set; }
-        public string ItemPriceFormatted => ItemPrice.ToString("C", CultureInfo.CurrentCulture);
+        public decimal SubTotal { get; set; }
 
-        public static OrderViewModel ConvertToViewModel(MenuItem item, int quantity)
+
+        public static OrderViewModel ConvertToViewModel(Order order)
         {
-            return new OrderViewModel()
+            OrderViewModel viewModel = new OrderViewModel()
             {
-                Id = item.Id,
-                Picture = item.Picture,
-                Name = item.Name,
-                ItemPrice = item.Price,
-                Quantity = quantity
+                Id = order.Id,
+                Table = order.Table.Id,
+                OrderTimestamp = order.OrderTimestamp,
+                Status = order.Status,
+                Quantity = order.Quantity,
+                SubTotal = order.SubTotal
             };
+
+
+            return viewModel;
         }
     }
 }
