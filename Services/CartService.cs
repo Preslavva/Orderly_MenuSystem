@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 namespace Services
 {
-    public class CartServices
+    public class CartService
     {
         private readonly IHttpContextAccessor contextAccessor;
         private readonly MenuItemRepository _menuItemRepository;
@@ -14,12 +14,12 @@ namespace Services
         private readonly CartRepository _cartRepository;
         private readonly CheckoutService _checkoutService;
 
-        public CartServices(IHttpContextAccessor contxtAccessor, MenuItemRepository menuDB, CartRepository cartRepository, CheckoutService checkoutService)
+        public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService)
         {
             _checkoutService = checkoutService;
             _cartRepository = cartRepository;
             contextAccessor = contxtAccessor;
-            _menuItemRepository = menuDB;
+            _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
 
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
@@ -43,11 +43,11 @@ namespace Services
             SaveCart();
         }
 
-        public void UpdateQuantity(int id, int newQuanity)
+        public void UpdateQuantity(int id, int newQuantity)
         {
             if (cart.ContainsKey(id))
             {
-                cart[id] = newQuanity;
+                cart[id] = newQuantity;
             }
             SaveCart();
         }
@@ -88,10 +88,10 @@ namespace Services
             }
             return counter;
         }
-
-        public Dictionary<MenuItem, int> GetCart()
+            
+        public Dictionary<MenuItemDTO, int> GetCart()
         {
-            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
+            Dictionary<MenuItemDTO, int> newCart = new Dictionary<MenuItemDTO, int>();
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
             if (!string.IsNullOrEmpty(jsonCart))
             {
@@ -99,18 +99,20 @@ namespace Services
                 foreach (int key in cart.Keys)
                 {
                     MenuItem? item = _menuItemRepository.GetMenuItemById(key);
-                    newCart[item!] = cart[key];
+                    
+                    MenuItemDTO? itemDTO = MenuItemDTO.ConvertToDTO(item);
+                    newCart[itemDTO!] = cart[key];
                 }
             }
             return newCart;
         }
 
-        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart)
+        public decimal CalculateTotalPrice(Dictionary<MenuItemDTO, int> cart)
         {
             decimal totalPrice = 0;
             foreach (var element in cart)
             {
-                MenuItem item = element.Key;
+                MenuItemDTO item = element.Key;
                 int quantity = element.Value;
                 totalPrice += quantity * item.Price;
             }
@@ -119,7 +121,7 @@ namespace Services
 
         public int FinalizeOrder(int tableId)
         {
-            Dictionary<MenuItem, int> cart = GetCart();
+            Dictionary<MenuItemDTO, int> cart = GetCart();
 
             return _checkoutService.FinalizeOrder(tableId, cart);
         }

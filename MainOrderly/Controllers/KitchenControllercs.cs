@@ -33,7 +33,7 @@ namespace MainOrderly.WebApp.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        public ActionResult RemoveOrderDashboard(int id)
+        public IActionResult RemoveOrderDashboard(int id)
         {
             _kitchenOrderService.RemoveOrderFromDashboard(id);
             return RedirectToAction("Dashboard");

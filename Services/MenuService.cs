@@ -13,12 +13,14 @@ namespace Services
         }
 
 
-        public List<MenuItem> LoadMenuItems()
+        public List<MenuItemDTO> LoadMenuItems()
         {
-            return _menuItemRepository.LoadMenuItems()!;
+            List<MenuItem> menuItems = _menuItemRepository.LoadMenuItems()!; // should return dto
+
+            return menuItems.Select(MenuItemDTO.ConvertToDTO).ToList();
         }
 
-        public MenuItem GetMenuItem(int id)
+        public Models.Entities.MenuItem GetMenuItem(int id)
         {
             return _menuItemRepository.GetMenuItemById(id)!;
         }

@@ -62,18 +62,17 @@ namespace MSSQL
 
                         while (reader.Read())
                         {
-                            menuItems.Add(new MenuItem
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Description = reader.GetString(2),
-                                Price = reader.GetDecimal(3),
-                                IsAvailable = reader.GetBoolean(4),
-                                Picture = reader.GetString(5),
-                                Quantity = reader.GetInt32(6),
-                                Continent = (Continent)Enum.Parse(typeof(Continent), reader.GetString(7))
+                            menuItems.Add(new MenuItem(
 
-                            });
+                                    Convert.ToInt32(reader["Id"]),
+                                    Convert.ToString(reader["Name"]),
+                                    Convert.ToString(reader["Description"]),
+                                    Convert.ToDecimal(reader["Price"]),
+                                    Convert.ToBoolean(reader["IsAvailable"]),
+                                    Convert.ToString(reader["Picture"]),
+                                    Convert.ToInt32(reader["Quantity"]),
+                                    (Continent)reader["Continent"]
+                            ));                           
                         }
                     }
                     return menuItems;
@@ -134,17 +133,20 @@ namespace MSSQL
                         {
                             if (reader.Read())
                             {
-                                return new MenuItem
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Description = reader.GetString(2),
-                                    Price = reader.GetDecimal(3),
-                                    IsAvailable = reader.GetBoolean(4),
-                                    Picture = reader.GetString(5)
-                                };
+                                return new MenuItem(
+                                    Convert.ToInt32(reader["Id"]),
+                                    Convert.ToString(reader["Name"]),
+                                    Convert.ToString(reader["Description"]),
+                                    Convert.ToDecimal(reader["Price"]),
+                                    Convert.ToBoolean(reader["IsAvailable"]),
+                                    Convert.ToString(reader["Picture"]),
+                                    Convert.ToInt32(reader["Quantity"]),
+                                    (Continent)reader["Continent"]
+                                );
                             }
                         }
+
+                           
                     }
                 }
                 return null;

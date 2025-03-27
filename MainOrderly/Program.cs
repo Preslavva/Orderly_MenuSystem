@@ -15,7 +15,7 @@ namespace MainOrderly.WebApp
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddScoped<CartServices>();
+            builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<MenuItemRepository>();
             builder.Services.AddScoped<NutritionRepository>();
             builder.Services.AddScoped<CartRepository>();

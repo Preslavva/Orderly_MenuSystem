@@ -9,28 +9,28 @@ namespace Services
     public class KitchenOrderService
     {
 
-        private readonly KitchenOrderRepository _kitchenOrderRepositories;
-        public KitchenOrderService(KitchenOrderRepository orderRepository)
+        private readonly KitchenOrderRepository _kitchenOrderRepository;
+        public KitchenOrderService(KitchenOrderRepository kitchenOrderRepository)
         {
-            _kitchenOrderRepositories = orderRepository;
+            _kitchenOrderRepository = kitchenOrderRepository;
         }
 
         public Order GetOrderById(int orderId)
         {
-            Order order = _kitchenOrderRepositories.GetOrderHeaderById(orderId);
+            Order order = _kitchenOrderRepository.GetOrderHeaderById(orderId);
             if (order != null)
             {
-                order.Items = _kitchenOrderRepositories.GetOrderItemsByOrderId(orderId);
+                order.Items = _kitchenOrderRepository.GetOrderItemsByOrderId(orderId);
             }
             return order!;
         }
 
         public List<Order> GetOrderByStatus(OrderStatus status)
         {
-            List<Order> orders = _kitchenOrderRepositories.GetOrderHeadersByStatus(status);
+            List<Order> orders = _kitchenOrderRepository.GetOrderHeadersByStatus(status);
             foreach (Order order in orders)
             {
-                order.Items = _kitchenOrderRepositories.GetOrderItemsByOrderId(order.Id);
+                order.Items = _kitchenOrderRepository.GetOrderItemsByOrderId(order.Id);
             }
             return orders;
         }
@@ -38,12 +38,12 @@ namespace Services
 
         public void UpdateOrderStatus(int orderId, OrderStatus orderStatus)
         {
-            _kitchenOrderRepositories.UpdateOrderStatus(orderId, orderStatus);
+            _kitchenOrderRepository.UpdateOrderStatus(orderId, orderStatus);
         }
 
         public void RemoveOrderFromDashboard(int orderId)
         {
-            _kitchenOrderRepositories.RemoveOrder(orderId);
+            _kitchenOrderRepository.RemoveOrder(orderId);
         }
     }
 }
