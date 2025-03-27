@@ -37,7 +37,7 @@ namespace MainOrderly.WebApp.Controllers
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
             }
-            List<MenuItemDTO>? menu = _menuService.LoadMenuItems(); //from the dto i will create viewModel
+            List<MenuItem>? menu = _menuService.LoadMenuItems(); //from the dto i will create viewModel
 
 
             if (!string.IsNullOrEmpty(searchTerm))

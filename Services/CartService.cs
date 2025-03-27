@@ -89,9 +89,9 @@ namespace Services
             return counter;
         }
             
-        public Dictionary<MenuItemDTO, int> GetCart()
+        public Dictionary<MenuItem, int> GetCart()
         {
-            Dictionary<MenuItemDTO, int> newCart = new Dictionary<MenuItemDTO, int>();
+            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
             if (!string.IsNullOrEmpty(jsonCart))
             {
@@ -100,19 +100,18 @@ namespace Services
                 {
                     MenuItem? item = _menuItemRepository.GetMenuItemById(key);
                     
-                    MenuItemDTO? itemDTO = MenuItemDTO.ConvertToDTO(item);
-                    newCart[itemDTO!] = cart[key];
+                    newCart[item] = cart[key];
                 }
             }
             return newCart;
         }
 
-        public decimal CalculateTotalPrice(Dictionary<MenuItemDTO, int> cart)
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart)
         {
             decimal totalPrice = 0;
             foreach (var element in cart)
             {
-                MenuItemDTO item = element.Key;
+                MenuItem item = element.Key;
                 int quantity = element.Value;
                 totalPrice += quantity * item.Price;
             }
@@ -121,7 +120,7 @@ namespace Services
 
         public int FinalizeOrder(int tableId)
         {
-            Dictionary<MenuItemDTO, int> cart = GetCart();
+            Dictionary<MenuItem, int> cart = GetCart();
 
             return _checkoutService.FinalizeOrder(tableId, cart);
         }

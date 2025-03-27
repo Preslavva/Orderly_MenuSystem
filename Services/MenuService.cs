@@ -13,11 +13,9 @@ namespace Services
         }
 
 
-        public List<MenuItemDTO> LoadMenuItems()
+        public List<MenuItem> LoadMenuItems()
         {
-            List<MenuItem> menuItems = _menuItemRepository.LoadMenuItems()!; // should return dto
-
-            return menuItems.Select(MenuItemDTO.ConvertToDTO).ToList();
+           return _menuItemRepository.LoadMenuItems()!;   
         }
 
         public Models.Entities.MenuItem GetMenuItem(int id)

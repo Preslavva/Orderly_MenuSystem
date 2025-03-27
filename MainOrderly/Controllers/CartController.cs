@@ -8,12 +8,9 @@ namespace MainOrderly.WebApp.Controllers
     {
         private readonly CartService _cartService;
 
-        private Dictionary<MenuItemDTO, int> GetOrderList()
-        {
-            Dictionary<MenuItemDTO, int> cart = _cartService.GetCart();
-            return cart;
-
-            //return _cartService.GetCart();
+        private Dictionary<MenuItem, int> GetOrderList()
+        { 
+            return _cartService.GetCart();
         }
         public CartController(CartService cartService)
         {
@@ -49,7 +46,7 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult OrderSummaryPage()
         {
             ViewData["Page"] = "Order summary";
-            Dictionary<MenuItemDTO, int> cart = GetOrderList();
+            Dictionary<MenuItem, int> cart = GetOrderList();
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
             return View(cart);
         }

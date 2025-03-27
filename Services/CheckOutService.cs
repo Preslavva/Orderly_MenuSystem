@@ -13,7 +13,7 @@ public class CheckoutService
         _kitchenOrderRepository = kitchenOrderRepository;   
     }
 
-    public int FinalizeOrder(int tableId, Dictionary<Models.Entities.MenuItem, int> cartItems)
+    public int FinalizeOrder(int tableId, Dictionary<MenuItem, int> cartItems)
     {
         int totalQuantity = 0;
         decimal totalPrice = 0;
@@ -29,7 +29,7 @@ public class CheckoutService
         {
            _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value);
         }
-
+            
         return newOrderId;
     }
 }

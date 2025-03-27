@@ -27,22 +27,22 @@ namespace MainOrderly.WebApp.ViewModels
             this.Nutritions = new List<int>();         
         }
 
-        public static MenuItemViewModel ConvertToViewModel(MenuItemDTO menuItemDTO)
+        public static MenuItemViewModel ConvertToViewModel(MenuItem menuItem)
         {
             MenuItemViewModel viewModel = new MenuItemViewModel()
             {
-                Id = menuItemDTO.Id,
-                Name = menuItemDTO.Name,
-                Description = menuItemDTO.Description,
-                Price = menuItemDTO.Price,
-                IsAvailable = menuItemDTO.IsAvailable,
-                Picture = menuItemDTO.Picture,
-                Quantity = menuItemDTO.Quantity,
-                Continent = menuItemDTO.Continent,
+                Id = menuItem.Id,
+                Name = menuItem.Name,
+                Description = menuItem.Description,
+                Price = menuItem.Price,
+                IsAvailable = menuItem.IsAvailable,
+                Picture = menuItem.Picture,
+                Quantity = menuItem.Quantity,
+                Continent = menuItem.Continent,
 
             };
 
-            foreach(var item in menuItemDTO.Nutritions)
+            foreach(var item in menuItem.Nutritions)
             {
                 viewModel.Nutritions.Add(item.Id);
             }
