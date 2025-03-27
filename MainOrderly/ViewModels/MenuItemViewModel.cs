@@ -19,13 +19,8 @@ namespace MainOrderly.WebApp.ViewModels
 
         public int Quantity { get; set; }
 
-        public Continent Continent { get; set; }
-        public List<int> Nutritions { get; set; }
-
-        public MenuItemViewModel()
-        {
-            this.Nutritions = new List<int>();         
-        }
+        public Category Category { get; set; }
+      
 
         public static MenuItemViewModel ConvertToViewModel(MenuItem menuItem)
         {
@@ -37,15 +32,8 @@ namespace MainOrderly.WebApp.ViewModels
                 Price = menuItem.Price,
                 IsAvailable = menuItem.IsAvailable,
                 Picture = menuItem.Picture,
-                Quantity = menuItem.Quantity,
-                Continent = menuItem.Continent,
-
+                Category = menuItem.Continent,
             };
-
-            foreach(var item in menuItem.Nutritions)
-            {
-                viewModel.Nutritions.Add(item.Id);
-            }
 
             return viewModel;
         }

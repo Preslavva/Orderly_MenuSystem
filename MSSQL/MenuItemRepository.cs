@@ -10,7 +10,7 @@ namespace MSSQL
     {
         public MenuItemRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Continent continent)
+        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category continent)
         {
             try
             {
@@ -53,7 +53,7 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string queryGetCustomers = @"select Id, [Name], [Description], Price, IsAvailable, Picture, Quantity, Continent
+                    string queryGetCustomers = @"select Id, [Name], [Description], Price, IsAvailable, Picture, Category
                                                 from MenuItem";
 
                     using (SqlCommand getCustomers = new SqlCommand(queryGetCustomers, conn))
@@ -62,6 +62,9 @@ namespace MSSQL
 
                         while (reader.Read())
                         {
+                            string continentValue = Convert.ToString(reader["Category"]);
+                            Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
+
                             menuItems.Add(new MenuItem(
 
                                     Convert.ToInt32(reader["Id"]),
@@ -70,8 +73,7 @@ namespace MSSQL
                                     Convert.ToDecimal(reader["Price"]),
                                     Convert.ToBoolean(reader["IsAvailable"]),
                                     Convert.ToString(reader["Picture"]),
-                                    Convert.ToInt32(reader["Quantity"]),
-                                    (Continent)reader["Continent"]
+                                     categoryEnum
                             ));                           
                         }
                     }
@@ -133,6 +135,9 @@ namespace MSSQL
                         {
                             if (reader.Read())
                             {
+                                string continentValue = Convert.ToString(reader["Category"]);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
+
                                 return new MenuItem(
                                     Convert.ToInt32(reader["Id"]),
                                     Convert.ToString(reader["Name"]),
@@ -140,8 +145,9 @@ namespace MSSQL
                                     Convert.ToDecimal(reader["Price"]),
                                     Convert.ToBoolean(reader["IsAvailable"]),
                                     Convert.ToString(reader["Picture"]),
-                                    Convert.ToInt32(reader["Quantity"]),
-                                    (Continent)reader["Continent"]
+                                    categoryEnum
+ 
+                                    
                                 );
                             }
                         }

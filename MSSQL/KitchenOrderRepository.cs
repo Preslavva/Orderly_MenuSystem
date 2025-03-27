@@ -14,7 +14,7 @@ namespace MSSQL
         public List<Order> GetOrderHeadersByStatus(OrderStatus status)
         {
             List<Order> orders = new();
-            string query = "SELECT Id, TableId, OrderTimestamp, Status FROM [Order] WHERE Status = @Status AND isArchived = 0";
+            string query = "SELECT Id, TableId, OrderTimestamp, Status FROM [Order] WHERE Status = @Status";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -73,7 +73,7 @@ namespace MSSQL
             List<MenuItem> menuItems = new List<MenuItem>();
 
             string query = @"
-            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, om.Quantity, m.Continent
+            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Continent
             FROM [Order_MenuItem] om
             INNER JOIN MenuItem m ON om.MenuItemId = m.Id
             WHERE om.OrderId = @OrderId";
@@ -94,11 +94,10 @@ namespace MSSQL
                         decimal price = reader.GetDecimal(3);
                         bool isAvailable = reader.GetBoolean(4);
                         string picture = reader.GetString(5);
-                        int quantity = reader.GetInt32(6);
                         string continentString = reader.GetString(7);
-                        Continent continent = (Continent)Enum.Parse(typeof(Continent), continentString);
+                        Category continent = (Category)Enum.Parse(typeof(Category), continentString);
 
-                        MenuItem menuItem = new MenuItem(id, name, description, price, isAvailable, picture, quantity, continent);
+                        MenuItem menuItem = new MenuItem(id, name, description, price, isAvailable, picture, continent);
                         menuItems.Add(menuItem);
                     }
                 }

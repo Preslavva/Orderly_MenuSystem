@@ -18,12 +18,11 @@ namespace Models.Entities
 
         public string Picture { get; }
 
-        public int Quantity { get; }
 
-        public Continent Continent { get; }
+        public Category Continent { get; }
         public List<Nutrition> Nutritions { get;}
 
-        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, int quantity, Continent continent)
+        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category continent)
         {
             Id = id;
             Name = name;
@@ -31,19 +30,17 @@ namespace Models.Entities
             Price = price;
             IsAvailable = isAvailable;
             Picture = picture;
-            Quantity = quantity;
             Continent = continent;
             Nutritions = new List<Nutrition>();
 
         }
 
-        public MenuItem(string name, string description, decimal price, string picture, int quantity, Continent continent)
+        public MenuItem(string name, string description, decimal price, string picture, Category continent)
         {
             Name = name;
             Description = description;
             Price = price;
             Picture = picture;
-            Quantity = quantity;
             Continent = continent;
         }
         public MenuItem() { }

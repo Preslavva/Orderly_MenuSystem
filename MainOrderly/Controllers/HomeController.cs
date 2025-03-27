@@ -56,11 +56,21 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult GetItemInfo(int id)
         {
-            Models.Entities.MenuItem? menuItem = _menuService.GetMenuItem(id);
+            MenuItem? menuItem = _menuService.GetMenuItem(id); // get first the object as entities
 
-            ViewBag.Nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
-            return View("Info", menuItem);
+            List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id); // same goes for nutritions.
+
+            List<NutritionViewModel> nutritionViewModels = nutritions.Select(nutrition =>NutritionViewModel.ConvertToViewModel(nutrition)).ToList();
+
+            CompositeViewModelMenuItemNutrition compositeViewModel = new CompositeViewModelMenuItemNutrition
+            {
+                MenuItemViewModel = menItemViewModel,
+                NutritionViewModel = nutritionViewModels
+            };
+
+            return View("Info", compositeViewModel);
         }
 
         [HttpPost]

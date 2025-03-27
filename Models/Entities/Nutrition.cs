@@ -6,16 +6,16 @@ namespace Models.Entities
     {
         public int Id { get; set; }
         public NutritionName Name { get; set; }
-        public decimal Value { get; set; }
+        public int Value { get; set; }
 
-        public Nutrition(int id, NutritionName name, decimal value)
+        public Nutrition(int id, NutritionName name, int value)
         {
             Id = id;
             Name = name;
             Value = value;
         }
 
-        public Nutrition(NutritionName name, decimal value)
+        public Nutrition(NutritionName name, int value)
         {
             Name = name;
             Value = value;

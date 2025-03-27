@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MainOrderly.WebApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 using Models.Entities;
 using Models.Enums;
@@ -17,13 +18,11 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult Dashboard()
         {
-            KitchenOrderManager kitchenOrderManager = new KitchenOrderManager()
-            {
-                NewOrders = _kitchenOrderService.GetOrderByStatus(OrderStatus.NEW_ORDER),
-                PendingOrders = _kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING),
-                CompletedOrders = _kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED),
-            };
-            return View("~/Views/Kitchen/Dashboard.cshtml", kitchenOrderManager);
+            KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
+
+            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+                           
+            return View("~/Views/Kitchen/Dashboard.cshtml", viewModel);
         }
 
 

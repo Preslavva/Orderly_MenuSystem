@@ -11,12 +11,7 @@ namespace MainOrderly.WebApp.ViewModels
         public OrderStatus Status { get; set; }
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
-        public List<int> Items { get; set; }
 
-        public OrderViewModel()
-        {
-            this.Items = new List<int>();
-        }
 
         public static OrderViewModel ConvertToViewModel(Order order)
         {
@@ -30,11 +25,7 @@ namespace MainOrderly.WebApp.ViewModels
                 SubTotal = order.SubTotal
             };
 
-            foreach (var item in order.Items)
-            {
-                viewModel.Items.Add(item.Id);
-            }
-
+     
             return viewModel;
         }
     }

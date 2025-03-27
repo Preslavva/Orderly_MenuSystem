@@ -109,7 +109,7 @@ namespace MSSQL
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
-                                    Value = reader.GetDecimal(2)
+                                    Value = reader.GetInt32(2)
                                 });
                             }
                         }
@@ -151,7 +151,7 @@ namespace MSSQL
                                 {
                                     Id = reader.GetInt32(0),
                                     Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
-                                    Value = reader.IsDBNull(2) ? 0.00m : reader.GetDecimal(2)
+                                    Value =  reader.GetInt32(2)
 
 
                                 });

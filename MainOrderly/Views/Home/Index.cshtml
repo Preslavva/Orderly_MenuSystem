@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<MenuItemViewModel>
 
 @{
-    var continents = Enum.GetValues(typeof(Continent));
+    var continents = Enum.GetValues(typeof(Category));
     ViewData["Title"] = "Home Page";
 }
 
@@ -39,7 +39,7 @@
 }
 
 
-@foreach (var continentGroup in  Model.GroupBy(m => m.Continent))
+@foreach (var continentGroup in  Model.GroupBy(m => m.Category))
 {
     <h2 class="continent-name" id="@continentGroup.Key">@continentGroup.Key</h2>
     <hr></hr>

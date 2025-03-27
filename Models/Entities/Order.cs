@@ -10,7 +10,7 @@ namespace Models.Entities
         public OrderStatus Status { get; }
         public int Quantity { get; }
         public decimal SubTotal { get; }
-        public List<MenuItem> Items { get; }
+        public List<MenuItem> Items { get; private set; }
 
         public Order(int id, Table table, DateTime orderTimestamp, OrderStatus status)
         {
@@ -27,6 +27,11 @@ namespace Models.Entities
             OrderTimestamp = orderTimestamp;
             Status = status;
             Items = new List<MenuItem>();
+        }
+
+        public void SetMenuItems(List<MenuItem> items)
+        {
+            Items = items;
         }
     }
 }
