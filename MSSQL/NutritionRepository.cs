@@ -106,11 +106,16 @@ namespace MSSQL
                             while (reader.Read())
                             {
                                 nutritions.Add(new Nutrition
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
-                                    Value = reader.GetDecimal(2)
-                                });
+                                    (
+                                       Convert.ToInt32(reader["Id"]),
+                                       (NutritionName)Enum.Parse(typeof(NutritionName), Convert.ToString(reader["Name"])),
+                                       Convert.ToDecimal(reader["Value"])
+                                    ));
+                                //{
+                                //    Id = reader.GetInt32(0),
+                                //    Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
+                                //    Value = reader.GetDecimal(2)
+                                //});
                             }
                         }
                     }
@@ -148,13 +153,18 @@ namespace MSSQL
                             while (reader.Read())
                             {
                                 nutritions.Add(new Nutrition
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
-                                    Value = reader.IsDBNull(2) ? 0.00m : reader.GetDecimal(2)
+                                     (
+                                       Convert.ToInt32(reader["Id"]),
+                                       (NutritionName)Enum.Parse(typeof(NutritionName), Convert.ToString(reader["Name"])),
+                                       Convert.ToDecimal(reader["Value"])
+                                    ));
+                                //{
+                                //    Id = reader.GetInt32(0),
+                                //    Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
+                                //    Value = reader.IsDBNull(2) ? 0.00m : reader.GetDecimal(2)
 
 
-                                });
+                                //});
                             }
                         }
                     }

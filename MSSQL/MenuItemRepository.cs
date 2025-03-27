@@ -1,9 +1,8 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Reflection;
-using System.Configuration;
-using Models.Enums;
+﻿using System.Reflection;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
+using Models.Enums;
 namespace MSSQL
 {
     public class MenuItemRepository : Repository
@@ -63,17 +62,27 @@ namespace MSSQL
                         while (reader.Read())
                         {
                             menuItems.Add(new MenuItem
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Description = reader.GetString(2),
-                                Price = reader.GetDecimal(3),
-                                IsAvailable = reader.GetBoolean(4),
-                                Picture = reader.GetString(5),
-                                Quantity = reader.GetInt32(6),
-                                Continent = (Continent)Enum.Parse(typeof(Continent), reader.GetString(7))
+                                (
+                                  Convert.ToInt32(reader["Id"]),
+                                  Convert.ToString(reader["Name"]),
+                                  Convert.ToString(reader["Description"]),
+                                  Convert.ToDecimal(reader["Price"]),
+                                  Convert.ToBoolean(reader["IsAvailable"]),
+                                  Convert.ToString(reader["Picture"]),
+                                  Convert.ToInt32(reader["Quantity"]),
+                                  (Continent)Enum.Parse(typeof(Continent), Convert.ToString(reader["Continent"]))
+                                ));
+                            //{
+                            //    Id = reader.GetInt32(0),
+                            //    Name = reader.GetString(1),
+                            //    Description = reader.GetString(2),
+                            //    Price = reader.GetDecimal(3),
+                            //    IsAvailable = reader.GetBoolean(4),
+                            //    Picture = reader.GetString(5),
+                            //    Quantity = reader.GetInt32(6),
+                            //    Continent = (Continent)Enum.Parse(typeof(Continent), reader.GetString(7))
 
-                            });
+                            //});
                         }
                     }
                     return menuItems;
@@ -135,14 +144,24 @@ namespace MSSQL
                             if (reader.Read())
                             {
                                 return new MenuItem
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Description = reader.GetString(2),
-                                    Price = reader.GetDecimal(3),
-                                    IsAvailable = reader.GetBoolean(4),
-                                    Picture = reader.GetString(5)
-                                };
+                                    (
+                                      Convert.ToInt32(reader["Id"]),
+                                      Convert.ToString(reader["Name"]),
+                                      Convert.ToString(reader["Description"]),
+                                      Convert.ToDecimal(reader["Price"]),
+                                      Convert.ToBoolean(reader["IsAvailable"]),
+                                      Convert.ToString(reader["Picture"]),
+                                      Convert.ToInt32(reader["Quantity"]),
+                                      (Continent)Enum.Parse(typeof(Continent), Convert.ToString(reader["Continent"]))
+                                    );
+                                //{
+                                //    Id = reader.GetInt32(0),
+                                //    Name = reader.GetString(1),
+                                //    Description = reader.GetString(2),
+                                //    Price = reader.GetDecimal(3),
+                                //    IsAvailable = reader.GetBoolean(4),
+                                //    Picture = reader.GetString(5)
+                                //};
                             }
                         }
                     }
