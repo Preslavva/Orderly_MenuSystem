@@ -4,9 +4,9 @@ namespace Models.Entities
 {
     public class Nutrition
     {
-        public int Id { get; set; }
-        public NutritionName Name { get; set; }
-        public decimal Value { get; set; }
+        public int Id { get; }
+        public NutritionName Name { get; }
+        public decimal Value { get; }
 
         public Nutrition(int id, NutritionName name, decimal value)
         {

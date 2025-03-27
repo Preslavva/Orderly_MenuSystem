@@ -20,7 +20,7 @@ namespace Services
             Order order = _kitchenOrderRepositories.GetOrderHeaderById(orderId);
             if (order != null)
             {
-                order.Items = _kitchenOrderRepositories.GetOrderItemsByOrderId(orderId);
+                order.SetMenuItems(_kitchenOrderRepositories.GetOrderItemsByOrderId(orderId));
             }
             return order!;
         }
@@ -30,7 +30,7 @@ namespace Services
             List<Order> orders = _kitchenOrderRepositories.GetOrderHeadersByStatus(status);
             foreach (Order order in orders)
             {
-                order.Items = _kitchenOrderRepositories.GetOrderItemsByOrderId(order.Id);
+                order.SetMenuItems(_kitchenOrderRepositories.GetOrderItemsByOrderId(order.Id));
             }
             return orders;
         }
