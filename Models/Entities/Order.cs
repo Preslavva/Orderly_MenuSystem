@@ -4,13 +4,13 @@ namespace Models.Entities
 {
     public class Order
     {
-        public int Id { get; set; }
-        public Table Table { get; set; }
-        public DateTime OrderTimestamp { get; set; }
-        public OrderStatus Status { get; set; }
-        public int Quantity { get; set; }
-        public decimal SubTotal { get; set; }
-        public List<MenuItem> Items { get; set; }
+        public int Id { get; }
+        public Table Table { get; }
+        public DateTime OrderTimestamp { get;    }
+        public OrderStatus Status { get; }
+        public int Quantity { get; }
+        public decimal SubTotal { get; }
+        public List<MenuItem> Items { get; }
 
         public Order(int id, Table table, DateTime orderTimestamp, OrderStatus status)
         {
