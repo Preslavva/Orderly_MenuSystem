@@ -1,15 +1,16 @@
-﻿@using Models.Enums
-@model List<MenuItem>
+﻿@model List<MenuItemViewModel>
+
 
 @{
-    var categories = Enum.GetValues(typeof(Category)).Cast<Category>().ToList();
+    // var categories = Enum.GetValues(typeof(Category)).Cast<Category>().ToList();
+    var categoriesFromModel = Model.Select(item => item.Category).Distinct().ToList();
     ViewData["Title"] = "Home Page";
 }
 
 <div class="category-tabs">
     <ul class="tab-list">
         <li class="tab-item active" data-category="All">All</li>
-        @foreach (var category in categories)
+        @foreach (var category in categoriesFromModel) // IS THIS ALLOWED??
         {
             <li class="tab-item" data-category="@category">@category.GetDisplayName()</li>
         }

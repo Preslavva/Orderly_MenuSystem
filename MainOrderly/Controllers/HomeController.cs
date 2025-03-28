@@ -98,12 +98,9 @@ namespace MainOrderly.WebApp.Controllers
         {
             var allItems = _menuService.LoadMenuItems();
 
-            var filtered = string.IsNullOrWhiteSpace(term)
-                ? allItems
-                : allItems.Where(x =>
-                    !string.IsNullOrEmpty(x.Name) &&
-                    x.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
-                ).ToList();
+            List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
+
+            var filtered = string.IsNullOrWhiteSpace(term)? menuItemViewModel: menuItemViewModel.Where(x =>!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
 
             return PartialView("_MenuItemList", filtered);
         }

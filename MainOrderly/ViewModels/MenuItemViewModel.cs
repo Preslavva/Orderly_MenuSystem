@@ -32,7 +32,7 @@ namespace MainOrderly.WebApp.ViewModels
                 Price = menuItem.Price,
                 IsAvailable = menuItem.IsAvailable,
                 Picture = menuItem.Picture,
-                Category = menuItem.Continent,
+                Category = menuItem.Category,
             };
 
             return viewModel;

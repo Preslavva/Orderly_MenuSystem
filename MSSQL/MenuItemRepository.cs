@@ -60,19 +60,24 @@ namespace MSSQL
                     {
                         using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
-                            string continentValue = Convert.ToString(reader["Category"]);
-                            Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
 
-                            menuItems.Add(new MenuItem(
+                            while (reader.Read())
+                            {
 
-                                    Convert.ToInt32(reader["Id"]),
-                                    Convert.ToString(reader["Name"]),
-                                    Convert.ToString(reader["Description"]),
-                                    Convert.ToDecimal(reader["Price"]),
-                                    Convert.ToBoolean(reader["IsAvailable"]),
-                                    Convert.ToString(reader["Picture"]),
-                                     categoryEnum
-                            ));                           
+                                string categoryValue = Convert.ToString(reader["Category"]);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue);
+
+                                menuItems.Add(new MenuItem(
+
+                                        Convert.ToInt32(reader["Id"]),
+                                        Convert.ToString(reader["Name"]),
+                                        Convert.ToString(reader["Description"]),
+                                        Convert.ToDecimal(reader["Price"]),
+                                        Convert.ToBoolean(reader["IsAvailable"]),
+                                        Convert.ToString(reader["Picture"]),
+                                        categoryEnum
+                                ));                           
+                            }
                         }
                     }
                 }
