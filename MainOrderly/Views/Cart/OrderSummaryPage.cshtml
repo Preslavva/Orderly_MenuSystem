@@ -12,7 +12,7 @@
 
     <div class="order-summary-box">
         <div class="order-items">
-            @foreach (var item in Model)
+            @foreach (CartViewModel item in Model)
             {
                 <p class="order-item">
                     @item.Name x @item.Quantity - @item.ItemPriceFormatted

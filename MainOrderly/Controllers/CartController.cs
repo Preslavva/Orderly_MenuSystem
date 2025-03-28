@@ -23,17 +23,17 @@ namespace MainOrderly.WebApp.Controllers
         /// Converts the Dictionary in Cart into View Model
         /// </summary>
         /// <returns>List with CatViewModels</returns>
-        private List<CartViewModel> GetCartModel()
+        private List<CartViewModel> GetCartViewModel()
         {
-            List<CartViewModel> model = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
-            return model;
+            List<CartViewModel> viewModel = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            return viewModel;
         }
 
         [HttpGet]
         public IActionResult OrderList()
         {
             ViewData["Page"] = "Order overview";
-            List<CartViewModel> model = GetCartModel();
+            List<CartViewModel> model = GetCartViewModel();
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
@@ -57,9 +57,9 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult OrderSummaryPage()
         {
             ViewData["Page"] = "Order summary";
-            List<CartViewModel> model = GetCartModel();
+            List<CartViewModel> viewModel = GetCartViewModel();
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
-            return View(model);
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -77,8 +77,8 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            List<CartViewModel> model = GetCartModel();
-            if (model.Count == 0)
+            List<CartViewModel> viewModel = GetCartViewModel();
+            if (viewModel.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
