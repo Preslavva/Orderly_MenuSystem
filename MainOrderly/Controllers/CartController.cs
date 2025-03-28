@@ -1,44 +1,46 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services;
 using Models.Entities;
+using MainOrderly.WebApp.ViewModels;
 
 namespace MainOrderly.WebApp.Controllers
 {
     public class CartController : Controller
     {
-        private readonly CartServices _cartServices;
-
-        public CartController(CartServices cartServices)
-        {
-            _cartServices = cartServices;
-        }
+        private readonly CartService _cartService;
 
         private Dictionary<MenuItem, int> GetOrderList()
-        {
-            return _cartServices.GetCart();
+        { 
+            return _cartService.GetCart();
         }
+        public CartController(CartService cartService)
+        {
+            _cartService = cartService;
+        }
+
 
         [HttpGet]
         public IActionResult OrderList()
         {
             ViewData["Page"] = "Order overview";
             Dictionary<MenuItem, int> cart = GetOrderList();
-            ViewBag.TotalPrice = _cartServices.CalculateTotalPrice(cart);
-            TempData["CartCount"] = _cartServices.GetCartCount();
-            return View(cart);
+            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
+            TempData["CartCount"] = _cartService.GetCartCount();
+            return View(model);
         }
-
+            
         [HttpPost]
         public IActionResult RemoveItemFromCart(int id)
         {
-            _cartServices.RemoveFromCart(id);
+            _cartService.RemoveFromCart(id);
             return RedirectToAction("OrderList", "Cart");
         }
 
         [HttpPost]
         public IActionResult UpdateItemQuantity(int id, int quantity)
         {
-            _cartServices.UpdateQuantity(id, quantity);
+            _cartService.UpdateQuantity(id, quantity);
             return RedirectToAction("OrderList", "Cart");
         }
 
@@ -47,8 +49,9 @@ namespace MainOrderly.WebApp.Controllers
         {
             ViewData["Page"] = "Order summary";
             Dictionary<MenuItem, int> cart = GetOrderList();
-            ViewBag.TotalPrice = _cartServices.CalculateTotalPrice(cart);
-            return View(cart);
+            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
+            return View(model);
         }
 
         [HttpPost]
@@ -66,18 +69,18 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            Dictionary<MenuItem, int> cart = _cartServices.GetCart();
+            Dictionary<MenuItem, int> cart = _cartService.GetCart();
 
             if (cart.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
 
-            int newOrderId = _cartServices.FinalizeOrder(tableId);
+            int newOrderId = _cartService.FinalizeOrder(tableId);
 
-            _cartServices.SaveCart(new Dictionary<int, int>());
+            _cartService.SaveCart(new Dictionary<int, int>());
 
-            _cartServices.ClearCart();
+            _cartService.ClearCart();
             return RedirectToAction("PaymentConfirmationPage", new { orderId = newOrderId });
         }
 

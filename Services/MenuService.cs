@@ -15,10 +15,10 @@ namespace Services
 
         public List<MenuItem> LoadMenuItems()
         {
-            return _menuItemRepository.LoadMenuItems()!;
+           return _menuItemRepository.LoadMenuItems()!;   
         }
 
-        public MenuItem GetMenuItem(int id)
+        public Models.Entities.MenuItem GetMenuItem(int id)
         {
             return _menuItemRepository.GetMenuItemById(id)!;
         }

@@ -1,0 +1,95 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Models.Entities
+    {
+        public class Restaurant
+        {
+            public int Id { get; }
+
+            public string Name { get; }
+
+            public string Description { get; }
+
+            public byte[] Logo { get; }
+
+            public string ColorTheme { get; }
+
+            public string OwnerName { get; }
+
+            public string Email { get; }
+
+            public string PhoneNumber { get; }
+
+            public string Address { get;  }
+
+
+            public List<MenuItem> MenuItems { get; }
+            public List<Table> Tables { get; }
+            public List<Order> Orders { get; }
+
+            public Restaurant(int id, string name, string description, Byte[]logo, string colorTheme, string email, string phoneNumber, string address)
+            {
+              Id = id;
+              Name = name;
+              Description = description;
+              Logo = logo;
+              ColorTheme = colorTheme;
+              Email = email;
+              PhoneNumber = phoneNumber;
+              Address = address;
+              MenuItems = new List<MenuItem>();
+              Tables = new List<Table>();
+              Orders = new List<Order>();
+            }
+
+
+            public Restaurant( string name, string description, Byte[] logo, string colorTheme, string email, string phoneNumber, string address)
+            {
+                Name = name;
+                Description = description;
+                Logo = logo;
+                ColorTheme = colorTheme;
+                Email = email;
+                PhoneNumber = phoneNumber;
+                Address = address;
+                MenuItems = new List<MenuItem>();
+                Tables = new List<Table>();
+                Orders = new List<Order>();
+            }
+    }
+   
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -2,20 +2,22 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Models.Entities;
+using MainOrderly.WebApp.ViewModels;
+using MainOrderly.WebApp.Helpers;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly CartServices _cartServices;
+        private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
 
-        public HomeController(ILogger<HomeController> logger, CartServices cartServices, MenuService menuService, NutritionService nutritionService)
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
         {
             _logger = logger;
-            _cartServices = cartServices;
+            _cartService = cartService;
             _menuService = menuService;
             _nutritionService = nutritionService;
 
@@ -35,7 +37,7 @@ namespace MainOrderly.WebApp.Controllers
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
             }
-            List<MenuItem>? menu = _menuService.LoadMenuItems();
+            List<MenuItem>? menu = _menuService.LoadMenuItems(); //from the dto i will create viewModel
 
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -44,26 +46,38 @@ namespace MainOrderly.WebApp.Controllers
                            .ToList();
             }
 
-            TempData["CartCount"] = _cartServices.GetCartCount();
+            List<MenuItemViewModel> menuItemViewModel =  MappingHelper.ConvertToViewModels(menu);
+            TempData["CartCount"] = _cartService.GetCartCount();
 
-            return View(menu);
+            return View(menuItemViewModel);
         }
+
 
         [HttpGet]
         public IActionResult GetItemInfo(int id)
         {
-            MenuItem? menuItem = _menuService.GetMenuItem(id);
+            MenuItem? menuItem = _menuService.GetMenuItem(id); // get first the object as entities
 
-            ViewBag.Nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
-            return View("Info", menuItem);
+            List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id); // same goes for nutritions.
+
+            List<NutritionViewModel> nutritionViewModels = nutritions.Select(nutrition =>NutritionViewModel.ConvertToViewModel(nutrition)).ToList();
+
+            CompositeViewModelMenuItemNutrition compositeViewModel = new CompositeViewModelMenuItemNutrition
+            {
+                MenuItemViewModel = menItemViewModel,
+                NutritionViewModel = nutritionViewModels
+            };
+
+            return View("Info", compositeViewModel);
         }
 
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
         {
-            _cartServices.AddToCart(id, quantity);
-            ViewBag.CartCount = _cartServices.GetCartCount();
+            _cartService.AddToCart(id, quantity);
+            ViewBag.CartCount = _cartService.GetCartCount();
             return RedirectToAction("Index", "Home");
         }
 

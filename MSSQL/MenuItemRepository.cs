@@ -60,20 +60,19 @@ namespace MSSQL
                     {
                         using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
-                            while (reader.Read())
-                            {
-                                MenuItem item = new MenuItem(
-                                    reader.GetInt32(0),
-                                    reader.GetString(1),
-                                    reader.GetString(2),
-                                    reader.GetDecimal(3),
-                                    reader.GetBoolean(4),
-                                    reader.GetString(5),
-                                    (Category)Enum.Parse(typeof(Category), reader.GetString(6))
-                                );
+                            string continentValue = Convert.ToString(reader["Category"]);
+                            Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
 
-                                menuItems.Add(item);
-                            }
+                            menuItems.Add(new MenuItem(
+
+                                    Convert.ToInt32(reader["Id"]),
+                                    Convert.ToString(reader["Name"]),
+                                    Convert.ToString(reader["Description"]),
+                                    Convert.ToDecimal(reader["Price"]),
+                                    Convert.ToBoolean(reader["IsAvailable"]),
+                                    Convert.ToString(reader["Picture"]),
+                                     categoryEnum
+                            ));                           
                         }
                     }
                 }
@@ -137,17 +136,24 @@ namespace MSSQL
                         {
                             if (reader.Read())
                             {
+                                string continentValue = Convert.ToString(reader["Category"]);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
+
                                 return new MenuItem(
-                                    reader.GetInt32(0),             
-                                    reader.GetString(1),                 
-                                    reader.GetString(2),                 
-                                    reader.GetDecimal(3),               
-                                    reader.GetBoolean(4),                
-                                    reader.GetString(5),                 
-                                    (Category)Enum.Parse(typeof(Category), reader.GetString(6)) 
+                                    Convert.ToInt32(reader["Id"]),
+                                    Convert.ToString(reader["Name"]),
+                                    Convert.ToString(reader["Description"]),
+                                    Convert.ToDecimal(reader["Price"]),
+                                    Convert.ToBoolean(reader["IsAvailable"]),
+                                    Convert.ToString(reader["Picture"]),
+                                    categoryEnum
+ 
+                                    
                                 );
                             }
                         }
+
+                           
                     }
                 }
                 return null;

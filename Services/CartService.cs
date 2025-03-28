@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 namespace Services
 {
-    public class CartServices
+    public class CartService
     {
         private readonly IHttpContextAccessor contextAccessor;
         private readonly MenuItemRepository _menuItemRepository;
@@ -14,12 +14,12 @@ namespace Services
         private readonly CartRepository _cartRepository;
         private readonly CheckoutService _checkoutService;
 
-        public CartServices(IHttpContextAccessor contxtAccessor, MenuItemRepository menuDB, CartRepository cartRepository, CheckoutService checkoutService)
+        public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService)
         {
             _checkoutService = checkoutService;
             _cartRepository = cartRepository;
             contextAccessor = contxtAccessor;
-            _menuItemRepository = menuDB;
+            _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
 
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
@@ -43,11 +43,11 @@ namespace Services
             SaveCart();
         }
 
-        public void UpdateQuantity(int id, int newQuanity)
+        public void UpdateQuantity(int id, int newQuantity)
         {
             if (cart.ContainsKey(id))
             {
-                cart[id] = newQuanity;
+                cart[id] = newQuantity;
             }
             SaveCart();
         }
@@ -88,10 +88,10 @@ namespace Services
             }
             return counter;
         }
-
+            
         public Dictionary<MenuItem, int> GetCart()
         {
-            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
+            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
             if (!string.IsNullOrEmpty(jsonCart))
             {
@@ -99,7 +99,8 @@ namespace Services
                 foreach (int key in cart.Keys)
                 {
                     MenuItem? item = _menuItemRepository.GetMenuItemById(key);
-                    newCart[item!] = cart[key];
+                    
+                    newCart[item] = cart[key];
                 }
             }
             return newCart;

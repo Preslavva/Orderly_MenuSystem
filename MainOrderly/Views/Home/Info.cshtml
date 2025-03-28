@@ -1,9 +1,7 @@
-﻿@model MenuItem
-
-
+﻿@model CompositeViewModelMenuItemNutrition
 
 @{
-    ViewData["Title"] =  "Info Page";
+    ViewData["Title"] = "Info Page";
 }
 <div class="container d-flex justify-content-center align-items-center">
     <div class="card food-card shadow-lg">
@@ -12,31 +10,23 @@
         </a>
 
         <div class="image-container2">
-            <img src="@Model.Picture" alt="@Model.Name">
+            <img src="@Model.MenuItemViewModel.Picture" alt="@Model.MenuItemViewModel.Name">
         </div>
 
         <div class="card-body2">
-            <h1 class="card-title">@Model.Name</h1>
-            <p class="card-text">@Model.Description</p>
+            <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
+            <p class="card-text">@Model.MenuItemViewModel.Description</p>
 
             <div class="nutritions row text-center">
-                @foreach (var nutrient in ViewBag.Nutritions)
-                {
-                    <div class="col-6 col-md-3">
-                        <img src="/images/@(nutrient.Name).png" alt="@nutrient.Name"> <br>
-                        @if (@nutrient.Name == NutritionName.Carbs || @nutrient.Name == NutritionName.Protein || @nutrient.Name == NutritionName.Fats)
-                        {
-                            @($"{nutrient.Name} {nutrient.Value} g")
-                        }
-                        else
-                        {
-                            @($"{nutrient.Name} {nutrient.Value} Kcal")
-                        }
-                    </div>
-                }
+            @foreach (var nutrition in Model.NutritionViewModel)
+            {
+                <div class="col-6 col-md-3">
+                    <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name"> <br>
+                @nutrition.Value @((nutrition.Name == NutritionName.Kcal) ? "Kcal" : "g")
+                </div>
+            }
+            </div>
             </div>
         </div>
     </div>
 </div>
-
-

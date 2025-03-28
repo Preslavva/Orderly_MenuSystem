@@ -3,8 +3,8 @@
     public enum NutritionName
     {
         Carbs,
-        Protein,
         Kcal,
+        Proteins,
         Fats
     }
 }
