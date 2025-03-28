@@ -7,12 +7,14 @@ function scrollToParagraph() {
     document.getElementById('target-paragraph')?.scrollIntoView({ behavior: 'smooth' });
 }
 
+
+
 document.addEventListener('DOMContentLoaded', function () {
     const tabs = document.querySelectorAll('.tab-item');
     const items = document.querySelectorAll('.menu-item');
     const titles = document.querySelectorAll('.category-title-wrapper');
 
-    if (!tabs.length) return; // Exit if no tabs on this page
+    if (!tabs.length) return; 
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -25,11 +27,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 const itemCategory = item.dataset.category;
                 const title = item.querySelector('.category-title-wrapper');
 
-                if (selected === 'All' || itemCategory === selected) {
+                if (selected === 'All') {
                     item.style.display = 'block';
-                    if (selected === 'All' && title) {
+                    if (title) {
                         title.style.display = 'block';
-                    } else if (title) {
+                    }
+                } else if (itemCategory === selected) {
+                    item.style.display = 'block';
+                    if (title) {
                         title.style.display = 'none';
                     }
                 } else {
@@ -44,23 +49,47 @@ document.addEventListener('DOMContentLoaded', function () {
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchInput');
     const resultsContainer = document.getElementById('searchResults');
-
-    if (!searchInput || !resultsContainer) return;
-
+    const tabs = document.querySelectorAll('.tab-item');
+    const DEBOUNCE_DELAY = 300;
     let debounceTimeout;
+
+    if (!searchInput || !resultsContainer || !tabs.length) return;
+
+    const getSelectedCategory = () => {
+        const activeTab = document.querySelector('.tab-item.active');
+        return activeTab?.dataset.category || 'All';
+    };
+
+    const performSearch = () => {
+        const term = searchInput.value.trim();
+        const selectedCategory = getSelectedCategory();
+        const categoryParam = selectedCategory === 'All' ? '' : selectedCategory;
+
+        const url = `/Home/Search?term=${encodeURIComponent(term)}&category=${encodeURIComponent(categoryParam)}`;
+
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                resultsContainer.innerHTML = html;
+            })
+            .catch(err => console.error('Search error:', err));
+    };
 
     searchInput.addEventListener('input', () => {
         clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(performSearch, DEBOUNCE_DELAY);
+    });
 
-        debounceTimeout = setTimeout(() => {
-            const term = searchInput.value;
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
 
-            fetch(`/Home/Search?term=${encodeURIComponent(term)}`)
-                .then(response => response.text())
-                .then(html => {
-                    resultsContainer.innerHTML = html;
-                })
-                .catch(err => console.error('Search error:', err));
-        }, 300); // debounce for 300ms
+            searchInput.value = '';
+
+            performSearch();
+        });
     });
 });
+
+
