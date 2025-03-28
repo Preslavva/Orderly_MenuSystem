@@ -69,6 +69,7 @@ header .logo {
 
 header {
     background-color: #f8f5ed;
+    z-index: 100;
 }
 
 button img {
@@ -84,10 +85,7 @@ meta[name = "format-detection"]
     address=no;
 }
 
-.continent{
-    -webkit-touch-callout:none;
-    -webkit-user-select: none;
-}
+
 
 .container-fluid {
     background-color: #f8f5ed;
