@@ -30,7 +30,7 @@ namespace MainOrderly.WebApp.ViewModels
             {
                 Id = order.Id,
                 Table = order.Table.Id,
-                OrderTimestamp = order.OrderTimestamp,  
+                OrderTimestamp = order.OrderTimestamp,
                 Status = order.Status,
                 Quantity = order.Quantity,
                 SubTotal = order.SubTotal,
@@ -39,7 +39,7 @@ namespace MainOrderly.WebApp.ViewModels
 
             };
 
-     
+
             return viewModel;
         }
     }
