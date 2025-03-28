@@ -10,22 +10,31 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
 
         private Dictionary<MenuItem, int> GetOrderList()
-        { 
+        {
             return _cartService.GetCart();
         }
+
         public CartController(CartService cartService)
         {
             _cartService = cartService;
         }
 
+        /// <summary>
+        /// Converts the Dictionary in Cart into View Model
+        /// </summary>
+        /// <returns>List with CatViewModels</returns>
+        private List<CartViewModel> GetCartModel()
+        {
+            List<CartViewModel> model = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            return model;
+        }
 
         [HttpGet]
         public IActionResult OrderList()
         {
             ViewData["Page"] = "Order overview";
-            Dictionary<MenuItem, int> cart = GetOrderList();
-            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
+            List<CartViewModel> model = GetCartModel();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
         }
@@ -48,9 +57,8 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult OrderSummaryPage()
         {
             ViewData["Page"] = "Order summary";
-            Dictionary<MenuItem, int> cart = GetOrderList();
-            List<CartViewModel> model = cart.Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(cart);
+            List<CartViewModel> model = GetCartModel();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             return View(model);
         }
 
@@ -69,9 +77,8 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            Dictionary<MenuItem, int> cart = _cartService.GetCart();
-
-            if (cart.Count == 0)
+            List<CartViewModel> model = GetCartModel();
+            if (model.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
