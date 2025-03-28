@@ -10,15 +10,15 @@ namespace MSSQL
     {
         public MenuItemRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Continent continent)
+        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string queryAddMenuItem = @"insert into MenuItem([Name], [Description], Price, IsAvailable, Picture, Continent)
-                                                 values(@Name, @Description, @Price, @IsAvailable, @Picture, @Continent)";
+                    string queryAddMenuItem = @"insert into MenuItem([Name], [Description], Price, IsAvailable, Picture, Category)
+                                                 values(@Name, @Description, @Price, @IsAvailable, @Picture, @Cont)";
 
                     using (SqlCommand addMenuItem = new SqlCommand(queryAddMenuItem, conn))
                     {
@@ -27,7 +27,7 @@ namespace MSSQL
                         addMenuItem.Parameters.AddWithValue("@Price", price);
                         addMenuItem.Parameters.AddWithValue("@IsAvailable", isAvailable);
                         addMenuItem.Parameters.AddWithValue("@Picture", picture);
-                        addMenuItem.Parameters.AddWithValue("@Continent", continent);
+                        addMenuItem.Parameters.AddWithValue("@Category", category);
 
 
                         addMenuItem.ExecuteNonQuery();
@@ -53,41 +53,43 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string queryGetCustomers = @"select Id, [Name], [Description], Price, IsAvailable, Picture, Quantity, Continent
-                                                from MenuItem";
+                    string queryGetMenuItems = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category
+                                         FROM MenuItem";
 
-                    using (SqlCommand getCustomers = new SqlCommand(queryGetCustomers, conn))
+                    using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
                     {
-                        SqlDataReader reader = getCustomers.ExecuteReader();
-
-                        while (reader.Read())
+                        using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
-                            menuItems.Add(new MenuItem
+                            while (reader.Read())
                             {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Description = reader.GetString(2),
-                                Price = reader.GetDecimal(3),
-                                IsAvailable = reader.GetBoolean(4),
-                                Picture = reader.GetString(5),
-                                Quantity = reader.GetInt32(6),
-                                Continent = (Continent)Enum.Parse(typeof(Continent), reader.GetString(7))
+                                MenuItem item = new MenuItem(
+                                    reader.GetInt32(0),
+                                    reader.GetString(1),
+                                    reader.GetString(2),
+                                    reader.GetDecimal(3),
+                                    reader.GetBoolean(4),
+                                    reader.GetString(5),
+                                    (Category)Enum.Parse(typeof(Category), reader.GetString(6))
+                                );
 
-                            });
+                                menuItems.Add(item);
+                            }
                         }
                     }
-                    return menuItems;
                 }
+
+                return menuItems;
             }
             catch (SqlException sqlEx)
             {
-                throw new Exception($"Database error occurred while loading customers: {sqlEx.Message}", sqlEx);
+                throw new Exception($"Database error occurred while loading menu items: {sqlEx.Message}", sqlEx);
             }
             catch (Exception ex)
             {
-                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex); //this could be remove
+                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
+
 
         public void DeleteMenuItem(MenuItem menuItem)
         {
@@ -125,7 +127,8 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT * FROM MenuItem WHERE Id = @Id;";
+                    string query = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category 
+                             FROM MenuItem WHERE Id = @Id;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -134,15 +137,15 @@ namespace MSSQL
                         {
                             if (reader.Read())
                             {
-                                return new MenuItem
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Description = reader.GetString(2),
-                                    Price = reader.GetDecimal(3),
-                                    IsAvailable = reader.GetBoolean(4),
-                                    Picture = reader.GetString(5)
-                                };
+                                return new MenuItem(
+                                    reader.GetInt32(0),             
+                                    reader.GetString(1),                 
+                                    reader.GetString(2),                 
+                                    reader.GetDecimal(3),               
+                                    reader.GetBoolean(4),                
+                                    reader.GetString(5),                 
+                                    (Category)Enum.Parse(typeof(Category), reader.GetString(6)) 
+                                );
                             }
                         }
                     }
@@ -151,9 +154,10 @@ namespace MSSQL
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while retrieving MenuItem: {ex.Message}", ex);
+                throw new Exception($"Error while retrieving MenuItem by ID: {ex.Message}", ex);
             }
         }
+
         public void ChangeMenuItemAvailability(MenuItem menuItem, bool isAvailable)
         {
             try

@@ -1,12 +1,25 @@
-﻿namespace Models.Enums
+﻿
+using System.ComponentModel.DataAnnotations;
+
+namespace Models.Enums
 {
     public enum Category
     {
+        [Display(Name = "Starters")]
         Starters,
-        Main_Dishes,
-        Side_Dishes,
-        Desserts,
-        Drinks
 
+        [Display(Name = "Main Course")]
+        Main_Course,
+
+        [Display(Name = "Side Dishes")]
+        Side_Dishes,
+
+        [Display(Name = "Desserts")]
+        Desserts,
+
+        [Display(Name = "Drinks")]
+        Drinks
     }
+
 }
+

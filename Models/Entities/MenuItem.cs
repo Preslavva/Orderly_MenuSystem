@@ -1,36 +1,26 @@
 ﻿using Models.Enums;
-using System.ComponentModel;
 using System.Net.Http.Headers;
 
 namespace Models.Entities
 {
     public class MenuItem
     {
-        public int Id { get; set; }
+        public int Id { get;  }
 
-        public string Name { get; set; }
+        public string Name { get;  }
 
-        public string Description { get; set; }
+        public string Description { get;  }
 
-        public decimal Price { get; set; }
+        public decimal Price { get; }
 
-        public bool IsAvailable { get; set; }
+        public bool IsAvailable { get; }
 
-        public string Picture { get; set; }
+        public string Picture { get; }
+
+        public int Quantity { get; }
 
         public Category Category { get; set; }
-        public List<Nutrition> Nutritions { get; set; }
-
-        public MenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category)
-        {
-            Name = name;
-            Description = description;
-            Price = price;
-            IsAvailable = isAvailable;
-            Picture = picture;
-            Category = category;
-            Nutritions = new List<Nutrition>();
-        }
+        public List<Nutrition> Nutritions { get;}
 
         public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category)
         {
@@ -42,9 +32,18 @@ namespace Models.Entities
             Picture = picture;
             Category = category;
             Nutritions = new List<Nutrition>();
-
         }
 
+        public MenuItem(string name, string description, decimal price, string picture, int quantity, Category category)
+        {
+            Name = name;
+            Description = description;
+            Price = price;
+            Picture = picture;
+            Quantity = quantity;
+            Category = category;
+        }
+     
         public MenuItem() { }
     }
 }
