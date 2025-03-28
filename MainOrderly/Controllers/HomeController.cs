@@ -92,5 +92,22 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        [HttpGet]
+        public IActionResult Search(string term)
+        {
+            var allItems = _menuService.LoadMenuItems();
+
+            var filtered = string.IsNullOrWhiteSpace(term)
+                ? allItems
+                : allItems.Where(x =>
+                    !string.IsNullOrEmpty(x.Name) &&
+                    x.Name.Contains(term, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+
+            return PartialView("_MenuItemList", filtered);
+        }
+
+
     }
 }

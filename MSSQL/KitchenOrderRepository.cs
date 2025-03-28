@@ -94,8 +94,9 @@ namespace MSSQL
                         decimal price = reader.GetDecimal(3);
                         bool isAvailable = reader.GetBoolean(4);
                         string picture = reader.GetString(5);
-                        string continentString = reader.GetString(7);
-                        Category category = (Category)Enum.Parse(typeof(Category), continentString);
+           
+                        string categoryString = reader.GetString(6);
+                        Category category = (Category)Enum.Parse(typeof(Category), categoryString);
 
                         MenuItem menuItem = new MenuItem(id, name, description, price, isAvailable, picture, category);
                         menuItems.Add(menuItem);

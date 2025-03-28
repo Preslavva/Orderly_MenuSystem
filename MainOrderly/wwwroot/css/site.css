@@ -75,57 +75,7 @@ button img {
     mix-blend-mode: multiply;
 }
 
-.continent-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    padding: 10px;
-    overflow-x: auto;
-    white-space: nowrap;
-}
 
-.continent {
-    background-color: #f8f9fa;
-    box-shadow: 0 0 10px #6B705C;
-    border-radius: 8px;
-    border: none;
-    padding: 10px 15px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    transition: all 0.3s ease-in-out;
-    font-size: 16px;
-    font-weight: bold;
-    flex: 0 0 auto;
-}
-
-    .continent img {
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-    }
-
-    .continent:hover {
-        background-color: #e0e0e0;
-        border-color: #aaa;
-        transform: scale(1.05);
-    }
-
-@media (max-width: 768px) {
-    .continent-container {
-        justify-content: flex-start; 
-        overflow-x: auto; 
-        padding: 10px 0;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .continent {
-        flex: 0 0 auto; 
-        scroll-snap-align: start; 
-    }
-}
 
 meta[name = "format-detection"]
 {
@@ -935,5 +885,58 @@ button.accept-policy {
         justify-content: center; /* Make sure items are centered */
     }
 
+
+    .category-filter {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+        overflow-x: auto;
+        padding: 10px 0;
+    }
+
+    .filter-button {
+        padding: 8px 16px;
+        border: 1px solid #ccc;
+        background-color: #fff;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: 600;
+    }
+
+        .filter-button.active {
+            background-color: #000;
+            color: #fff;
+            border-color: #000;
+        }
 }
 
+.category-tabs {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+.tab-list {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    padding: 0;
+    margin: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+
+.tab-item {
+    cursor: pointer;
+    font-weight: 500;
+    padding: 10px 0;
+    border-bottom: 3px solid transparent;
+    color: #888;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+    .tab-item.active {
+        color: #6B705C;
+        border-bottom: 3px solid #6B705C;
+    }
