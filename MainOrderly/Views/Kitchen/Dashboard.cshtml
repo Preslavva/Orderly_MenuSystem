@@ -17,15 +17,15 @@
                     <p>Table: @orderViewModel.Table.</p>
                     <p>Ordered At: @orderViewModel.OrderTimestamp</p>
 
-                    @* @if (order.Items != null && order.Items.Count > 0) *@
-                    @* { *@
-                    @*     <ul> *@
-                    @*         @foreach (var item in order.Items) *@
-                    @*         { *@
-                    @*             <li>@item.Name (@item.Quantity)</li> *@
-                    @*         } *@
-                    @*     </ul> *@
-                    @* } *@
+                     @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0) 
+                     { 
+                         <ul> 
+                             @foreach (var item in orderViewModel.Items) 
+                             { 
+                                 <li>@item.Name (@item.Quantity)</li> 
+                             } 
+                          </ul> 
+                     } 
 
                     <!-- Form to move order to 'Processing' -->
                     <form method="post" asp-action="UpdateOrderStatus">

@@ -12,6 +12,17 @@ namespace MainOrderly.WebApp.ViewModels
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
 
+        public List<MenuItemViewModel> Items { get; set; }
+
+        public OrderViewModel(List<MenuItemViewModel> menuItemViewModels)
+        {
+            Items = menuItemViewModels;
+        }
+
+        public OrderViewModel()
+        {
+            
+        }
 
         public static OrderViewModel ConvertToViewModel(Order order)
         {
@@ -22,7 +33,10 @@ namespace MainOrderly.WebApp.ViewModels
                 OrderTimestamp = order.OrderTimestamp,  
                 Status = order.Status,
                 Quantity = order.Quantity,
-                SubTotal = order.SubTotal
+                SubTotal = order.SubTotal,
+                Items = order.Items.Select(o=> MenuItemViewModel.ConvertToViewModel(o)).ToList()
+
+
             };
 
      
