@@ -125,6 +125,7 @@ meta[name = "format-detection"]
 }
 
 .card {
+    margin-top: 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -133,7 +134,7 @@ meta[name = "format-detection"]
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    max-width: 100%; 
+    max-width: 100%;
     overflow: hidden;
     box-shadow: 0 0 10px #6B705C;
     border: none;
@@ -938,3 +939,29 @@ button.accept-policy {
         color: #6B705C;
         border-bottom: 3px solid #6B705C;
     }
+
+#searchContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 50px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    color: #6B705C;
+}
+
+    #searchInput:focus {
+        border-color: #6B705C;
+        outline: none;
+    }
+
+
