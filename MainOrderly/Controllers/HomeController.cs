@@ -14,13 +14,16 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
+        private readonly AllergenService _allergenService;
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
+
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService)
         {
             _logger = logger;
             _cartService = cartService;
             _menuService = menuService;
             _nutritionService = nutritionService;
+            _allergenService = allergenService;
 
         }
 
@@ -65,10 +68,15 @@ namespace MainOrderly.WebApp.Controllers
 
             List<NutritionViewModel> nutritionViewModels = nutritions.Select(nutrition =>NutritionViewModel.ConvertToViewModel(nutrition)).ToList();
 
-            CompositeViewModelMenuItemNutrition compositeViewModel = new CompositeViewModelMenuItemNutrition
+            List<Allergen> allergens = _allergenService.GetAllergenForMenuItem(id);
+
+            List<AllergenViewModel> allergenViewModel = allergens.Select(allergen => AllergenViewModel.ConvertToViewModel(allergen)).ToList();
+
+            CompositeViewModelMenuItemNutritionAllergen compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
             {
                 MenuItemViewModel = menItemViewModel,
-                NutritionViewModel = nutritionViewModels
+                NutritionViewModel = nutritionViewModels,
+                AllergenViewModel = allergenViewModel
             };
 
             return View("Info", compositeViewModel);

@@ -1,4 +1,4 @@
-﻿@model CompositeViewModelMenuItemNutrition
+﻿@model CompositeViewModelMenuItemNutritionAllergen
 
 @{
     ViewData["Title"] = "Info Page";
@@ -17,16 +17,38 @@
             <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
             <p class="card-text">@Model.MenuItemViewModel.Description</p>
 
-            <div class="nutritions row text-center">
-            @foreach (var nutrition in Model.NutritionViewModel)
-            {
-                <div class="col-6 col-md-3">
-                    <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name"> <br>
-                @nutrition.Value @((nutrition.Name == NutritionName.Kcal) ? "Kcal" : "g")
-                </div>
-            }
+            <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
+                Show Ingredients
+            </button>
+
+            <div class="collapse mt-2" id="ingredientsCollapse">
+                <p>Tomatoes, Olive Oil, Onion, Garlic, Basil, Salt, Pepper</p> @* for testing only *@
             </div>
+
+
+
+
+            <div class="nutritions d-flex flex-wrap justify-content-center">
+                @foreach (var nutrition in Model.NutritionViewModel)
+                {
+                    <div class="nutrition-item text-center m-1">
+                        <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name" style="width:80px; height:80px;"> <br>
+                        @nutrition.Value @((nutrition.Name == NutritionName.Kcal) ? "Kcal" : "g")
+                    </div>
+                }
+            </div>
+
+
+            <div class="allergen-icons">
+                @foreach (var allergen in Model.AllergenViewModel)
+                {
+                    <div class="allergen-icon">
+                        <img src="/images/@(allergen.Name).png" alt="@allergen.Name" />
+                    </div>
+                }
+            </div>
+
             </div>
         </div>
     </div>
-</div>
+
