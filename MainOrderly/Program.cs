@@ -28,6 +28,10 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableService>();
             builder.Services.AddScoped<NutritionService>();
             builder.Services.AddScoped<TableRepository>();
+            builder.Services.AddScoped<IngredientService>();
+            builder.Services.AddScoped<IngredientRepository>();
+
+
 
 
             var app = builder.Build();

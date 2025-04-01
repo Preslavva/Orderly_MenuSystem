@@ -98,7 +98,7 @@ namespace Services
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
                 foreach (int key in cart.Keys)
                 {
-                    MenuItem? item = _menuItemRepository.GetMenuItemById(key);
+                    MenuItem? item = _menuItemRepository.GetMenuItemById(key,1);
                     
                     newCart[item] = cart[key];
                 }
@@ -118,11 +118,11 @@ namespace Services
             return totalPrice;
         }
 
-        public int FinalizeOrder(int tableId)
+        public int FinalizeOrder(int tableId, Restaurant restaurant)
         {
             Dictionary<MenuItem, int> cart = GetCart();
 
-            return _checkoutService.FinalizeOrder(tableId, cart);
+            return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
     }
 }

@@ -12,9 +12,9 @@ namespace MainOrderly.WebApp.ViewModels
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
 
-        public List<MenuItemViewModel> Items { get; set; }
+        public List<OrderLineItemViewModel> Items { get; set; }
 
-        public OrderViewModel(List<MenuItemViewModel> menuItemViewModels)
+        public OrderViewModel(List<OrderLineItemViewModel> menuItemViewModels)
         {
             Items = menuItemViewModels;
         }
@@ -34,7 +34,7 @@ namespace MainOrderly.WebApp.ViewModels
                 Status = order.Status,
                 Quantity = order.Quantity,
                 SubTotal = order.SubTotal,
-                Items = order.Items.Select(o=> MenuItemViewModel.ConvertToViewModel(o)).ToList()
+                Items = order.Items.Select(o=> OrderLineItemViewModel.FromOrderMenuItem(o)).ToList()
 
 
             };

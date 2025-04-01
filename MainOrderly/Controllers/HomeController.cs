@@ -31,13 +31,13 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string searchTerm = "", int tableId = 0)
+        public IActionResult Index(string searchTerm = "", int tableId = 0, int restaurantId = 0)
         {
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
             }
-            List<MenuItem>? menu = _menuService.LoadMenuItems(); //from the dto i will create viewModel
+            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId); //from the dto i will create viewModel
 
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -54,9 +54,9 @@ namespace MainOrderly.WebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult GetItemInfo(int id)
+        public IActionResult GetItemInfo(int id, int restaurantId)
         {
-            MenuItem? menuItem = _menuService.GetMenuItem(id); // get first the object as entities
+            MenuItem? menuItem = _menuService.GetMenuItem(id, restaurantId); // get first the object as entities
 
             MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
@@ -96,7 +96,8 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult Search(string term)
         {
-            var allItems = _menuService.LoadMenuItems();
+            int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
+            var allItems = _menuService.LoadMenuItems(restaurantId);
 
             List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
 

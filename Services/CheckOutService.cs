@@ -13,8 +13,10 @@ public class CheckoutService
         _kitchenOrderRepository = kitchenOrderRepository;   
     }
 
-    public int FinalizeOrder(int tableId, Dictionary<MenuItem, int> cartItems)
+    public int FinalizeOrder(int tableId, Dictionary<MenuItem, int> cartItems, Restaurant restaurant)
     {
+        
+        
         int totalQuantity = 0;
         decimal totalPrice = 0;
         foreach (var kvp in cartItems)
@@ -23,7 +25,7 @@ public class CheckoutService
             totalPrice += kvp.Key.Price * kvp.Value;
         }
 
-        int newOrderId = _kitchenOrderRepository.CreateOrder(tableId, OrderStatus.NEW_ORDER, totalQuantity, totalPrice);
+        int newOrderId = _kitchenOrderRepository.CreateOrder(tableId, OrderStatus.NEW_ORDER, totalQuantity, totalPrice, restaurant.Id);
 
         foreach (var kvp in cartItems)
         {

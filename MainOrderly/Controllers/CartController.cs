@@ -77,13 +77,29 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
+            // Create a hardcoded test restaurant
+            int restaurantId = 1; // Use a default ID
+            byte[] emptyLogo = new byte[0]; // Empty byte array for logo
+
+            // Create a simple restaurant object
+            Restaurant testRestaurant = new Restaurant(
+                restaurantId,
+                "Test Restaurant",
+                "This is a test restaurant for checkout",
+                emptyLogo,
+                "Blue",
+                "test@example.com",
+                "123-456-7890",
+                "123 Test Street"
+            );
+
             List<CartViewModel> viewModel = GetCartViewModel();
             if (viewModel.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
 
-            int newOrderId = _cartService.FinalizeOrder(tableId);
+            int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
 
             _cartService.SaveCart(new Dictionary<int, int>());
 
