@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Services\Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="Views\BusinessOwner\LandingPage.cshtml" />
+  </ItemGroup>
+
 </Project>
