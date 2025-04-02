@@ -22,7 +22,15 @@ namespace Services
             _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
 
+            /*
             string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
+            if (!string.IsNullOrEmpty(jsonCart))
+            {
+                cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
+            }
+            */
+
+            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
@@ -64,7 +72,13 @@ namespace Services
         public void SaveCart()
         {
             string jsonCart = JsonSerializer.Serialize(cart);
-            contextAccessor.HttpContext?.Session.SetString("Cart", jsonCart);
+            //contextAccessor.HttpContext?.Session.SetString("Cart", jsonCart);
+
+            contextAccessor.HttpContext?.Response.Cookies.Append("Cart", jsonCart, new CookieOptions
+            {
+                Expires = DateTime.Now.AddHours(1),
+                IsEssential = true
+            });
         }
         // Overload that accepts a dictionary
         public void SaveCart(Dictionary<int, int> newCart)

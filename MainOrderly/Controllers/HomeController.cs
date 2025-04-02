@@ -36,8 +36,29 @@ namespace MainOrderly.WebApp.Controllers
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
+                Response.Cookies.Append(
+                    "TableId",
+                    tableId.ToString(),
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        IsEssential = true
+                    }
+                    );
             }
-            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId); //from the dto i will create viewModel
+
+            if(!Request.Cookies.ContainsKey("SessiondID"))
+            {
+                string sessionID = Guid.NewGuid().ToString();
+                Response.Cookies.Append("SessiondID", sessionID,
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        IsEssential = true
+                    });
+            }
+
+            List<MenuItem>? menu = _menuService.LoadMenuItems();
 
 
             if (!string.IsNullOrEmpty(searchTerm))
