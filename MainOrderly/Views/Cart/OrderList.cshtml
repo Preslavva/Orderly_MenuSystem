@@ -1,4 +1,4 @@
-﻿@model Dictionary<MenuItem,int>
+﻿@model List<CartViewModel>
 
 
 @{
@@ -12,29 +12,29 @@
 @if (Model != null && Model.Any())
 {
     <div class="cart-container">
-        @foreach (var item in Model)
+        @foreach (CartViewModel item in Model)
         {
             <div class="cart-item">
                 <div class="cart-item-img">
-                    <img src="@item.Key.Picture" alt="@item.Key.Name" />
+                    <img src="@item.Picture" alt="@item.Name" />
                 </div>
                 <div class="cart-item-details">
-                    <h3>@item.Key.Name</h3>
-                    <p>@item.Key.Price.ToString("C")</p>
+                    <h3>@item.Name</h3>
+                    <p>@item.ItemPrice.ToString("C")</p>
                 </div>
 
                 <div class="cart-item-actions">
                     <form asp-controller="Cart" asp-action="UpdateItemQuantity" method="post" class="quantity-form">
-                        <input type="hidden" name="id" value="@item.Key.Id" />
+                        <input type="hidden" name="id" value="@item.Id" />
                         <div class="quantity-wrapper">
-                            <button type="submit" class="quantity-btn decrease-btn" @(item.Value == 1 ? "disabled" : "") onclick="this.parentNode.querySelector('input[name=quantity]').value--; this.form.submit(); return false;">-</button>
-                            <input type="number" name="quantity" value="@item.Value" min="1" class="quantity-input" readonly />
+                            <button type="submit" class="quantity-btn decrease-btn" @(item.Quantity == 1 ? "disabled" : "") onclick="this.parentNode.querySelector('input[name=quantity]').value--; this.form.submit(); return false;">-</button>
+                            <input type="number" name="quantity" value="@item.Quantity" min="1" class="quantity-input" readonly />
                             <button type="submit" class="quantity-btn increase-btn" onclick="this.parentNode.querySelector('input[name=quantity]').value++; this.form.submit(); return false;">+</button>
                         </div>
                     </form>
 
                     <form asp-controller="Cart" asp-action="RemoveItemFromCart" method="post">
-                        <input type="hidden" name="id" value="@item.Key.Id" />
+                        <input type="hidden" name="id" value="@item.Id" />
                         <input type="submit" value="Remove" class="btn remove-btn" />
                     </form>
                 </div>

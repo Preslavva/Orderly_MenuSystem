@@ -1,40 +1,24 @@
 ﻿using Models.Enums;
 using System.Net.Http.Headers;
 
+
 namespace Models.Entities
 {
     public class MenuItem
     {
-        public int Id { get; set; }
+        public int Id { get;  }
+        public int RestaurantId { get; set; }
+        public string Name { get;  }
+        public string Description { get;  }
+        public decimal Price { get; }
+        public bool IsAvailable { get; }
+        public string Picture { get; }
+        public int Quantity { get; }
+        public Category Category { get; set; }
+        public List<Nutrition> Nutritions { get;}
+        public List<MenuItemIngredient> Ingredients { get; private set; }
 
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public decimal Price { get; set; }
-
-        public bool IsAvailable { get; set; }
-
-        public string Picture { get; set; }
-
-        public int Quantity { get; set; }
-
-        public Continent Continent { get; set; }
-        public List<Nutrition> Nutritions { get; set; }
-
-        public MenuItem(string name, string description, decimal price, bool isAvailable, string picture, int quantity, Continent continent)
-        {
-            Name = name;
-            Description = description;
-            Price = price;
-            IsAvailable = isAvailable;
-            Picture = picture;
-            Quantity = quantity;
-            Continent = continent;
-            Nutritions = new List<Nutrition>();
-        }
-
-        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, int quantity, Continent continent)
+        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
         {
             Id = id;
             Name = name;
@@ -42,12 +26,25 @@ namespace Models.Entities
             Price = price;
             IsAvailable = isAvailable;
             Picture = picture;
-            Quantity = quantity;
-            Continent = continent;
+            Category = category;
             Nutritions = new List<Nutrition>();
-
+            RestaurantId = restaurantId;
         }
 
-        public MenuItem() { }
+        public MenuItem(string name, string description, decimal price, string picture, int quantity, Category category, int restaurantId )
+        {
+            Name = name;
+            Description = description;
+            Price = price;
+            Picture = picture;
+            Quantity = quantity;
+            Category = category;
+            RestaurantId= restaurantId;
+        }
+     
+        public void SetIngredient(List<MenuItemIngredient> ingredients)
+        {
+            Ingredients = ingredients;
+        }
     }
 }

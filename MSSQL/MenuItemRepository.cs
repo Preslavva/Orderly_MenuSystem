@@ -10,29 +10,34 @@ namespace MSSQL
     {
         public MenuItemRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Continent continent)
+        public int AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
+                    int newItemId = 0;
                     conn.Open();
-                    string queryAddMenuItem = @"insert into MenuItem([Name], [Description], Price, IsAvailable, Picture, Continent)
-                                                 values(@Name, @Description, @Price, @IsAvailable, @Picture, @Continent)";
+                    string queryAddMenuItem = @"insert into MenuItem([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
+                                                 values(@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId)";
 
-                    using (SqlCommand addMenuItem = new SqlCommand(queryAddMenuItem, conn))
+                    using (SqlCommand cmd = new SqlCommand(queryAddMenuItem, conn))
                     {
-                        addMenuItem.Parameters.AddWithValue("@Name", name);
-                        addMenuItem.Parameters.AddWithValue("@Description", description);
-                        addMenuItem.Parameters.AddWithValue("@Price", price);
-                        addMenuItem.Parameters.AddWithValue("@IsAvailable", isAvailable);
-                        addMenuItem.Parameters.AddWithValue("@Picture", picture);
-                        addMenuItem.Parameters.AddWithValue("@Continent", continent);
+                        cmd.Parameters.AddWithValue("@Name", name);
+                        cmd.Parameters.AddWithValue("@Description", description);
+                        cmd.Parameters.AddWithValue("@Price", price);
+                        cmd.Parameters.AddWithValue("@IsAvailable", isAvailable);
+                        cmd.Parameters.AddWithValue("@Picture", picture);
+                        cmd.Parameters.AddWithValue("@Category", category);
+                        cmd.Parameters.AddWithValue("@RestaurantId",restaurantId);
 
 
-                        addMenuItem.ExecuteNonQuery();
+                       newItemId  = (int)cmd.ExecuteScalar();
                     }
+                    
+                    return newItemId; // need to check this.
                 }
+
             }
             catch (SqlException sqlEx)
             {
@@ -44,7 +49,7 @@ namespace MSSQL
             }
         }
 
-        public List<MenuItem>? LoadMenuItems()
+        public List<MenuItem>? LoadMenuItems(int restaurantId)
         {
             List<MenuItem> menuItems = new List<MenuItem>();
 
@@ -53,64 +58,42 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string queryGetCustomers = @"select Id, [Name], [Description], Price, IsAvailable, Picture, Quantity, Continent
-                                                from MenuItem";
+                    string queryGetMenuItems = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId
+                                         FROM MenuItem WHERE RestaurantId = @RestaurantId";
 
-                    using (SqlCommand getCustomers = new SqlCommand(queryGetCustomers, conn))
+                    using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
                     {
-                        SqlDataReader reader = getCustomers.ExecuteReader();
-
-                        while (reader.Read())
+                        getMenuItems.Parameters.AddWithValue("@RestaurantId",1);
+                        using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
-                            menuItems.Add(new MenuItem
-                            {
-                                Id = reader.GetInt32(0),
-                                Name = reader.GetString(1),
-                                Description = reader.GetString(2),
-                                Price = reader.GetDecimal(3),
-                                IsAvailable = reader.GetBoolean(4),
-                                Picture = reader.GetString(5),
-                                Quantity = reader.GetInt32(6),
-                                Continent = (Continent)Enum.Parse(typeof(Continent), reader.GetString(7))
 
-                            });
+                            while (reader.Read())
+                            {
+
+                                string categoryValue = Convert.ToString(reader["Category"]);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue);
+
+                                menuItems.Add(new MenuItem(
+
+                                        Convert.ToInt32(reader["Id"]),
+                                        Convert.ToString(reader["Name"])!,
+                                        Convert.ToString(reader["Description"])!,
+                                        Convert.ToDecimal(reader["Price"]),
+                                        Convert.ToBoolean(reader["IsAvailable"]),
+                                        Convert.ToString(reader["Picture"])!,
+                                        categoryEnum,
+                                        Convert.ToInt32(reader["RestaurantId"])
+                                ));                           
+                            }
                         }
                     }
-                    return menuItems;
                 }
+
+                return menuItems;
             }
             catch (SqlException sqlEx)
             {
-                throw new Exception($"Database error occurred while loading customers: {sqlEx.Message}", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex); //this could be remove
-            }
-        }
-
-        public void DeleteMenuItem(MenuItem menuItem)
-        {
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(_connectionString))
-                {
-                    conn.Open();
-                    string queryDeleteMenuItem = @"delete from MenuItem
-                                                   where Id = @Id";
-
-                    using (SqlCommand deleteMenuItem = new SqlCommand(queryDeleteMenuItem, conn))
-                    {
-                        deleteMenuItem.Parameters.AddWithValue("@Id", menuItem.Id);
-
-                        deleteMenuItem.ExecuteNonQuery();
-
-                    }
-                }
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new Exception($"Database error occurred while loading customers: {sqlEx.Message}", sqlEx);
+                throw new Exception($"Database error occurred while loading menu items: {sqlEx.Message}", sqlEx);
             }
             catch (Exception ex)
             {
@@ -118,42 +101,53 @@ namespace MSSQL
             }
         }
 
-        public MenuItem? GetMenuItemById(int id)
+        public MenuItem? GetMenuItemById(int id, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT * FROM MenuItem WHERE Id = @Id;";
+                    string query = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId
+                             FROM MenuItem WHERE Id = @Id AND RestaurantId = @RestaurantId";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@RestaurantId", 1);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                return new MenuItem
-                                {
-                                    Id = reader.GetInt32(0),
-                                    Name = reader.GetString(1),
-                                    Description = reader.GetString(2),
-                                    Price = reader.GetDecimal(3),
-                                    IsAvailable = reader.GetBoolean(4),
-                                    Picture = reader.GetString(5)
-                                };
+                                string continentValue = Convert.ToString(reader["Category"]);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), continentValue);
+
+                                return new MenuItem(
+                                    Convert.ToInt32(reader["Id"]),
+                                    Convert.ToString(reader["Name"]),
+                                    Convert.ToString(reader["Description"]),
+                                    Convert.ToDecimal(reader["Price"]),
+                                    Convert.ToBoolean(reader["IsAvailable"]),
+                                    Convert.ToString(reader["Picture"]),
+                                    categoryEnum,
+                                    Convert.ToInt32(reader["RestaurantId"])
+ 
+                                    
+                                );
                             }
                         }
+
+                           
                     }
                 }
                 return null;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while retrieving MenuItem: {ex.Message}", ex);
+                throw new Exception($"Error while retrieving MenuItem by ID: {ex.Message}", ex);
             }
         }
+
         public void ChangeMenuItemAvailability(MenuItem menuItem, bool isAvailable)
         {
             try

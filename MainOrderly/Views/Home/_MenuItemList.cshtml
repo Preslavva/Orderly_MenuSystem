@@ -1,0 +1,30 @@
+﻿@model List<MenuItemViewModel>
+
+@foreach (var group in Model.GroupBy(i => i.Category))
+{
+    <div class="menu-category-group" data-category="@group.Key">
+        <div class="category-title-wrapper">
+            <h2 class="category-name">@group.Key.GetDisplayName()</h2>
+        </div>
+
+        <div class="row">
+            @foreach (var item in group)
+            {
+                <div class="col-md-6 col-lg-4 menu-item" data-category="@item.Category">
+                    <div class="card">
+                        <img src="@item.Picture" alt="@item.Name" class="img-fluid" />
+                        <div class="card-content">
+                            <h3>@item.Name</h3>
+                            <p>Price: €@item.Price</p>
+                            <form asp-controller="Home" asp-action="AddToCart">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <input type="submit" value="Add to cart" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}

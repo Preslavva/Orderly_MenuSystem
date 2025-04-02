@@ -1,44 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Services;
 using Models.Entities;
+using MainOrderly.WebApp.ViewModels;
 
 namespace MainOrderly.WebApp.Controllers
 {
     public class CartController : Controller
     {
-        private readonly CartServices _cartServices;
-
-        public CartController(CartServices cartServices)
-        {
-            _cartServices = cartServices;
-        }
+        private readonly CartService _cartService;
 
         private Dictionary<MenuItem, int> GetOrderList()
         {
-            return _cartServices.GetCart();
+            return _cartService.GetCart();
+        }
+
+        public CartController(CartService cartService)
+        {
+            _cartService = cartService;
+        }
+
+        /// <summary>
+        /// Converts the Dictionary in Cart into View Model
+        /// </summary>
+        /// <returns>List with CatViewModels</returns>
+        private List<CartViewModel> GetCartViewModel()
+        {
+            List<CartViewModel> viewModel = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            return viewModel;
         }
 
         [HttpGet]
         public IActionResult OrderList()
         {
             ViewData["Page"] = "Order overview";
-            Dictionary<MenuItem, int> cart = GetOrderList();
-            ViewBag.TotalPrice = _cartServices.CalculateTotalPrice(cart);
-            TempData["CartCount"] = _cartServices.GetCartCount();
-            return View(cart);
+            List<CartViewModel> model = GetCartViewModel();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+            TempData["CartCount"] = _cartService.GetCartCount();
+            return View(model);
         }
-
+            
         [HttpPost]
         public IActionResult RemoveItemFromCart(int id)
         {
-            _cartServices.RemoveFromCart(id);
+            _cartService.RemoveFromCart(id);
             return RedirectToAction("OrderList", "Cart");
         }
 
         [HttpPost]
         public IActionResult UpdateItemQuantity(int id, int quantity)
         {
-            _cartServices.UpdateQuantity(id, quantity);
+            _cartService.UpdateQuantity(id, quantity);
             return RedirectToAction("OrderList", "Cart");
         }
 
@@ -46,9 +57,9 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult OrderSummaryPage()
         {
             ViewData["Page"] = "Order summary";
-            Dictionary<MenuItem, int> cart = GetOrderList();
-            ViewBag.TotalPrice = _cartServices.CalculateTotalPrice(cart);
-            return View(cart);
+            List<CartViewModel> viewModel = GetCartViewModel();
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -66,18 +77,33 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            Dictionary<MenuItem, int> cart = _cartServices.GetCart();
+            // Create a hardcoded test restaurant
+            int restaurantId = 1; // Use a default ID
+            byte[] emptyLogo = new byte[0]; // Empty byte array for logo
 
-            if (cart.Count == 0)
+            // Create a simple restaurant object
+            Restaurant testRestaurant = new Restaurant(
+                restaurantId,
+                "Test Restaurant",
+                "This is a test restaurant for checkout",
+                emptyLogo,
+                "Blue",
+                "test@example.com",
+                "123-456-7890",
+                "123 Test Street"
+            );
+
+            List<CartViewModel> viewModel = GetCartViewModel();
+            if (viewModel.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
 
-            int newOrderId = _cartServices.FinalizeOrder(tableId);
+            int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
 
-            _cartServices.SaveCart(new Dictionary<int, int>());
+            _cartService.SaveCart(new Dictionary<int, int>());
 
-            _cartServices.ClearCart();
+            _cartService.ClearCart();
             return RedirectToAction("PaymentConfirmationPage", new { orderId = newOrderId });
         }
 

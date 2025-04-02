@@ -1,6 +1,4 @@
-﻿@model KitchenOrderManager
-
-
+﻿@model CompositeKitchenViewModel
 
 @{
     ViewData["Title"] = "Kitchen Orders Dashboard";
@@ -11,27 +9,27 @@
     <!-- Column for NEW orders -->
     <div class="col-md-4">
         <h3 style="border-bottom: 3px solid red;">New Orders</h3>
-        @foreach (Order order in Model.NewOrders)
+        @foreach (OrderViewModel orderViewModel in Model.NewOrders)
         {
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5>Order @order.Id</h5>
-                    <p>Table: @order.Table.Id</p>
-                    <p>Ordered At: @order.OrderTimestamp</p>
+                    <h5>Order @orderViewModel.Id</h5>
+                    <p>Table: @orderViewModel.Table.</p>
+                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
 
-                    @if (order.Items != null && order.Items.Count > 0)
-                    {
-                        <ul>
-                            @foreach (var item in order.Items)
-                            {
-                                <li>@item.Name (@item.Quantity)</li>
-                            }
-                        </ul>
-                    }
+                     @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0) 
+                     { 
+                         <ul> 
+                             @foreach (var item in orderViewModel.Items) 
+                             { 
+                                 <li>@item.Name (@item.Quantity)</li> 
+                             } 
+                          </ul> 
+                     } 
 
                     <!-- Form to move order to 'Processing' -->
                     <form method="post" asp-action="UpdateOrderStatus">
-                        <input type="hidden" name="id" value="@order.Id" />
+                        <input type="hidden" name="id" value="@orderViewModel.Id" />
                         <input type="hidden" name="newStatus" value="@OrderStatus.PROCESSING" />
                         <button type="submit" class="btn btn-primary">Move to Process</button>
                     </form>
@@ -43,27 +41,27 @@
     <!-- Column for PROCESSING orders -->
     <div class="col-md-4">
         <h3 style="border-bottom: 3px solid orange;">Processing Orders</h3>
-        @foreach (var order in Model.PendingOrders)
+        @foreach (OrderViewModel orderViewModel in Model.PendingOrders)
         {
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5>Order @order.Id</h5>
-                    <p>Table: @order.Table.Id</p>
-                    <p>Ordered At: @order.OrderTimestamp</p>
+                    <h5>Order @orderViewModel.Id</h5>
+                    <p>Table: @orderViewModel.Table</p>
+                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
 
-                    @if (order.Items != null && order.Items.Count > 0)
-                    {
-                        <ul>
-                            @foreach (var item in order.Items)
-                            {
-                                <li>@item.Name (@item.Quantity)</li>
-                            }
-                        </ul>
-                    }
+                    @* @if (order.Items != null && order.Items.Count > 0) *@
+                    @* { *@
+                    @*     <ul> *@
+                    @*         @foreach (var item in order.Items) *@
+                    @*         { *@
+                    @*             <li>@item.Name (@item.Quantity)</li> *@
+                    @*         } *@
+                    @*     </ul> *@
+                    @* } *@
 
                     <!-- Form to move order to 'Completed' -->
                     <form method="post" asp-action="UpdateOrderStatus">
-                        <input type="hidden" name="id" value="@order.Id" />
+                        <input type="hidden" name="id" value="@orderViewModel.Id" />
                         <input type="hidden" name="newStatus" value="@OrderStatus.COMPLETED" />
                         <button type="submit" class="btn btn-success">Move to Ready</button>
                     </form>
@@ -75,27 +73,27 @@
     <!-- Column for COMPLETED orders -->
     <div class="col-md-4">
         <h3 style="border-bottom: 3px solid green;">Completed Orders</h3>
-        @foreach (var order in Model.CompletedOrders)
+        @foreach (OrderViewModel orderViewModel in Model.CompletedOrders)
         {
             <div class="card mb-3">
                 <div class="card-body">
-                    <h5>Order @order.Id</h5>
-                    <p>Table: @order.Table.Id</p>
-                    <p>Ordered At: @order.OrderTimestamp</p>
+                    <h5>Order @orderViewModel.Id</h5>
+                    <p>Table: @orderViewModel.Table</p>
+                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
 
-                    @if (order.Items != null && order.Items.Count > 0)
-                    {
-                        <ul>
-                            @foreach (var item in order.Items)
-                            {
-                                <li>@item.Name (@item.Quantity)</li>
-                            }
-                        </ul>
-                    }
+                    @* @if (order.Items != null && order.Items.Count > 0) *@
+                    @* { *@
+                    @*     <ul> *@
+                    @*         @foreach (var item in order.Items) *@
+                    @*         { *@
+                    @*             <li>@item.Name (@item.Quantity)</li> *@
+                    @*         } *@
+                    @*     </ul> *@
+                    @* } *@
 
                     <p><em>Order is completed</em></p>
                     <form asp-controller="Kitchen" asp-action="RemoveOrderDashboard" method="post">
-                         <input type="hidden" name="id" value="@order.Id" />
+                         <input type="hidden" name="id" value="@orderViewModel.Id" />
                         <button type="submit" class="btn btn-primary">Remove</button>
                     </form>
                 </div>

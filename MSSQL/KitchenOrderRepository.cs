@@ -14,12 +14,13 @@ namespace MSSQL
         public List<Order> GetOrderHeadersByStatus(OrderStatus status)
         {
             List<Order> orders = new();
-            string query = "SELECT Id, TableId, OrderTimestamp, Status FROM [Order] WHERE Status = @Status AND isArchived = 0";
+            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@Status", status.ToString());
+                command.Parameters.AddWithValue("@RestaurantId", 1);
                 connection.Open();
                 using (SqlDataReader reader = command.ExecuteReader())
                 {
@@ -31,8 +32,9 @@ namespace MSSQL
                         int id = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!);
+                        int restaurantId = Convert.ToInt32(reader["RestaurantId"]);
 
-                        Order order = new Order(id, table, orderTimestamp, orderStatus);
+                        Order order = new Order(id, table, orderTimestamp, orderStatus, restaurantId );
                         orders.Add(order);
 
                     }
@@ -45,7 +47,7 @@ namespace MSSQL
         public Order GetOrderHeaderById(int id)
         {
             Order order = null!;
-            string query = "SELECT Id, TableId, OrderTimestamp, Status FROM [Order] WHERE Id = @Id AND isArchived = 0";
+            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE Id = @Id AND isArchived = 0";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -61,19 +63,20 @@ namespace MSSQL
                         int orderId = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!);
+                        int restaurantId = Convert.ToInt32(reader["RestaurantId"]);
 
-                        order = new Order(orderId, table, orderTimestamp, orderStatus);
+                        order = new Order(orderId, table, orderTimestamp, orderStatus, restaurantId);
                     }
                 }
             }
             return order!;
         }
-        public List<MenuItem> GetOrderItemsByOrderId(int orderId)
+        public List<OrderItem> GetOrderItemsByOrderId(int orderId)
         {
-            List<MenuItem> menuItems = new List<MenuItem>();
+            List<OrderItem> orderItems = new List<OrderItem>();
 
             string query = @"
-            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, om.Quantity, m.Continent
+            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Category, m.RestaurantId, om.Quantity
             FROM [Order_MenuItem] om
             INNER JOIN MenuItem m ON om.MenuItemId = m.Id
             WHERE om.OrderId = @OrderId";
@@ -88,22 +91,24 @@ namespace MSSQL
                 {
                     while (reader.Read())
                     {
-                        int id = reader.GetInt32(0);
+                        int menuItemId = reader.GetInt32(0);
                         string name = reader.GetString(1);
                         string description = reader.GetString(2);
                         decimal price = reader.GetDecimal(3);
                         bool isAvailable = reader.GetBoolean(4);
                         string picture = reader.GetString(5);
-                        int quantity = reader.GetInt32(6);
-                        string continentString = reader.GetString(7);
-                        Continent continent = (Continent)Enum.Parse(typeof(Continent), continentString);
+                        string categoryString = reader.GetString(6);
+                        int quantity = reader.GetInt32(7);
+                        Category category = (Category)Enum.Parse(typeof(Category), categoryString);
+                        int restaurantId = Convert.ToInt32(reader.GetInt32(8));
 
-                        MenuItem menuItem = new MenuItem(id, name, description, price, isAvailable, picture, quantity, continent);
-                        menuItems.Add(menuItem);
+                        MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId);
+                        OrderItem orderItem = new OrderItem(orderId, menuItemId, menuItem, quantity);
+                        orderItems.Add(orderItem);
                     }
                 }
             }
-            return menuItems;
+            return orderItems;
         }
 
 
@@ -121,12 +126,12 @@ namespace MSSQL
             }
         }
 
-        public int CreateOrder(int tableId, OrderStatus status, int totalQuantity, decimal totalPrice)
+        public int CreateOrder(int tableId, OrderStatus status, int totalQuantity, decimal totalPrice, int restaurantId)
         {
             string sql = @"
-            INSERT INTO [Order] (TableId, OrderTimestamp, Status, Quantity, SubTotal)
+            INSERT INTO [Order] (TableId, OrderTimestamp, Status, Quantity, SubTotal, RestaurantId)
             OUTPUT INSERTED.Id
-            VALUES (@TableId, @Timestamp, @Status, @Quantity, @SubTotal);";
+            VALUES (@TableId, @Timestamp, @Status, @Quantity, @SubTotal, @RestaurantId);";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -136,6 +141,7 @@ namespace MSSQL
                 cmd.Parameters.AddWithValue("@Status", status.ToString());
                 cmd.Parameters.AddWithValue("@Quantity", totalQuantity);
                 cmd.Parameters.AddWithValue("@SubTotal", totalPrice);
+                cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                 conn.Open();
                 int newOrderId = Convert.ToInt32(cmd.ExecuteScalar());

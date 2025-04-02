@@ -15,7 +15,7 @@ namespace MainOrderly.WebApp
             builder.Services.AddSession();
             builder.Services.AddHttpContextAccessor();
 
-            builder.Services.AddScoped<CartServices>();
+            builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<MenuItemRepository>();
             builder.Services.AddScoped<NutritionRepository>();
             builder.Services.AddScoped<CartRepository>();
@@ -28,6 +28,10 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableService>();
             builder.Services.AddScoped<NutritionService>();
             builder.Services.AddScoped<TableRepository>();
+            builder.Services.AddScoped<IngredientService>();
+            builder.Services.AddScoped<IngredientRepository>();
+
+
 
 
             var app = builder.Build();
@@ -52,7 +56,7 @@ namespace MainOrderly.WebApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=LoadingPage}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
         }
