@@ -58,7 +58,7 @@ namespace MainOrderly.WebApp.Controllers
                     });
             }
 
-            List<MenuItem>? menu = _menuService.LoadMenuItems();
+            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId);
 
 
             if (!string.IsNullOrEmpty(searchTerm))
