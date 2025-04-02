@@ -34,7 +34,28 @@ namespace MainOrderly.WebApp.Controllers
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
+                Response.Cookies.Append(
+                    "TableId",
+                    tableId.ToString(),
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        IsEssential = true
+                    }
+                    );
             }
+
+            if(!Request.Cookies.ContainsKey("SessiondID"))
+            {
+                string sessionID = Guid.NewGuid().ToString();
+                Response.Cookies.Append("SessiondID", sessionID,
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        IsEssential = true
+                    });
+            }
+
             List<MenuItem>? menu = _menuService.LoadMenuItems();
 
 
@@ -47,6 +68,11 @@ namespace MainOrderly.WebApp.Controllers
             TempData["CartCount"] = _cartServices.GetCartCount();
 
             return View(menu);
+        }
+
+        private string GetSessionID()
+        {
+            return Request.Cookies["SessionID"] ?? Guid.NewGuid().ToString();
         }
 
         [HttpGet]
