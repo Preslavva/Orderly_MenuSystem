@@ -106,13 +106,14 @@ namespace Services
         public Dictionary<MenuItem, int> GetCart()
         {
             Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
-            string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
+
+            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
                 foreach (int key in cart.Keys)
                 {
-                    MenuItem? item = _menuItemRepository.GetMenuItemById(key,1);
+                    MenuItem? item = _menuItemRepository.GetMenuItemById(key);
                     
                     newCart[item] = cart[key];
                 }

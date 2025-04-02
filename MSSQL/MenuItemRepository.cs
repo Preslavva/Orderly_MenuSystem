@@ -101,7 +101,7 @@ namespace MSSQL
             }
         }
 
-        public MenuItem? GetMenuItemById(int id, int restaurantId)
+        public MenuItem? GetMenuItemById(int id)
         {
             try
             {

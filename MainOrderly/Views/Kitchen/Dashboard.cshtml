@@ -2,102 +2,151 @@
 
 @{
     ViewData["Title"] = "Kitchen Orders Dashboard";
+    Layout = "_KitchenStaffLayout";
 }
-<h2>Kitchen Orders</h2>
-<meta http-equiv="refresh" content="1">
-<div class="row">
+
+<h2 class="mb-4">Kitchen Orders</h2>
+
+<div class="order-board">
     <!-- Column for NEW orders -->
-    <div class="col-md-4">
-        <h3 style="border-bottom: 3px solid red;">New Orders</h3>
-        @foreach (OrderViewModel orderViewModel in Model.NewOrders)
+    <div class="order-column">
+        <h3 class="column-header new-orders-header">New Orders</h3>
+        @if (Model.NewOrders != null && Model.NewOrders.Any())
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5>Order @orderViewModel.Id</h5>
-                    <p>Table: @orderViewModel.Table.</p>
-                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
+            @foreach (OrderViewModel orderViewModel in Model.NewOrders)
+            {
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">Order #@orderViewModel.Id</div>
+                        <div class="order-table">Table @orderViewModel.Table</div>
+                    </div>
+                    <div class="order-content">
+                        <div class="order-timestamp">
+                            <i class="fas fa-clock"></i> @orderViewModel.OrderTimestamp.ToString("MMM dd, HH:mm")
+                        </div>
 
-                     @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0) 
-                     { 
-                         <ul> 
-                             @foreach (var item in orderViewModel.Items) 
-                             { 
-                                 <li>@item.Name (@item.Quantity)</li> 
-                             } 
-                          </ul> 
-                     } 
+                        @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                        {
+                            <ul class="order-items">
+                                @foreach (var item in orderViewModel.Items)
+                                {
+                                    <li class="order-item">@item.Name <span class="badge bg-secondary">x@item.Quantity</span></li>
+                                }
+                            </ul>
+                        }
 
-                    <!-- Form to move order to 'Processing' -->
-                    <form method="post" asp-action="UpdateOrderStatus">
-                        <input type="hidden" name="id" value="@orderViewModel.Id" />
-                        <input type="hidden" name="newStatus" value="@OrderStatus.PROCESSING" />
-                        <button type="submit" class="btn btn-primary">Move to Process</button>
-                    </form>
+                        <div class="order-actions">
+                            <form method="post" asp-action="UpdateOrderStatus">
+                                <input type="hidden" name="id" value="@orderViewModel.Id" />
+                                <input type="hidden" name="newStatus" value="@OrderStatus.PROCESSING" />
+                                <button type="submit" class="btn btn-primary btn-move-process">Start Processing</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
+        }
+        else
+        {
+            <div class="empty-orders">No new orders at this time</div>
         }
     </div>
 
     <!-- Column for PROCESSING orders -->
-    <div class="col-md-4">
-        <h3 style="border-bottom: 3px solid orange;">Processing Orders</h3>
-        @foreach (OrderViewModel orderViewModel in Model.PendingOrders)
+    <div class="order-column">
+        <h3 class="column-header processing-orders-header">Processing Orders</h3>
+        @if (Model.PendingOrders != null && Model.PendingOrders.Any())
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5>Order @orderViewModel.Id</h5>
-                    <p>Table: @orderViewModel.Table</p>
-                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
+            @foreach (OrderViewModel orderViewModel in Model.PendingOrders)
+            {
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">Order #@orderViewModel.Id</div>
+                        <div class="order-table">Table @orderViewModel.Table</div>
+                    </div>
+                    <div class="order-content">
+                        <div class="order-timestamp">
+                            <i class="fas fa-clock"></i> @orderViewModel.OrderTimestamp.ToString("MMM dd, HH:mm")
+                        </div>
 
-                    @* @if (order.Items != null && order.Items.Count > 0) *@
-                    @* { *@
-                    @*     <ul> *@
-                    @*         @foreach (var item in order.Items) *@
-                    @*         { *@
-                    @*             <li>@item.Name (@item.Quantity)</li> *@
-                    @*         } *@
-                    @*     </ul> *@
-                    @* } *@
+                        @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                        {
+                            <ul class="order-items">
+                                @foreach (var item in orderViewModel.Items)
+                                {
+                                    <li class="order-item">@item.Name <span class="badge bg-secondary">x@item.Quantity</span></li>
+                                }
+                            </ul>
+                        }
 
-                    <!-- Form to move order to 'Completed' -->
-                    <form method="post" asp-action="UpdateOrderStatus">
-                        <input type="hidden" name="id" value="@orderViewModel.Id" />
-                        <input type="hidden" name="newStatus" value="@OrderStatus.COMPLETED" />
-                        <button type="submit" class="btn btn-success">Move to Ready</button>
-                    </form>
+                        <div class="order-actions">
+                            <form method="post" asp-action="UpdateOrderStatus">
+                                <input type="hidden" name="id" value="@orderViewModel.Id" />
+                                <input type="hidden" name="newStatus" value="@OrderStatus.COMPLETED" />
+                                <button type="submit" class="btn btn-success btn-move-ready">Mark as Ready</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
+        }
+        else
+        {
+            <div class="empty-orders">No orders in process</div>
         }
     </div>
 
     <!-- Column for COMPLETED orders -->
-    <div class="col-md-4">
-        <h3 style="border-bottom: 3px solid green;">Completed Orders</h3>
-        @foreach (OrderViewModel orderViewModel in Model.CompletedOrders)
+    <div class="order-column">
+        <h3 class="column-header completed-orders-header">Completed Orders</h3>
+        @if (Model.CompletedOrders != null && Model.CompletedOrders.Any())
         {
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5>Order @orderViewModel.Id</h5>
-                    <p>Table: @orderViewModel.Table</p>
-                    <p>Ordered At: @orderViewModel.OrderTimestamp</p>
+            @foreach (OrderViewModel orderViewModel in Model.CompletedOrders)
+            {
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">Order #@orderViewModel.Id</div>
+                        <div class="order-table">Table @orderViewModel.Table</div>
+                    </div>
+                    <div class="order-content">
+                        <div class="order-timestamp">
+                            <i class="fas fa-clock"></i> @orderViewModel.OrderTimestamp.ToString("MMM dd, HH:mm")
+                        </div>
 
-                    @* @if (order.Items != null && order.Items.Count > 0) *@
-                    @* { *@
-                    @*     <ul> *@
-                    @*         @foreach (var item in order.Items) *@
-                    @*         { *@
-                    @*             <li>@item.Name (@item.Quantity)</li> *@
-                    @*         } *@
-                    @*     </ul> *@
-                    @* } *@
+                        @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                        {
+                            <ul class="order-items">
+                                @foreach (var item in orderViewModel.Items)
+                                {
+                                    <li class="order-item">@item.Name <span class="badge bg-secondary">x@item.Quantity</span></li>
+                                }
+                            </ul>
+                        }
 
-                    <p><em>Order is completed</em></p>
-                    <form asp-controller="Kitchen" asp-action="RemoveOrderDashboard" method="post">
-                         <input type="hidden" name="id" value="@orderViewModel.Id" />
-                        <button type="submit" class="btn btn-primary">Remove</button>
-                    </form>
+                        <div class="status-pill status-completed">Ready for service</div>
+
+                        <div class="order-actions">
+                            <form asp-controller="Kitchen" asp-action="RemoveOrderDashboard" method="post">
+                                <input type="hidden" name="id" value="@orderViewModel.Id" />
+                                <button type="submit" class="btn btn-secondary btn-remove">Remove</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            }
+        }
+        else
+        {
+            <div class="empty-orders">No completed orders</div>
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Auto-refresh the page every 30 seconds
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    </script>
+}

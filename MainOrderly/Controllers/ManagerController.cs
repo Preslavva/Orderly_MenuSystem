@@ -31,9 +31,9 @@ namespace MainOrderly.WebApp.Controllers
             return View(menuItemViewModels);
         }
 
-        public IActionResult MenuItemDetails(int id, int restaurantId)
+        public IActionResult MenuItemDetails(int id)
         {
-            MenuItem menuItem = _menuService.GetMenuItemWithIngredient(id, restaurantId);
+            MenuItem menuItem = _menuService.GetMenuItemWithIngredient(id);
             List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id);
             List<NutritionViewModel> nutritionViewModels = nutritions.Select(n => NutritionViewModel.ConvertToViewModel(n)).ToList();   
             

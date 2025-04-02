@@ -26,14 +26,14 @@ namespace Services
            return _menuItemRepository.LoadMenuItems(restaurantId)!;   
         }
 
-        public MenuItem GetMenuItem(int id, int restaurantId)
+        public MenuItem GetMenuItem(int id)
         {
-            return _menuItemRepository.GetMenuItemById(id, restaurantId)!;
+            return _menuItemRepository.GetMenuItemById(id)!;
         }
 
-        public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
+        public MenuItem GetMenuItemWithIngredient(int id)
         {
-            MenuItem menuItem = _menuItemRepository.GetMenuItemById(id, restaurantId);
+            MenuItem menuItem = _menuItemRepository.GetMenuItemById(id);
             List<MenuItemIngredient> ingredient = _ingredientRepository.GetIngredientsForMenuItem(id);
           
             menuItem.SetIngredient(ingredient);

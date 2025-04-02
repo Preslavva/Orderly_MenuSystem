@@ -75,9 +75,9 @@ namespace MainOrderly.WebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult GetItemInfo(int id, int restaurantId)
+        public IActionResult GetItemInfo(int id)
         {
-            MenuItem? menuItem = _menuService.GetMenuItem(id, restaurantId); // get first the object as entities
+            MenuItem? menuItem = _menuService.GetMenuItem(id); // get first the object as entities
 
             MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
