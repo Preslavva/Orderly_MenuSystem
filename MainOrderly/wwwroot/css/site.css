@@ -645,7 +645,7 @@ footer .container
     background-color: #6B705C; /* Example greenish/brown tone */
     /* Give the footer a bit of height and padding */
     padding: 0.75rem 0;
-    /* Optional: curve the top corners to mimic a “rounded” tab look */
+    /* Optional: curve the top corners to mimic a ï¿½roundedï¿½ tab look */
     border-top-left-radius: 16px;
     border-top-right-radius: 16px;
     /* Ensure content (buttons) do not overflow */
@@ -832,7 +832,7 @@ button.accept-policy {
     }
 
     .PaymentContainer {
-        height:  45vh;
+        height: ï¿½45vh;
     }
 
     #fancy-text {
@@ -940,3 +940,5 @@ button.accept-policy {
         color: #6B705C;
         border-bottom: 3px solid #6B705C;
     }
+    
+    
