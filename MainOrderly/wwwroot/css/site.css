@@ -78,15 +78,6 @@ button img {
 
 
 
-meta[name = "format-detection"]
-{
-    telephone = no;
-    email = no;
-    address=no;
-}
-
-
-
 .container-fluid {
     background-color: #f8f5ed;
 }
@@ -906,7 +897,6 @@ button.accept-policy {
         display: flex;
         gap: 10px;
         margin: 20px 0;
-        overflow-x: auto;
         padding: 10px 0;
     }
 
@@ -927,9 +917,17 @@ button.accept-policy {
 }
 
 .category-tabs {
+/*    position: sticky;
+    top: 0;*/
+    background-color: #f8f5ed; /* your page bg */
+    z-index: 999;
     border-bottom: 1px solid #ddd;
     margin-bottom: 20px;
+    z-index: 1000;
 }
+
+
+
 
 .tab-list {
     list-style: none;
@@ -938,7 +936,7 @@ button.accept-policy {
     gap: 30px;
     padding: 0;
     margin: 0;
-    overflow-x: auto;
+    /*overflow-x: auto;*/
     white-space: nowrap;
 }
 
@@ -1017,3 +1015,21 @@ button.accept-policy {
         text-decoration: underline;
         color: #556050;
     }
+
+.sticky-panel {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #f8f5ed;
+   /* max-height: 100vh;
+    overflow-y: auto;*/
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Optional: make results scroll inside sticky panel */
+.scrollable-results {
+    max-height: 60vh; /* Adjust as needed */
+    overflow-y: auto;
+    margin-top: 10px;
+}

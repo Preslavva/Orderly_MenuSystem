@@ -66,18 +66,22 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    <footer class="custom-footer d-flex justify-content-around align-items-center">
+        <button type="button" class="btn footer-btn">
+        </button>
+
+
+        <button type="button" class="btn footer-btn">
+        </button>
+
+
+        <button type="button" class="btn footer-btn">
+            <i class="fas fa-home"></i>
+        </button>
+    </footer>
+
 </body>
-<footer class="custom-footer d-flex justify-content-around align-items-center">
-    <button type="button" class="btn footer-btn">
-    </button>
 
-    
-    <button type="button" class="btn footer-btn">
-    </button>
-
-
-    <button type="button" class="btn footer-btn">
-        <i class="fas fa-home"></i>
-    </button>
-</footer>
 </html>
