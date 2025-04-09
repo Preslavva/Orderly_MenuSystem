@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Models;
 using Models.Entities;
 using MSSQL;
@@ -21,14 +22,6 @@ namespace Services
             contextAccessor = contxtAccessor;
             _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
-
-            /*
-            string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
-            if (!string.IsNullOrEmpty(jsonCart))
-            {
-                cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
-            }
-            */
 
             string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
@@ -77,6 +70,8 @@ namespace Services
             contextAccessor.HttpContext?.Response.Cookies.Append("Cart", jsonCart, new CookieOptions
             {
                 Expires = DateTime.Now.AddHours(1),
+                HttpOnly = true,
+                Secure = true,
                 IsEssential = true
             });
         }

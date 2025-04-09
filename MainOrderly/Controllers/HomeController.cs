@@ -13,6 +13,7 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
+        private static Dictionary<int, string> _tableGuidMap = new();
 
         public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
         {
@@ -36,15 +37,24 @@ namespace MainOrderly.WebApp.Controllers
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
+
+                if (!_tableGuidMap.ContainsKey(tableId))
+                {
+                    _tableGuidMap[tableId] = Guid.NewGuid().ToString();
+                }
+
+                string tableGuid = _tableGuidMap[tableId];
+
                 Response.Cookies.Append(
-                    "TableId",
-                    tableId.ToString(),
+                    "TableGuid",
+                    tableGuid,
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
+                        HttpOnly = true, 
+                        Secure = true,
                         IsEssential = true
-                    }
-                    );
+                    });
             }
 
             if(!Request.Cookies.ContainsKey("SessiondID"))
@@ -54,6 +64,8 @@ namespace MainOrderly.WebApp.Controllers
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
+                        HttpOnly = true, 
+                        Secure = true,
                         IsEssential = true
                     });
             }
