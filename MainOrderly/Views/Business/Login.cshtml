@@ -1,0 +1,34 @@
+@{
+    ViewData["Title"] = "Create Account";
+    Layout = "_BusinessLayout";
+}
+
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Create Account</h2>
+        <form method="post" asp-controller="BusinessAccount" asp-action="Register">
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            }
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number">
+            </div>
+            <button type="submit" class="btn btn-auth">CREATE ACCOUNT</button>
+            <div class="auth-footer">
+                <p>Already have an account? <a href="@Url.Action("Login", "BusinessAccount")">Log in</a></p>
+            </div>
+        </form>
+    </div>
+</div>
