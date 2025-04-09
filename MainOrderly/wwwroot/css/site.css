@@ -1023,10 +1023,10 @@ button.accept-policy {
     justify-content: space-between;
     align-items: center;
     padding: 12px 15px;
-    background-color: #f8f9fa;
+    background-color: #f9e1a7; /* Light yellow/gold header for table grouping */
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid #f4d47c;
 }
 
 .order-id {
@@ -1035,36 +1035,131 @@ button.accept-policy {
 }
 
 .order-table {
-    background-color: #e9ecef;
-    padding: 3px 8px;
-    border-radius: 4px;
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: #333;
+}
+
+.order-count {
+    font-size: 0.9rem;
+    color: #666;
+    background-color: rgba(255, 255, 255, 0.6);
+    padding: 2px 8px;
+    border-radius: 12px;
 }
 
 .order-content {
-    padding: 15px;
+    padding: 5px 0;
+}
+
+/* New nested order styling */
+.order-subcard {
+    padding: 12px 15px;
+    position: relative;
+}
+
+.order-subheader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
 .order-timestamp {
     color: #6c757d;
     font-size: 0.9rem;
-    margin-bottom: 10px;
+}
+
+.order-divider {
+    margin: 5px 15px;
+    border-top: 1px dashed #ddd;
 }
 
 .order-items {
     margin-bottom: 15px;
-    padding-left: 20px;
+    padding-left: 0;
+    list-style-type: none;
 }
 
 .order-item {
-    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+    .order-item:hover {
+        background-color: #f0f0f0;
+    }
+
+.item-quantity {
+    font-weight: 600;
+    margin-right: 8px;
+    color: #555;
+    min-width: 30px;
+}
+
+.item-name {
+    flex-grow: 1;
+}
+
+/* Preparation time input styling */
+.prep-time-input {
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+    white-space: nowrap;
+}
+
+.prep-time-label {
+    font-size: 0.8rem;
+    color: #6c757d;
+    margin-right: 5px;
+}
+
+.prep-time-select {
+    font-size: 0.85rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    background-color: white;
+    width: auto;
+}
+
+/* Progress bar styling */
+.item-progress {
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+    min-width: 80px;
+    max-width: 120px;
+}
+
+.progress {
+    height: 8px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    background-color: #e9ecef;
+}
+
+.prep-time-remaining {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #6c757d;
 }
 
 .order-actions {
     display: flex;
     justify-content: flex-end;
     padding-top: 10px;
+}
+
+.table-actions {
     border-top: 1px solid #eee;
+    margin-top: 10px;
+    padding-top: 15px;
 }
 
 .btn-move-process {
@@ -1085,11 +1180,12 @@ button.accept-policy {
 /* Status pill indicators */
 .status-pill {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 4px 10px;
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 500;
     color: white;
+    margin: 5px 0;
 }
 
 .status-new {
@@ -1113,8 +1209,34 @@ button.accept-policy {
 }
 
 /* Responsive fixes */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
     .order-board {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-item {
+        flex-wrap: wrap;
+    }
+
+    .item-name {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+
+    .prep-time-input,
+    .item-progress {
+        margin-left: 32px; /* Align with item name with quantity indent */
+        margin-top: 5px;
+    }
+
+    .order-subheader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .order-timestamp {
+        margin-top: 5px;
     }
 }

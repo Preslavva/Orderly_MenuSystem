@@ -14,11 +14,12 @@ namespace MSSQL
         public List<Order> GetOrderHeadersByStatus(OrderStatus status)
         {
             List<Order> orders = new();
-            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId";
+            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId AND isArchived = 0";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
+               
                 command.Parameters.AddWithValue("@Status", status.ToString());
                 command.Parameters.AddWithValue("@RestaurantId", 1);
                 connection.Open();

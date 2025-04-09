@@ -15,6 +15,8 @@ namespace Services
             _ingredientRepository = ingredientRepository;
             
         }
+        
+        
 
         public int CreateMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
         {
@@ -35,9 +37,9 @@ namespace Services
         {
             MenuItem menuItem = _menuItemRepository.GetMenuItemById(id);
             List<MenuItemIngredient> ingredient = _ingredientRepository.GetIngredientsForMenuItem(id);
-          
+            
             menuItem.SetIngredient(ingredient);
-
+           
             return menuItem;
         }
     }
