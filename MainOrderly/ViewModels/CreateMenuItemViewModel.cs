@@ -19,7 +19,7 @@ namespace MainOrderly.WebApp.ViewModels
         {
             return new CreateMenuItemViewModel
             {
-                IsAvailable = true, // Set default value
+                IsAvailable = true, 
                 AvailableIngredients = availableIngredients,
                 SelectedIngredientIds = new List<int>(),
                 IngredientQuantities = new Dictionary<int, decimal>()

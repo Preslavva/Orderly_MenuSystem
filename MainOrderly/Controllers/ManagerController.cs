@@ -17,34 +17,70 @@ namespace MainOrderly.WebApp.Controllers
             _menuService = menuService;
             _ingredientService = ingredientService;
             _nutritionService = nutritionService;
+
         }
+
         public IActionResult Index()
         {
             return View();
         }
-
+        public IActionResult AddMenuItem()
+        {
+            return View();
+        }
         [HttpGet]
         public IActionResult MenuItems()
         {
             List<MenuItem> menuItems = _menuService.LoadMenuItems(_restaurantId);
-            List<MenuItemViewModel> menuItemViewModels = menuItems.Select(m=> MenuItemViewModel.ConvertToViewModel(m)).ToList();    
+            List<MenuItemViewModel> menuItemViewModels = menuItems.Select(m => MenuItemViewModel.ConvertToViewModel(m)).ToList();
             return View(menuItemViewModels);
+
         }
 
         public IActionResult MenuItemDetails(int id, int restaurantId)
         {
             MenuItem menuItem = _menuService.GetMenuItemWithIngredient(id, restaurantId);
             List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id);
-            List<NutritionViewModel> nutritionViewModels = nutritions.Select(n => NutritionViewModel.ConvertToViewModel(n)).ToList();   
-            
-            MenuItemDetailViewModel menuItemDetailViewModel = MenuItemDetailViewModel.ConvertToViewModel(menuItem,nutritionViewModels);
+            List<NutritionViewModel> nutritionViewModels = nutritions.Select(n => NutritionViewModel.ConvertToViewModel(n)).ToList();
+
+            MenuItemDetailViewModel menuItemDetailViewModel = MenuItemDetailViewModel.ConvertToViewModel(menuItem, nutritionViewModels);
             return View(menuItemDetailViewModel);
-            
+
         }
 
-        //public IActionResult CreateMenuItems(istring name,int restaurantId)
-        //{
-        //    MenuItem menuItem = _menuService.CreateMenuItem(restaurantId, id);
-        //}
+        [HttpPost]
+        public IActionResult Create(CreateMenuItemViewModel model)
+        {
+            Console.WriteLine(">>> POST Create");
+
+            if (!ModelState.IsValid)
+            {
+                // ✅ Вставляєш цей блок:
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($"[Model Error] {key}: {error.ErrorMessage}");
+                    }
+                }
+
+                return View("AddMenuItem", model); // або View(model), залежно від назви твоєї View
+            }
+
+            // Збереження моделі, якщо все валідно
+            _menuService.CreateMenuItem(
+                model.Name,
+                model.Description,
+                model.Price,
+                model.IsAvailable,
+                model.Picture,
+                model.Category,
+                1
+            );
+
+            return RedirectToAction("MenuItem");
+        }
+
     }
 }
