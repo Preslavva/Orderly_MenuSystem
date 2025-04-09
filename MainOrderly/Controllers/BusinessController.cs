@@ -7,7 +7,7 @@ namespace MainOrderly.WebApp.Controllers
         
         public IActionResult LandingPage()
         {
-            return View("~/Views/Business/LandingPage.cshtml");  
+            return View("LandingPage");  
         }
     }
 }
