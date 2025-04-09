@@ -5,12 +5,11 @@ html {
 @media (min-width: 768px) {
     html {
         font-size: 16px;
-        
     }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
@@ -23,11 +22,11 @@ html {
     width: 100px;
     height: 100px;
     top: 10px; /* Adjust the position from the top */
-    left: 10px; /* Adjust the position from the left */   
+    left: 10px; /* Adjust the position from the left */
     background-color: transparent;
     background-image: none;
-    background-blend-mode:multiply;
-    margin-left:50px;
+    background-blend-mode: multiply;
+    margin-left: 50px;
 }
 
 .cart {
@@ -36,7 +35,7 @@ html {
 }
 
 .cart-img {
-    height: 60px; 
+    height: 60px;
     width: auto;
     mix-blend-mode: multiply;
 }
@@ -47,7 +46,7 @@ html {
     top: 5px !important;
     start: 85% !important;
     transform: translate(-50%, -50%);
-    min-width: 18px; 
+    min-width: 18px;
     min-height: 18px;
     display: flex;
     justify-content: center;
@@ -81,6 +80,7 @@ button img {
 .container-fluid {
     background-color: #f8f5ed;
 }
+
 .group {
     margin-bottom: 10px;
     display: flex;
@@ -133,10 +133,10 @@ button img {
 }
 
     .card img {
-        width: 120px; 
+        width: 120px;
         height: 120px;
         border-radius: 10px;
-        object-fit: cover; 
+        object-fit: cover;
         flex-shrink: 0;
     }
 
@@ -146,7 +146,7 @@ button img {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 0; 
+    min-width: 0;
     position: relative;
 }
 
@@ -157,31 +157,28 @@ button img {
         color: #6B705C;
     }
 
-    h2 {
-        color: #6B705C;
-        margin-bottom: 1px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-        
-          
-    }
+h2 {
+    color: #6B705C;
+    margin-bottom: 1px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
 
-    hr
-    {
-        margin-top: 1px;
-    }
+hr {
+    margin-top: 1px;
+}
 
-    .card-content p {
-        font-size: 1.2rem;
-        margin-bottom: 5px;
-        color: grey;
-        white-space: nowrap; 
-        overflow: hidden;
-        text-overflow: ellipsis; 
-    }
+.card-content p {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: grey;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .card-content .info-button {
     position: absolute;
-    top: 10px;
+    top: 0px;
     right: 10px;
     background-color: transparent;
     border: none;
@@ -193,118 +190,97 @@ button img {
     margin-bottom: 8px;
 }
 
-        .card-content .info-button:hover {
-            transform: scale(1.1);
-        }
-
-    .card-content form {
-        margin-top: 10px;
+    .card-content .info-button:hover {
+        transform: scale(1.1);
     }
 
-    .card-content input[type="number"] {
-        width: 60px;
-        padding: 5px;
-        text-align: center;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        color: #6B705C;
-    }
+.card-content form {
+    margin-top: 10px;
+}
 
-    .card-content .btn {
-        padding: 8px 12px;
-        font-size: 1rem;
-        border-radius: 5px;
-    }
+.card-content input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #6B705C;
+}
 
-    .card-content input[type="submit"] {
-        background: #6B705C;
-        border-radius: 5px;
-        padding: 8px 12px;
-        border: none;
-        margin: 5px;
-        color: white;
-    }
+.card-content .btn {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
+.card-content input[type="submit"] {
+    background: #6B705C;
+    border-radius: 5px;
+    padding: 8px 12px;
+    border: none;
+    margin: 5px;
+    color: white;
+}
 
     .card-content input[type="submit"]:hover {
         transform: scale(1.1);
     }
 
-.container .food-card {
-    width: 100vw; 
-    height: 100vh; 
-    min-height: 100vh; 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #f8f5ed;
+
+.image-container2 img {
+    object-fit: contain; 
+    height: auto;
+    width: 100%;
+    display: block; 
 }
-
-.food-card {
-    display: flex;
-    flex-direction: column;
-    width: 380px; 
-    height: 90vh; 
-    overflow: hidden; 
-    border-radius: 16px;
-    background: white;
-}
-
-    .food-card .close-button {
-        position: absolute;
-        left: 7%;
-        transform: translateX(-100%);
-        margin-bottom: 25px;
-      
-    }
-
 
 .image-container2 {
-    margin-top: 25px;
-    height: 70vh;
-    overflow: hidden;
-    margin-bottom: 1px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+
+.btn-close {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 20%;
+    font-size: 1.2rem;
+    color: #6B705C;
+    opacity: 1;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background-color: none;
-    padding: 10px;
+    justify-content: center;
+    cursor: pointer;
+    border-color: #6B705C;
 }
 
-    .image-container2 img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 10%;
-    }
 
-@media (max-width: 768px) {
-    .image-container2 {
-        height: 50vh;
-        padding: 8px;
-    }
 
-        .image-container2 img {
-            object-fit: cover;
-            border-radius: 10%;
-        }
-}
+
 
 
 
 .card-body2 {
     margin-top: 1px;
     width: 100%;
-    height: 50vh; 
+    height: 50vh;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
     text-align: center;
 }
 
 h1 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 50px;
-    color: #6B705C; }
+    color: #6B705C;
+}
 
 p {
     font-family: 'Times New Roman', serif;
@@ -322,7 +298,7 @@ p {
 
 @media (max-width: 768px) {
     .food-card {
-        width: 100%; 
+        width: 100%;
     }
 }
 
@@ -335,13 +311,12 @@ footer {
     height: 60px
 }
 
-footer .container
-{
-    color: white;
-    font-size: 20px;
-    text-align: center;
-    padding: 10px;
-}
+    footer .container {
+        color: white;
+        font-size: 20px;
+        text-align: center;
+        padding: 10px;
+    }
 
 /* cart section css*/
 
@@ -590,11 +565,11 @@ footer .container
 
 
 
-/*this section is for the loading animation*/
+    /*this section is for the loading animation*/
 
 
 
-/* Loader container styles */
+    /* Loader container styles */
     #loader {
         position: fixed;
         top: 0;
@@ -608,24 +583,24 @@ footer .container
         align-items: center;
         justify-content: center;
     }
-/* Progress bar styles */
-#progress-bar {
-    width: 0;
-    height: 4px;
-    background-color: #6B705C; /* Change this color as needed */
-    animation: loading 2s linear forwards;
-}
-
-@keyframes loading {
-    from {
+    /* Progress bar styles */
+    #progress-bar {
         width: 0;
+        height: 4px;
+        background-color: #6B705C; /* Change this color as needed */
+        animation: loading 2s linear forwards;
     }
 
-    to {
-        width: 80%;
+    @keyframes loading {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 80%;
+        }
+        /* Adjust final width as desired */
     }
-    /* Adjust final width as desired */
-}
 
     /* Center the text inside #fancy-text */
     #fancy-text {
@@ -641,91 +616,91 @@ footer .container
         margin: 0 auto; /* auto left/right margins will center it */
     }
 
-/*footer style section*/
+    /*footer style section*/
 
-.custom-footer {
-    /* Make footer stick to the bottom */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* Adjust background color to match your design */
-    background-color: #6B705C; /* Example greenish/brown tone */
-    /* Give the footer a bit of height and padding */
-    padding: 0.75rem 0;
-    /* Optional: curve the top corners to mimic a “rounded” tab look */
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    /* Ensure content (buttons) do not overflow */
-    overflow: hidden;
-    /* Ensure the footer is above other elements if needed */
-    z-index: 9999;
-}
-
-/* Example styling for buttons in the footer */
-.footer-btn {
-    color: #fff; /* White icon/text */
-    background: transparent;
-    border: none;
-    font-size: 1.4rem; /* Larger icon size */
-    outline: none;
-    box-shadow: none;
-}
-
-
-.ImgMenu{
-    text-align: center;
-    width: 50px;
-    height: auto;
-}
-
-a.navbar-brand {
-    white-space: normal;
-    text-align: center;
-    word-break: break-all;
-}
-
-a {
-    color: #0077cc;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.border-top {
-    border-top: 1px solid #e5e5e5;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px;
-}
+    .custom-footer {
+        /* Make footer stick to the bottom */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        /* Adjust background color to match your design */
+        background-color: #6B705C; /* Example greenish/brown tone */
+        /* Give the footer a bit of height and padding */
+        padding: 0.75rem 0;
+        /* Optional: curve the top corners to mimic a ?rounded? tab look */
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        /* Ensure content (buttons) do not overflow */
+        overflow: hidden;
+        /* Ensure the footer is above other elements if needed */
+        z-index: 9999;
     }
+
+    /* Example styling for buttons in the footer */
+    .footer-btn {
+        color: #fff; /* White icon/text */
+        background: transparent;
+        border: none;
+        font-size: 1.4rem; /* Larger icon size */
+        outline: none;
+        box-shadow: none;
+    }
+
+
+    .ImgMenu {
+        text-align: center;
+        width: 50px;
+        height: auto;
+    }
+
+    a.navbar-brand {
+        white-space: normal;
+        text-align: center;
+        word-break: break-all;
+    }
+
+    a {
+        color: #0077cc;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #1b6ec2;
+        border-color: #1861ac;
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: #1b6ec2;
+        border-color: #1861ac;
+    }
+
+    .border-top {
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .border-bottom {
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .box-shadow {
+        box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    }
+
+    button.accept-policy {
+        font-size: 1rem;
+        line-height: inherit;
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        white-space: nowrap;
+        line-height: 60px;
+    }
+}
 
 @media (max-width: 768px) {
     .cart-item {
@@ -840,7 +815,7 @@ button.accept-policy {
     }
 
     .PaymentContainer {
-        height:  45vh;
+        height: ?45vh;
     }
 
     #fancy-text {
@@ -918,7 +893,7 @@ button.accept-policy {
 }
 
 .category-tabs {
-/*    position: sticky;
+    /*    position: sticky;
     top: 0;*/
     background-color: #f8f5ed; /* your page bg */
     z-index: 999;
@@ -942,19 +917,19 @@ button.accept-policy {
 }
 
 
-.tab-item {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 10px 0;
-    border-bottom: 3px solid transparent;
+.tab-item a {
     color: #888;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: inline-block;
     transition: color 0.2s, border-color 0.2s;
 }
 
-    .tab-item.active {
-        color: #6B705C;
-        border-bottom: 3px solid #6B705C;
-    }
+.tab-item.active a {
+    color: #6B705C;
+    font-weight: bold;
+    border-bottom: 3px solid #6B705C;
+}
 
 #searchContainer {
     width: 100%;
@@ -986,7 +961,7 @@ button.accept-policy {
     flex-wrap: wrap;
     justify-content: center;
     gap: 12px;
-    margin-top: 24px; /* increased space from element above */
+    margin-top: 18px; /* increased space from element above */
 }
 
 
@@ -1022,7 +997,7 @@ button.accept-policy {
     top: 0;
     z-index: 999;
     background-color: #f8f5ed;
-   /* max-height: 100vh;
+    /* max-height: 100vh;
     overflow-y: auto;*/
     padding: 10px;
     border-bottom: 1px solid #ddd;

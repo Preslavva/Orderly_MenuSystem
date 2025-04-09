@@ -34,53 +34,83 @@ namespace MainOrderly.WebApp.Controllers
             return View("~/Views/loading.cshtml");
         }
 
+      
         [HttpGet]
-        public IActionResult Index(string searchTerm = "", int tableId = 0)
+        public IActionResult Index(Category? category = null, string searchTerm = "", int tableId = 0)
         {
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
             }
-            List<MenuItem>? menu = _menuService.LoadMenuItems(); //from the dto i will create viewModel
 
+            var allMenuItems = _menuService.LoadMenuItems();
+
+            if (!category.HasValue)
+            {
+                category = Category.Starters;
+            }
+
+            ViewBag.AllCategories = allMenuItems
+                .Select(m => m.Category)
+                .Distinct()
+                .ToList();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                menu = menu.Where(m => m.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                           .ToList();
+                allMenuItems = allMenuItems
+                    .Where(m => m.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
-            List<MenuItemViewModel> menuItemViewModel =  MappingHelper.ConvertToViewModels(menu);
+            if (category.HasValue)
+            {
+                allMenuItems = allMenuItems
+                    .Where(m => m.Category == category.Value)
+                    .ToList();
+            }
+
+            var menuItemViewModel = MappingHelper.ConvertToViewModels(allMenuItems);
             TempData["CartCount"] = _cartService.GetCartCount();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_MenuItemList", menuItemViewModel);
+            }
 
             return View(menuItemViewModel);
         }
 
 
+
         [HttpGet]
-        public IActionResult GetItemInfo(int id)
+        public IActionResult GetItemInfo(int id, Category category)
         {
-            MenuItem? menuItem = _menuService.GetMenuItem(id); // get first the object as entities
+            var menuItem = _menuService.GetMenuItem(id);
+            var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
 
-            MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
+            var nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            var nutritionViewModels = nutritions
+                .Select(NutritionViewModel.ConvertToViewModel)
+                .ToList();
 
-            List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id); // same goes for nutritions.
+            var allergens = _allergenService.GetAllergenForMenuItem(id);
+            var allergenViewModel = allergens
+                .Select(AllergenViewModel.ConvertToViewModel)
+                .ToList();
 
-            List<NutritionViewModel> nutritionViewModels = nutritions.Select(nutrition =>NutritionViewModel.ConvertToViewModel(nutrition)).ToList();
-
-            List<Allergen> allergens = _allergenService.GetAllergenForMenuItem(id);
-
-            List<AllergenViewModel> allergenViewModel = allergens.Select(allergen => AllergenViewModel.ConvertToViewModel(allergen)).ToList();
-
-            CompositeViewModelMenuItemNutritionAllergen compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
+            var compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
             {
-                MenuItemViewModel = menItemViewModel,
+                MenuItemViewModel = menuItemViewModel,
                 NutritionViewModel = nutritionViewModels,
                 AllergenViewModel = allergenViewModel
             };
 
+         
+            ViewBag.Category = category;
+
             return View("Info", compositeViewModel);
         }
+
 
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
