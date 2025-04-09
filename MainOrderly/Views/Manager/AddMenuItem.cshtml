@@ -1,0 +1,130 @@
+﻿@model CreateMenuItemViewModel
+@{
+    ViewData["Title"] = "Menu Management";
+    Layout = "_ManagerLayout";
+}
+<div class="content">
+
+    <!-- Start Content-->
+    <div class="container-fluid">
+
+        <!-- start page title -->
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    
+                    <h4 class="page-title">Add / Edit </h4>
+                </div>
+            </div>
+        </div>
+        <!-- end page title -->
+
+
+        <form asp-action="Create" asp-controller="Manager" method="post" enctype="multipart/form-data">
+            <!-- <-- зміни тут -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-uppercase bg-light p-2 mt-0 mb-3">General</h5>
+
+                            <div class="mb-3">
+                                <label asp-for="Name" class="form-label"></label>
+                                <input asp-for="Name" class="form-control" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label"></label>
+                                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Price" class="form-label"></label>
+                                <input asp-for="Price" class="form-control" />
+                                <span asp-validation-for="Price" class="text-danger"></span>
+                            </div>
+
+                            @* <div class="mb-3">
+                                <label asp-for="Quantity" class="form-label"></label>
+                                <input asp-for="Quantity" class="form-control" />
+                                <span asp-validation-for="Quantity" class="text-danger"></span>
+                            </div> *@
+
+                            <div class="mb-3">
+                                <label asp-for="Category" class="form-label"></label>
+                                <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-control">
+                                    <option value="">Select</option>
+                                </select>
+                                <span asp-validation-for="Category" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3 form-check">
+                                <input asp-for="IsAvailable" class="form-check-input" />
+                                <label asp-for="IsAvailable" class="form-check-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- end col -->
+
+                <div class="col-lg-6">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+
+                            <div class="mb-3">
+                                <label asp-for="Picture" class="form-label">Image URL</label>
+                                <input asp-for="Picture" class="form-control" />
+                                <span asp-validation-for="Picture" class="text-danger"></span>
+                            </div>
+
+
+                            <!-- Preview -->
+                            <div class="dropzone-previews mt-3" id="file-previews"></div>
+                        </div>
+                    </div> <!-- end col-->
+
+
+                </div> <!-- end col-->
+            </div>
+            <!-- end row -->
+                
+            <div class="row">
+                <div class="col-12 text-center mb-3">
+                    <a asp-action="MenuItems" class="btn w-sm btn-light waves-effect">Cancel</a>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    <button type="submit" formaction="@Url.Action("Delete")" class="btn w-sm btn-danger waves-effect waves-light">Delete</button>
+                </div>
+            </div>
+        </form>
+        
+        <!-- end row -->
+        <!-- file preview template -->
+        <div class="d-none" id="uploadPreviewTemplate">
+            <div class="card mt-1 mb-0 shadow-none border">
+                <div class="p-2">
+                    <div class="row align-items-center">
+                        <div class="col-auto">
+                            <img data-dz-thumbnail src="ecommerce-product-edit.html#" class="avatar-sm rounded bg-light" alt="">
+                        </div>
+                        <div class="col ps-0">
+                            <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
+                            <p class="mb-0" data-dz-size></p>
+                        </div>
+                        <div class="col-auto">
+                            <!-- Button -->
+                            <a href="ecommerce-product-edit.html" class="btn btn-link btn-lg text-muted" data-dz-remove>
+                                <i class="dripicons-cross"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div> <!-- container -->
+
+</div> <!-- content -->
