@@ -21,8 +21,8 @@ html {
 .logo {
     width: 100px;
     height: 100px;
-    top: 10px; /* Adjust the position from the top */
-    left: 10px; /* Adjust the position from the left */
+    top: 10px;
+    left: 10px;
     background-color: transparent;
     background-image: none;
     background-blend-mode: multiply;
