@@ -33,7 +33,7 @@ namespace Services
             return _menuItemRepository.GetMenuItemById(id)!;
         }
 
-        public int CalculateAvgPrepTime(int menuItemId, int quantity)
+        public int CalculateAvgPrepTime(int menuItemId, int quantity) // this may not be needed at all
         {
             var menuItem = _menuItemRepository.GetMenuItemById(menuItemId);
             return  menuItem.PrepTime * quantity; // of the menuItem
