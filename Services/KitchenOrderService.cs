@@ -10,6 +10,7 @@ namespace Services
     {
 
         private readonly KitchenOrderRepository _kitchenOrderRepository;
+        private readonly MenuItemRepository _menuItemRepository;
         public KitchenOrderService(KitchenOrderRepository kitchenOrderRepository)
         {
             _kitchenOrderRepository = kitchenOrderRepository;
@@ -40,31 +41,11 @@ namespace Services
             _kitchenOrderRepository.UpdateOrderStatus(orderId, orderStatus);
         }
 
-        public void RemoveOrderFromDashboard(int orderId)
+        public void RemoveOrderFromDashboard(List<int> orderId)
         {
             _kitchenOrderRepository.RemoveOrder(orderId);
         }
 
-        public CountdownTimer UpdatePrepTime(int orderId, int menuItemId, int prepTime, DateTime startTime)
-        {
-           
-            var actualStartTime = DateTime.Now;
-
-            double elapsedMinutes = (DateTime.Now - actualStartTime).TotalMinutes;
-
-            int remainingTime = Math.Max(0, prepTime - (int)elapsedMinutes);
-           
-             CountdownTimer countdownTimer = new CountdownTimer
-            {
-                OrderId = orderId,
-                MenuItemId = menuItemId,
-                RemainingTimeInMinutes = remainingTime,
-            };
-            
-            return countdownTimer;
-
-
-        }
     
     }
 }

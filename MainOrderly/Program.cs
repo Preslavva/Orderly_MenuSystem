@@ -1,3 +1,4 @@
+using MainOrderly.WebApp.Helpers;
 using Models;
 using Services;
 using MSSQL;
@@ -30,6 +31,7 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableRepository>();
             builder.Services.AddScoped<IngredientService>();
             builder.Services.AddScoped<IngredientRepository>();
+            builder.Services.AddScoped<TimerHelpers>();
 
 
 

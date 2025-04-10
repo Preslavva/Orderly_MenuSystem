@@ -1,15 +1,30 @@
-﻿@model CompositeKitchenViewModel
-
+﻿@model KitchenViewModelWithTimer
 @{
-    ViewData["Title"] = "Kitchen Orders Dashboard";
-    Layout = "_KitchenStaffLayout";
+	ViewData["Title"] = "Kitchen Orders Dashboard";
+	Layout = "_KitchenStaffLayout";
 }
 
+<div class="order-board">
 
-<div id="order-board" class="order-board"
-     hx-get="@Url.Action("GetUpdatedOrders", "Kitchen")"
-     hx-trigger="every 4s"
-     hx-swap="innerHTML">
+	<div id="new-orders-column" class="order-column"
+	     hx-get="@Url.Action("GetNewOrders", "Kitchen")"
+	     hx-trigger="every 2s"
+	     hx-swap="innerHTML">
+		@await Html.PartialAsync("_NewOrdersPartial", Model)
+	</div>
 
-    @await Html.PartialAsync("_OrderBoardPartial", Model)
-</div>  
+	<div id="processing-orders-column" class="order-column"
+	     hx-get="@Url.Action("GetProcessingOrders", "Kitchen")"
+	     hx-trigger="every 1s"
+	     hx-swap="innerHTML">
+		@await Html.PartialAsync("_ProcessingOrdersPartial", Model)
+	</div>
+
+	<div id="completed-orders-column" class="order-column"
+	     hx-get="@Url.Action("GetCompletedOrders", "Kitchen")"
+	     hx-trigger="every 2s"
+	     hx-swap="innerHTML">
+		@await Html.PartialAsync("_CompletedOrdersPartial", Model)
+	</div>
+</div>
+

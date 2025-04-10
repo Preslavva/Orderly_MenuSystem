@@ -1,0 +1,66 @@
+﻿@model KitchenViewModelWithTimer
+
+<h3 class="column-header completed-orders-header">Completed Orders</h3>
+@if (Model.CompositeKitchenViewModel != null && Model.CompositeKitchenViewModel.CompletedOrders.Any())
+{
+    var ordersByTable = Model.CompositeKitchenViewModel.CompletedOrders.GroupBy(o => o.Table);
+
+    @foreach (var tableGroup in ordersByTable)
+    {
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-name">Table @tableGroup.Key</span>
+                <span class="order-count">@tableGroup.Count() order(s)</span>
+            </div>
+
+            @foreach (var orderViewModel in tableGroup)
+            {
+                <div class="order-row">
+                    <div class="order-header">
+                        <span class="order-id">Order #@orderViewModel.Id</span>
+                        <span class="order-time">@orderViewModel.OrderTimestamp.ToString("HH:mm")</span>
+                    </div>
+
+                    @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                    {
+                        @foreach (var item in orderViewModel.Items)
+                        {
+                            <div class="menu-item-row">
+                                <div class="item-details">
+                                    <span class="item-quantity">@item.Quantity×</span>
+                                    <span class="item-name">@item.Name</span>
+                                </div>
+                            </div>
+                        }
+                        <div class="status-badge">Ready for service</div>
+                    }
+                
+                </div>
+
+                @if (tableGroup.Last() != orderViewModel)
+                {
+                    <hr class="separator" />
+                }
+            }
+
+            <div class="table-actions">
+                <form asp-controller="Kitchen"
+                      asp-action="RemoveOrderDashboard"
+                      method="post"
+                      hx-post="@Url.Action("RemoveOrderDashboard", "Kitchen")"
+                      hx-target="#completed-orders-column"
+                      hx-swap="innerHTML">
+                    @foreach (var order in tableGroup)
+                    {
+                        <input type="hidden" name="id" value="@order.Id" />
+                    }
+                    <button type="submit" class="btn btn-secondary">Remove All</button>
+                </form>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="empty-message">No completed orders</div>
+}

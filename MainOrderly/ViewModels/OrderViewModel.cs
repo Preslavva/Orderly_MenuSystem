@@ -11,7 +11,8 @@ namespace MainOrderly.WebApp.ViewModels
         public OrderStatus Status { get; set; }
         public int Quantity { get; set; }
         public decimal SubTotal { get; set; }
-
+        public bool IsExceeded { get; set; }
+        public string ElapsedTime { get; set; }
         public List<OrderLineItemViewModel> Items { get; set; }
 
         public OrderViewModel(List<OrderLineItemViewModel> menuItemViewModels)

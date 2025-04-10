@@ -58,7 +58,7 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string queryGetMenuItems = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId
+                    string queryGetMenuItems = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId, PrepTime
                                          FROM MenuItem WHERE RestaurantId = @RestaurantId";
 
                     using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
@@ -82,7 +82,8 @@ namespace MSSQL
                                         Convert.ToBoolean(reader["IsAvailable"]),
                                         Convert.ToString(reader["Picture"])!,
                                         categoryEnum,
-                                        Convert.ToInt32(reader["RestaurantId"])
+                                        Convert.ToInt32(reader["RestaurantId"]),
+                                        Convert.ToInt32(reader["PrepTime"])
                                 ));                           
                             }
                         }
@@ -108,7 +109,7 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId
+                    string query = @"SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId, PrepTime
                              FROM MenuItem WHERE Id = @Id AND RestaurantId = @RestaurantId";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
@@ -130,7 +131,8 @@ namespace MSSQL
                                     Convert.ToBoolean(reader["IsAvailable"]),
                                     Convert.ToString(reader["Picture"]),
                                     categoryEnum,
-                                    Convert.ToInt32(reader["RestaurantId"])
+                                    Convert.ToInt32(reader["RestaurantId"]),
+                                    Convert.ToInt32(reader["PrepTime"])
  
                                     
                                 );
@@ -194,6 +196,7 @@ namespace MSSQL
                 throw new Exception($"Error while updating MenuItem quantity: {ex.Message}", ex);
             }
         }
+        
 
 
     }

@@ -1,0 +1,69 @@
+﻿@model KitchenViewModelWithTimer
+
+<h3 class="column-header processing-orders-header">Processing Orders</h3>
+@if (Model.CompositeKitchenViewModel.PendingOrders != null && Model.CompositeKitchenViewModel.PendingOrders.Any())
+{
+    var ordersByTable = Model.CompositeKitchenViewModel.PendingOrders.GroupBy(o => o.Table);
+    @foreach (var tableGroup in ordersByTable)
+    {
+        <div class="table-card">
+            <div class="table-header">
+                <span class="table-name">Table @tableGroup.Key</span>
+                <span class="order-count">@tableGroup.Count() order(s)</span>
+            </div>
+            @foreach (var orderViewModel in tableGroup)
+            {
+	              var orderExceeded = orderViewModel.IsExceeded || orderViewModel.Items.Any(i => i.IsExceeded);
+
+                <div class="order-row">
+                    <div class="order-header">
+                        <span class="order-id">Order #@orderViewModel.Id</span>
+                        <span class="order-time">@orderViewModel.OrderTimestamp.ToString("HH:mm")</span>
+                    </div>
+                    @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                    {
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="order-items" style="flex: 1;">
+                                @foreach (var item in orderViewModel.Items)
+                                {
+                                    <div class="menu-item-row">
+                                        <div class="item-details">
+                                            <span class="item-quantity">@item.Quantity×</span>
+                                            <span class="item-name">@item.Name</span>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            
+                    
+                            <!-- Updated timer display -->
+                            <div style="display: flex; flex-direction: column; align-items: center; padding-left: 15px;">
+	                            <div class="item-timer @(orderViewModel.IsExceeded ? "timer-exceeded" : "")" style="margin-bottom: 10px;">
+		                            @orderViewModel.ElapsedTime
+	                            </div>
+
+                                <form method="post"
+                                      asp-action="UpdateOrderStatus"
+                                      hx-post="@Url.Action("UpdateOrderStatus", "Kitchen")"
+                                      hx-target="#completed-orders-column"
+                                      hx-swap="innerHTML">
+                                    <input type="hidden" name="id" value="@orderViewModel.Id" />
+                                    <input type="hidden" name="newStatus" value="@OrderStatus.COMPLETED" />
+                                    <button type="submit" class="btn btn-primary">Mark Ready</button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+                @if (tableGroup.Last() != orderViewModel)
+                {
+                    <hr class="separator" />
+                }
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="empty-message">No orders in process</div>
+}

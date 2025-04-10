@@ -4,12 +4,15 @@ namespace MainOrderly.WebApp.ViewModels
 {
     public class CompositeKitchenViewModel
     {
+        public List<MenuItemViewModel> MenuItems { get; set; }
         public List<OrderViewModel> NewOrders { get; set; }
         public List<OrderViewModel> PendingOrders { get; set; }
         public List<OrderViewModel> CompletedOrders { get; set; }
 
+
         public CompositeKitchenViewModel()
         {
+            this.MenuItems = new List<MenuItemViewModel>();
             this.NewOrders = new List<OrderViewModel>();
             this.PendingOrders = new List<OrderViewModel>();
             this.CompletedOrders = new List<OrderViewModel>();
