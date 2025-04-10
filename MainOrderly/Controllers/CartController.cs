@@ -2,6 +2,7 @@
 using Services;
 using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
+using System.Runtime.CompilerServices;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -69,9 +70,13 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult PaymentConfirmationPage()
+        public IActionResult PaymentConfirmationPage(int orderId)
         {
-            return View();
+            OrderViewModel orderModel = new OrderViewModel()
+            {
+                Id = orderId
+            };
+            return View(orderModel);
         }
 
         public IActionResult Checkout()

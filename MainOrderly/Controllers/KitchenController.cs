@@ -146,7 +146,14 @@ namespace MainOrderly.WebApp.Controllers
             return RedirectToAction("Dashboard");
         }
 
-        [HttpPost]
+        [HttpGet]
+        public IActionResult GetOrderStatus(int orderId)
+        {
+            OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId));
+            return Content(order.Status.ToString());
+            //return PartialView("orderButtons",order);
+        }
+
         public IActionResult RemoveOrderDashboard(List<int> id)
         {
             _kitchenOrderService.RemoveOrderFromDashboard(id);
