@@ -1,6 +1,4 @@
-﻿
-using Models;
-using Models.Entities;
+﻿using Models.Entities;
 using Models.Enums;
 using MSSQL;
 

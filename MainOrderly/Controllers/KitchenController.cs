@@ -1,6 +1,5 @@
 ﻿using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
-
 using Models.Entities;
 using Models.Enums;
 using Services;
@@ -34,6 +33,14 @@ namespace MainOrderly.WebApp.Controllers
         {
             _kitchenOrderService.UpdateOrderStatus(id, newStatus);
             return RedirectToAction("Dashboard");
+        }
+
+        [HttpGet]
+        public IActionResult GetOrderStatus(int orderId)
+        {
+            OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId));
+            return Content(order.Status.ToString());
+            //return PartialView("orderButtons",order);
         }
 
         public IActionResult RemoveOrderDashboard(int id)

@@ -5,12 +5,11 @@ html {
 @media (min-width: 768px) {
     html {
         font-size: 16px;
-        
     }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
@@ -22,12 +21,12 @@ html {
 .logo {
     width: 100px;
     height: 100px;
-    top: 10px; /* Adjust the position from the top */
-    left: 10px; /* Adjust the position from the left */   
+    top: 10px;
+    left: 10px;
     background-color: transparent;
     background-image: none;
-    background-blend-mode:multiply;
-    margin-left:50px;
+    background-blend-mode: multiply;
+    margin-left: 50px;
 }
 
 .cart {
@@ -36,7 +35,7 @@ html {
 }
 
 .cart-img {
-    height: 60px; 
+    height: 60px;
     width: auto;
     mix-blend-mode: multiply;
 }
@@ -47,7 +46,7 @@ html {
     top: 5px !important;
     start: 85% !important;
     transform: translate(-50%, -50%);
-    min-width: 18px; 
+    min-width: 18px;
     min-height: 18px;
     display: flex;
     justify-content: center;
@@ -77,21 +76,21 @@ button img {
 
 
 
-meta[name = "format-detection"]
-{
+meta[name = "format-detection"] {
     telephone = no;
     email = no;
-    address=no;
+    address =no;
 }
 
-.continent{
-    -webkit-touch-callout:none;
+.continent {
+    -webkit-touch-callout: none;
     -webkit-user-select: none;
 }
 
 .container-fluid {
     background-color: #f8f5ed;
 }
+
 .group {
     display: flex;
     align-items: center;
@@ -135,17 +134,17 @@ meta[name = "format-detection"]
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
-    max-width: 100%; 
+    max-width: 100%;
     overflow: hidden;
     box-shadow: 0 0 10px #6B705C;
     border: none;
 }
 
     .card img {
-        width: 120px; 
+        width: 120px;
         height: 120px;
         border-radius: 10px;
-        object-fit: cover; 
+        object-fit: cover;
         flex-shrink: 0;
     }
 
@@ -155,9 +154,9 @@ meta[name = "format-detection"]
     display: flex;
     flex-direction: column;
     justify-content: center;
-    min-width: 0; 
+    min-width: 0;
     position: relative;
-    padding:15px;
+    padding: 15px;
 }
 
     .card-content h3 {
@@ -166,78 +165,77 @@ meta[name = "format-detection"]
         color: #6B705C;
     }
 
-    h2 {
-        color: #6B705C;
-        margin-bottom: 1px;
-        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+h2 {
+    color: #6B705C;
+    margin-bottom: 1px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+hr {
+    margin-top: 1px;
+}
+
+.card-content p {
+    font-size: 1rem;
+    margin-bottom: 5px;
+    color: #6B705C;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-content .info-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    color: #6B705C;
+    border-radius: 50%;
+}
+
+    .card-content .info-button:hover {
+        transform: scale(1.1);
     }
 
-    hr
-    {
-        margin-top: 1px;
-    }
+.card-content form {
+    margin-top: 10px;
+}
 
-    .card-content p {
-        font-size: 1rem;
-        margin-bottom: 5px;
-        color: #6B705C;
-        white-space: nowrap; 
-        overflow: hidden;
-        text-overflow: ellipsis; 
-    }
+.card-content input[type="number"] {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    color: #6B705C;
+}
 
-    .card-content .info-button {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        transition: transform 0.2s ease-in-out;
-        color: #6B705C;
-        border-radius: 50%;
-    }
+.card-content .btn {
+    padding: 8px 12px;
+    font-size: 1rem;
+    border-radius: 5px;
+}
 
-        .card-content .info-button:hover {
-            transform: scale(1.1);
-        }
-
-    .card-content form {
-        margin-top: 10px;
-    }
-
-    .card-content input[type="number"] {
-        width: 60px;
-        padding: 5px;
-        text-align: center;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        color: #6B705C;
-    }
-
-    .card-content .btn {
-        padding: 8px 12px;
-        font-size: 1rem;
-        border-radius: 5px;
-    }
-
-    .card-content input[type="submit"] {
-        background: #6B705C;
-        border-radius: 5px;
-        padding: 8px 12px;
-        border: none;
-        margin: 5px;
-        color: white;
-    }
+.card-content input[type="submit"] {
+    background: #6B705C;
+    border-radius: 5px;
+    padding: 8px 12px;
+    border: none;
+    margin: 5px;
+    color: white;
+}
 
     .card-content input[type="submit"]:hover {
         transform: scale(1.1);
     }
 
 .container .food-card {
-    width: 100vw; 
-    height: 100vh; 
-    min-height: 100vh; 
+    width: 100vw;
+    height: 100vh;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -247,9 +245,9 @@ meta[name = "format-detection"]
 .food-card {
     display: flex;
     flex-direction: column;
-    width: 380px; 
-    height: 90vh; 
-    overflow: hidden; 
+    width: 380px;
+    height: 90vh;
+    overflow: hidden;
     border-radius: 16px;
     background: white;
 }
@@ -259,33 +257,32 @@ meta[name = "format-detection"]
         left: 7%;
         transform: translateX(-100%);
         margin-bottom: 25px;
-      
     }
 
 
 .image-container2 {
     margin-top: 25px;
-    height: 70vh; 
+    height: 70vh;
     overflow: hidden;
     margin-bottom: 1px;
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
 }
 
     .image-container2 img {
         width: 100%;
         height: 100%;
-        object-fit: cover; 
+        object-fit: cover;
     }
 
 @media (max-width: 768px) {
     .image-container2 {
-        height: 50vh; 
+        height: 50vh;
     }
 
         .image-container2 img {
-            object-fit: contain; 
+            object-fit: contain;
         }
 }
 
@@ -293,28 +290,29 @@ meta[name = "format-detection"]
 .card-body2 {
     margin-top: 1px;
     width: 100%;
-    height: 50vh; 
+    height: 50vh;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    justify-content: center; 
+    justify-content: center;
     text-align: center;
 }
 
 h1 {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     font-size: 50px;
-    color: #6B705C; }
+    color: #6B705C;
+}
 
-    .nutritions img {
-        mix-blend-mode: multiply;
-        width: 100px;
-        height: 100px;
-    }
+.nutritions img {
+    mix-blend-mode: multiply;
+    width: 100px;
+    height: 100px;
+}
 
 @media (max-width: 768px) {
     .food-card {
-        width: 100%; 
+        width: 100%;
     }
 }
 
@@ -327,13 +325,12 @@ footer {
     height: 60px
 }
 
-footer .container
-{
-    color: white;
-    font-size: 20px;
-    text-align: center;
-    padding: 10px;
-}
+    footer .container {
+        color: white;
+        font-size: 20px;
+        text-align: center;
+        padding: 10px;
+    }
 
 /* cart section css*/
 
@@ -582,11 +579,11 @@ footer .container
 
 
 
-/*this section is for the loading animation*/
+    /*this section is for the loading animation*/
 
 
 
-/* Loader container styles */
+    /* Loader container styles */
     #loader {
         position: fixed;
         top: 0;
@@ -600,24 +597,24 @@ footer .container
         align-items: center;
         justify-content: center;
     }
-/* Progress bar styles */
-#progress-bar {
-    width: 0;
-    height: 4px;
-    background-color: #6B705C; /* Change this color as needed */
-    animation: loading 2s linear forwards;
-}
-
-@keyframes loading {
-    from {
+    /* Progress bar styles */
+    #progress-bar {
         width: 0;
+        height: 4px;
+        background-color: #6B705C; /* Change this color as needed */
+        animation: loading 2s linear forwards;
     }
 
-    to {
-        width: 80%;
+    @keyframes loading {
+        from {
+            width: 0;
+        }
+
+        to {
+            width: 80%;
+        }
+        /* Adjust final width as desired */
     }
-    /* Adjust final width as desired */
-}
 
     /* Center the text inside #fancy-text */
     #fancy-text {
@@ -633,91 +630,91 @@ footer .container
         margin: 0 auto; /* auto left/right margins will center it */
     }
 
-/*footer style section*/
+    /*footer style section*/
 
-.custom-footer {
-    /* Make footer stick to the bottom */
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /* Adjust background color to match your design */
-    background-color: #6B705C; /* Example greenish/brown tone */
-    /* Give the footer a bit of height and padding */
-    padding: 0.75rem 0;
-    /* Optional: curve the top corners to mimic a “rounded” tab look */
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
-    /* Ensure content (buttons) do not overflow */
-    overflow: hidden;
-    /* Ensure the footer is above other elements if needed */
-    z-index: 9999;
-}
-
-/* Example styling for buttons in the footer */
-.footer-btn {
-    color: #fff; /* White icon/text */
-    background: transparent;
-    border: none;
-    font-size: 1.4rem; /* Larger icon size */
-    outline: none;
-    box-shadow: none;
-}
-
-
-.ImgMenu{
-    text-align: center;
-    width: 50px;
-    height: auto;
-}
-
-a.navbar-brand {
-    white-space: normal;
-    text-align: center;
-    word-break: break-all;
-}
-
-a {
-    color: #0077cc;
-}
-
-.btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
-}
-
-.border-top {
-    border-top: 1px solid #e5e5e5;
-}
-
-.border-bottom {
-    border-bottom: 1px solid #e5e5e5;
-}
-
-.box-shadow {
-    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
-}
-
-button.accept-policy {
-    font-size: 1rem;
-    line-height: inherit;
-}
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    white-space: nowrap;
-    line-height: 60px;
-}
+    .custom-footer {
+        /* Make footer stick to the bottom */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        /* Adjust background color to match your design */
+        background-color: #6B705C; /* Example greenish/brown tone */
+        /* Give the footer a bit of height and padding */
+        padding: 0.75rem 0;
+        /* Optional: curve the top corners to mimic a “rounded” tab look */
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        /* Ensure content (buttons) do not overflow */
+        overflow: hidden;
+        /* Ensure the footer is above other elements if needed */
+        z-index: 9999;
     }
+
+    /* Example styling for buttons in the footer */
+    .footer-btn {
+        color: #fff; /* White icon/text */
+        background: transparent;
+        border: none;
+        font-size: 1.4rem; /* Larger icon size */
+        outline: none;
+        box-shadow: none;
+    }
+
+
+    .ImgMenu {
+        text-align: center;
+        width: 50px;
+        height: auto;
+    }
+
+    a.navbar-brand {
+        white-space: normal;
+        text-align: center;
+        word-break: break-all;
+    }
+
+    a {
+        color: #0077cc;
+    }
+
+    .btn-primary {
+        color: #fff;
+        background-color: #1b6ec2;
+        border-color: #1861ac;
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: #1b6ec2;
+        border-color: #1861ac;
+    }
+
+    .border-top {
+        border-top: 1px solid #e5e5e5;
+    }
+
+    .border-bottom {
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .box-shadow {
+        box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+    }
+
+    button.accept-policy {
+        font-size: 1rem;
+        line-height: inherit;
+    }
+
+    .footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        white-space: nowrap;
+        line-height: 60px;
+    }
+}
 
 @media (max-width: 768px) {
     .cart-item {
@@ -794,10 +791,11 @@ button.accept-policy {
         align-items: center;
         height: 50vh;
         mix-blend-mode: multiply;
+        transform: translateY(-110px)
     }
 
         .checkmark-container img {
-            max-width: 100%;
+            max-width: 70%;
             height: auto;
         }
 
@@ -805,13 +803,13 @@ button.accept-policy {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 50vh;
+        height: 20vh;
     }
 
     .PaymentHome {
-        background: #6B705C;
-        border-radius: 5px;
-        padding: 8px 12px;
+        background: black;
+        border-radius: 15px;
+        padding: 10px 14px;
         border: none;
         color: white;
         font-size: 16px;
@@ -940,3 +938,55 @@ button.accept-policy {
         color: #6B705C;
         border-bottom: 3px solid #6B705C;
     }
+
+/*payment confirmation page*/
+
+.StatusButtons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: -110px;
+}
+
+.line {
+    width: 40%;
+    height: 2px;
+    background-color: #000000;
+    margin: 10px 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+}
+
+.PaymentTitle,
+.PaymentText {
+    text-align: center;
+}
+
+    .PaymentTitle h1 {
+        color: black;
+    }
+
+.PaymentText {
+    margin-top: 50px;
+    text-align: center;
+}
+
+.StatusButtons .btn {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.StatusButtons .selected-new {
+    background-color: #00000000;
+}
+
+.StatusButtons .selected-processing {
+    background-color: #3998FF;
+    color: white;
+}
+
+.StatusButtons .selected-completed {
+    background-color: #1AD285;
+    color: white;
+}
