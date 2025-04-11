@@ -17,13 +17,14 @@ namespace MSSQL
                 conn.Open();
 
                 string queryAddTable = """
-                            INSERT INTO [Table] (QrCode, RestaurantId) 
-                            VALUES (@QrCode, 1)
+                            INSERT INTO [Table] (QrCode, RestaurantId, GuidToken) 
+                            VALUES (@QrCode, 1, @GuidToken)
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
-                    cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode); ;
+                    cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode);
+                    cmdAddTable.Parameters.AddWithValue("@GuidToken", table.GuidToken);
 
                     cmdAddTable.ExecuteNonQuery();
                 }
@@ -48,7 +49,7 @@ namespace MSSQL
 
                     while (dr.Read())
                     {
-                        tables.Add(new Table(Convert.ToInt32(dr["Id"]), (byte[])dr["QrCode"]));
+                        tables.Add(new Table(Convert.ToInt32(dr["Id"]), (byte[])dr["QrCode"], dr["GuidToken"].ToString()));
                     }
                 }
             }
@@ -56,6 +57,35 @@ namespace MSSQL
             return tables;
         }
 
+        public Table? GetTableByToken(string token)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
 
+                string queryGetTable = """
+                            SELECT * FROM [Table]
+                            WHERE GuidToken = @GuidToken
+                        """;
+
+                using (SqlCommand cmdGetTable = new SqlCommand(queryGetTable, conn))
+                {
+                    cmdGetTable.Parameters.AddWithValue("@GuidToken", token);
+
+                    SqlDataReader dr = cmdGetTable.ExecuteReader();
+
+                    if(dr.Read())
+                    {
+                        return new Table(
+                    Convert.ToInt32(dr["Id"]),
+                    (byte[])dr["QRCode"],
+                    dr["GuidToken"].ToString()
+                );
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

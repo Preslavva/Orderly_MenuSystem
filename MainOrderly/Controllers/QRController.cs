@@ -20,28 +20,43 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult GenerateAndStoreTables()
         {
-            var tables = new[]
-         {
-            //new Table(1, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=1")),
-            //new Table(2, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=2")),
-            //new Table(3, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=3")),
-            //new Table(4, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=4")),
-            //new Table(5, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=5")),
-            //new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=6")),
-            new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=6")),
-            //new Table(27, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=27")),
+            //    var tables = new[]
+            // {
+            //    //new Table(1, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=1")),
+            //    //new Table(2, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=2")),
+            //    //new Table(3, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=3")),
+            //    //new Table(4, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=4")),
+            //    //new Table(5, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=5")),
+            //    //new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=6")),
+            //    new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=6")),
+            //    //new Table(27, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=27")),
 
 
-        };
+            //};
 
-            foreach (Table table in tables)
+            //    foreach (Table table in tables)
+            //    {
+            //        _tableService.CreateAddTableDB(table);
+            //    }
+
+            var tables = new List<Table>();
+
+            for (int i = 1; i <= 3; i++)
             {
+                string guidToken = Guid.NewGuid().ToString();
+                string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
+                byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
+
+                var table = new Table(i, qrCodeImage, guidToken);
                 _tableService.CreateAddTableDB(table);
+
+                tables.Add(table);
             }
 
             return RedirectToAction("QrView");
 
         }
+
 
         public IActionResult QrView()
         {

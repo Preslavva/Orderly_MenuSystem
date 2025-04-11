@@ -13,37 +13,56 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
+        private readonly TableService _tableService;
         private static Dictionary<int, string> _tableGuidMap = new();
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, TableService tableService, NutritionService nutritionService)
         {
             _logger = logger;
             _cartService = cartService;
             _menuService = menuService;
+            _tableService = tableService;
             _nutritionService = nutritionService;
 
         }
 
         //this controller is the first thing that user you will see.
-        public IActionResult LoadingPage(int tableId)
+        public IActionResult LoadingPage(string token)
         {
-            ViewBag.TableId = tableId;  
+            Table table = _tableService.GetTableByToken(token);
+
+            if (table == null)
+            {
+                return NotFound("Invalid token.");
+            }
+
+            HttpContext.Session.SetInt32("TableId", table.Id);
+  
             return View("~/Views/loading.cshtml");
         }
 
         [HttpGet]
-        public IActionResult Index(string searchTerm = "", int tableId = 0, int restaurantId = 0)
+        public IActionResult Index(string token="", string searchTerm = "", int restaurantId = 0)
         {
-            if (tableId > 0)
+            if (!string.IsNullOrEmpty(token))
             {
-                HttpContext.Session.SetInt32("TableId", tableId);
-
-                if (!_tableGuidMap.ContainsKey(tableId))
+                var table = _tableService.GetTableByToken(token);
+                if (table != null)
                 {
-                    _tableGuidMap[tableId] = Guid.NewGuid().ToString();
+                    HttpContext.Session.SetInt32("TableId", table.Id);
+                }
+            }
+
+            int? tableId = HttpContext.Session.GetInt32("TableId");
+
+            if (tableId.HasValue)
+            {
+                if (!_tableGuidMap.ContainsKey(tableId.Value))
+                {
+                    _tableGuidMap[tableId.Value] = Guid.NewGuid().ToString();
                 }
 
-                string tableGuid = _tableGuidMap[tableId];
+                string tableGuid = _tableGuidMap[tableId.Value];
 
                 Response.Cookies.Append(
                     "TableGuid",
