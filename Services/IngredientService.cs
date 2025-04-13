@@ -32,7 +32,11 @@ namespace Services
             return _ingredientRepository.AddIngredient(ingredient);
         }
 
-       
-       
+        public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities)
+        {
+            return _ingredientRepository.UpdateMenuItemIngredients(menuItemId, ingredientQuantities);
+        }
+
+
     }
 }

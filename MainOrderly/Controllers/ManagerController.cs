@@ -1,10 +1,12 @@
 ﻿using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
+using Models.Enums;
 using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {
+    //https://localhost:7196/Manager/Create
     public class ManagerController : Controller
     {
         private readonly MenuService _menuService;
@@ -17,70 +19,157 @@ namespace MainOrderly.WebApp.Controllers
             _menuService = menuService;
             _ingredientService = ingredientService;
             _nutritionService = nutritionService;
-
         }
 
         public IActionResult Index()
         {
             return View();
         }
-        public IActionResult AddMenuItem()
-        {
-            return View();
-        }
+
         [HttpGet]
-        public IActionResult MenuItems()
+        public IActionResult Create()
         {
-            List<MenuItem> menuItems = _menuService.LoadMenuItems(_restaurantId);
-            List<MenuItemViewModel> menuItemViewModels = menuItems.Select(m => MenuItemViewModel.ConvertToViewModel(m)).ToList();
-            return View(menuItemViewModels);
+            var ingridients = _ingredientService.GetIngredientsByRestaurantId(1).Select(e => new IngredientViewModel
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Unit = e.Unit,
+                QuantityInStock = e.QuantityInStock,
+                MinimumStockLevel = e.MinimumStockLevel
+            }).ToList();
 
-        }
-
-        public IActionResult MenuItemDetails(int id, int restaurantId)
-        {
-            MenuItem menuItem = _menuService.GetMenuItemWithIngredient(id, restaurantId);
-            List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id);
-            List<NutritionViewModel> nutritionViewModels = nutritions.Select(n => NutritionViewModel.ConvertToViewModel(n)).ToList();
-
-            MenuItemDetailViewModel menuItemDetailViewModel = MenuItemDetailViewModel.ConvertToViewModel(menuItem, nutritionViewModels);
-            return View(menuItemDetailViewModel);
-
+            return View(CreateMenuItemViewModel.Initialize(ingridients));
         }
 
         [HttpPost]
         public IActionResult Create(CreateMenuItemViewModel model)
         {
-            Console.WriteLine(">>> POST Create");
-
             if (!ModelState.IsValid)
             {
-                // ✅ Вставляєш цей блок:
-                foreach (var key in ModelState.Keys)
-                {
-                    var state = ModelState[key];
-                    foreach (var error in state.Errors)
-                    {
-                        Console.WriteLine($"[Model Error] {key}: {error.ErrorMessage}");
-                    }
-                }
-
-                return View("AddMenuItem", model); // або View(model), залежно від назви твоєї View
+                return View("Create", model);
             }
 
-            // Збереження моделі, якщо все валідно
-            _menuService.CreateMenuItem(
+            int menuId = _menuService.CreateMenuItem(
                 model.Name,
                 model.Description,
                 model.Price,
                 model.IsAvailable,
                 model.Picture,
                 model.Category,
-                1
+                _restaurantId
             );
 
-            return RedirectToAction("MenuItem");
+            bool result = _menuService.AddIngridientsToMenuItem(menuId, model.SelectedIngredientIds.ToArray(),
+            model.IngredientQuantities.Where(e => model.SelectedIngredientIds.Contains(e.Key)).Select(e => e.Value).ToArray());
+
+
+            return RedirectToAction("MenuItems");
         }
 
+        [HttpGet]
+        public IActionResult MenuItems()
+        {
+            var menuItems = _menuService.LoadMenuItems(_restaurantId);
+            var viewModels = menuItems.Select(MenuItemViewModel.ConvertToViewModel).ToList();
+            return View(viewModels);
+        }
+
+        [HttpGet]
+        public IActionResult MenuItemDetails(int id)
+        {
+            var menuItem = _menuService.GetMenuItemWithIngredient(id, _restaurantId);
+            var nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            var nutritionVMs = nutritions.Select(NutritionViewModel.ConvertToViewModel).ToList();
+
+            var detailVM = MenuItemDetailViewModel.ConvertToViewModel(menuItem, nutritionVMs);
+            return View(detailVM);
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+
+            var item = _menuService.GetMenuItemWithIngredient(id, _restaurantId);   
+            var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(_restaurantId);
+            if (item == null)
+            {
+                return RedirectToAction("MenuItems");
+            }
+            var model = new CreateMenuItemViewModel
+            {
+                Id = item.Id,
+                Name = item.Name,
+                Description = item.Description,
+                Price = item.Price,
+                Picture = item.Picture,
+                IsAvailable = item.IsAvailable,
+                Category = item.Category,
+                AvailableIngredients = availableIngredients.Select(e => new IngredientViewModel { Id = e.Id, Name = e.Name }).ToList(),
+                IngredientQuantities = item.Ingredients.ToDictionary(i => i.IngredientId, i => i.Quantity)
+
+            };
+            return View("EditMenuItem", model);
+
+        }
+
+        [HttpPost]
+        public IActionResult Edit(CreateMenuItemViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(_restaurantId);
+                model.AvailableIngredients = availableIngredients
+                    .Select(e => new IngredientViewModel { Id = e.Id, Name = e.Name })
+                    .ToList();
+
+                model.IngredientQuantities ??= new Dictionary<int, int>();
+
+                return View("EditMenuItem", model);
+            }
+
+
+            var updated = new MenuItem(
+                model.Id,
+                model.Name,
+                model.Description,
+                model.Price,
+                model.IsAvailable,
+                model.Picture,
+                model.Category,
+                _restaurantId
+            );
+
+            _menuService.UpdateMenuItem(updated);
+
+            _ingredientService.UpdateMenuItemIngredients(
+                model.Id,
+                model.IngredientQuantities.ToDictionary(kv => kv.Key, kv => (decimal)kv.Value)
+            );
+
+            TempData["Success"] = "Menu item updated successfully!";
+            return RedirectToAction("MenuItems");
+        }
+
+
+        [HttpPost]
+        public IActionResult Delete(int id)
+        {
+            bool success = _menuService.DeleteMenuItem(id);
+            if (!success)
+            {
+                Console.WriteLine("Error deleting menu item");
+            }
+            return RedirectToAction("MenuItems");
+        }
+
+        //private List<IngredientViewModel> LoadIngredients()
+        //{
+        //    var ingredients = _ingredientService.GetAllIngredients();
+        //    return ingredients.Select(i => new IngredientViewModel
+        //    {
+        //        Id = i.Id,
+        //        Name = i.Name,
+        //    }).ToList();
+        //}
     }
 }

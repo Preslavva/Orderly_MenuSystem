@@ -298,6 +298,40 @@ namespace MSSQL
                 throw new Exception($"Error while updating Ingredient for MenuItem: {ex.Message}", ex);
             }
         }
+        public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities)
+        {
+            try
+            {
+                using (var conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    var deleteCmd = new SqlCommand("DELETE FROM MenuItem_Ingredient WHERE MenuItemId = @MenuItemId", conn);
+                    deleteCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                    deleteCmd.ExecuteNonQuery();
+
+                    foreach (var kvp in ingredientQuantities)
+                    {
+                        var insertCmd = new SqlCommand(@"
+                    INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
+                    VALUES (@MenuItemId, @IngredientId, @Quantity)", conn);
+
+                        insertCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                        insertCmd.Parameters.AddWithValue("@IngredientId", kvp.Key);
+                        insertCmd.Parameters.AddWithValue("@Quantity", kvp.Value);
+
+                        insertCmd.ExecuteNonQuery();
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Failed to update ingredients for MenuItem: {ex.Message}", ex);
+            }
+        }
+
     }
 }
 

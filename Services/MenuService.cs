@@ -13,17 +13,22 @@ namespace Services
         {
             _menuItemRepository = menuItemRepository;
             _ingredientRepository = ingredientRepository;
-            
+
         }
 
         public int CreateMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
         {
-           return _menuItemRepository.AddMenuItem(name, description, price, isAvailable, picture, category, restaurantId);
+            return _menuItemRepository.AddMenuItem(name, description, price, isAvailable, picture, category, restaurantId);
+        }
+
+        public bool AddIngridientsToMenuItem(int menuId, int[] ingredientIds, int[] quantities)
+        {
+            return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities);
         }
 
         public List<MenuItem> LoadMenuItems(int restaurantId)
         {
-           return _menuItemRepository.LoadMenuItems(restaurantId)!;   
+            return _menuItemRepository.LoadMenuItems(restaurantId)!;
         }
 
         public MenuItem GetMenuItem(int id, int restaurantId)
@@ -33,12 +38,28 @@ namespace Services
 
         public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
         {
-            MenuItem menuItem = _menuItemRepository.GetMenuItemById(id, restaurantId);
-            List<MenuItemIngredient> ingredient = _ingredientRepository.GetIngredientsForMenuItem(id);
-          
-            menuItem.SetIngredient(ingredient);
+            var item = _menuItemRepository.GetMenuItemById(id, restaurantId);
 
-            return menuItem;
+            if (item == null)
+            {
+                return null; 
+            }
+
+            var ingredients = _ingredientRepository.GetIngredientsForMenuItem(id) ?? new List<MenuItemIngredient>();
+            item.SetIngredient(ingredients);
+
+            return item;
         }
+
+        public bool DeleteMenuItem(int menuItemId)
+        {
+            return _menuItemRepository.DeleteMenuItem(menuItemId);
+        }
+
+        public void UpdateMenuItem(MenuItem updatedItem)
+        {
+            _menuItemRepository.UpdateMenuItem(updatedItem);
+        }
+
     }
 }

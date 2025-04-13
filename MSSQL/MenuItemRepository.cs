@@ -4,48 +4,84 @@ using System.Configuration;
 using Models.Enums;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
+using System.Diagnostics;
+using System.Data;
 namespace MSSQL
 {
     public class MenuItemRepository : Repository
     {
         public MenuItemRepository(IConfiguration configuration) : base(configuration) { }
 
+        public bool AddMenuIngredients(int menuId, int[] ingredientIds, int[] quantities)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    using (SqlTransaction transaction = conn.BeginTransaction())
+                    {
+                        using (SqlCommand cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = transaction;
+                            cmd.CommandText = @"
+                            INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
+                            VALUES (@MenuItemId, @IngredientId, @Quantity)";
+
+                            cmd.Parameters.Add("@MenuItemId", SqlDbType.Int);
+                            cmd.Parameters.Add("@IngredientId", SqlDbType.Int);
+                            cmd.Parameters.Add("@Quantity", SqlDbType.Int);
+
+                            for (int i = 0; i < ingredientIds.Length; i++)
+                            {
+                                cmd.Parameters["@MenuItemId"].Value = menuId;
+                                cmd.Parameters["@IngredientId"].Value = ingredientIds[i];
+                                cmd.Parameters["@Quantity"].Value = quantities[i];
+
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+
+                        transaction.Commit();
+                    }
+
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
+            }
+        }
         public int AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
-                    int newItemId = 0;
                     conn.Open();
-                    string queryAddMenuItem = @"insert into MenuItem([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
-                                                 values(@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId)";
+                    string query = @"
+                INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
+                OUTPUT INSERTED.Id
+                VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId);";
 
-                    using (SqlCommand cmd = new SqlCommand(queryAddMenuItem, conn))
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Name", name);
                         cmd.Parameters.AddWithValue("@Description", description);
                         cmd.Parameters.AddWithValue("@Price", price);
                         cmd.Parameters.AddWithValue("@IsAvailable", isAvailable);
                         cmd.Parameters.AddWithValue("@Picture", picture);
-                        cmd.Parameters.AddWithValue("@Category", category);
-                        cmd.Parameters.AddWithValue("@RestaurantId",restaurantId);
+                        cmd.Parameters.AddWithValue("@Category", category.ToString());
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
-
-                       newItemId  = (int)cmd.ExecuteScalar();
+                        return Convert.ToInt32(cmd.ExecuteScalar());
                     }
-                    
-                    return newItemId; // need to check this.
                 }
-
             }
             catch (SqlException sqlEx)
             {
-                throw new Exception($"Database error occurred while adding customer: {sqlEx.Message}", sqlEx);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
+                throw new Exception($"Database error occurred while adding menu item: {sqlEx.Message}", sqlEx);
             }
         }
 
@@ -63,15 +99,15 @@ namespace MSSQL
 
                     using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
                     {
-                        getMenuItems.Parameters.AddWithValue("@RestaurantId",1);
+                        getMenuItems.Parameters.AddWithValue("@RestaurantId", 1);
                         using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
 
                             while (reader.Read())
                             {
-
+                                //Main Course
                                 string categoryValue = Convert.ToString(reader["Category"]);
-                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue);
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue.Replace(" ", "_"));
 
                                 menuItems.Add(new MenuItem(
 
@@ -83,7 +119,7 @@ namespace MSSQL
                                         Convert.ToString(reader["Picture"])!,
                                         categoryEnum,
                                         Convert.ToInt32(reader["RestaurantId"])
-                                ));                           
+                                ));
                             }
                         }
                     }
@@ -100,7 +136,6 @@ namespace MSSQL
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
-
         public MenuItem? GetMenuItemById(int id, int restaurantId)
         {
             try
@@ -131,13 +166,13 @@ namespace MSSQL
                                     Convert.ToString(reader["Picture"]),
                                     categoryEnum,
                                     Convert.ToInt32(reader["RestaurantId"])
- 
-                                    
+
+
                                 );
                             }
                         }
 
-                           
+
                     }
                 }
                 return null;
@@ -147,7 +182,6 @@ namespace MSSQL
                 throw new Exception($"Error while retrieving MenuItem by ID: {ex.Message}", ex);
             }
         }
-
         public void ChangeMenuItemAvailability(MenuItem menuItem, bool isAvailable)
         {
             try
@@ -192,6 +226,58 @@ namespace MSSQL
             catch (Exception ex)
             {
                 throw new Exception($"Error while updating MenuItem quantity: {ex.Message}", ex);
+            }
+        }
+        public bool DeleteMenuItem(int menuItemId)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM MenuItem WHERE Id = @Id";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", menuItemId);
+                    int rowsAffected = cmd.ExecuteNonQuery();
+                    return rowsAffected > 0;
+                }
+            }
+        }
+        public void UpdateMenuItem(MenuItem menuItem)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                UPDATE MenuItem SET 
+                    Name = @Name,
+                    Description = @Description,
+                    Price = @Price,
+                    IsAvailable = @IsAvailable,
+                    Picture = @Picture,
+                    Category = @Category,
+                    RestaurantId = @RestaurantId
+                WHERE Id = @Id";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Name", menuItem.Name);
+                        cmd.Parameters.AddWithValue("@Description", menuItem.Description);
+                        cmd.Parameters.AddWithValue("@Price", menuItem.Price);
+                        cmd.Parameters.AddWithValue("@IsAvailable", menuItem.IsAvailable);
+                        cmd.Parameters.AddWithValue("@Picture", menuItem.Picture);
+                        cmd.Parameters.AddWithValue("@Category", menuItem.Category.ToString());
+                        cmd.Parameters.AddWithValue("@RestaurantId", menuItem.RestaurantId);
+                        cmd.Parameters.AddWithValue("@Id", menuItem.Id);
+
+                        cmd.ExecuteNonQuery(); 
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred while updating menu item: {sqlEx.Message}", sqlEx);
             }
         }
 

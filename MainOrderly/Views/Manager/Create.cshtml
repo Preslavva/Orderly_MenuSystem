@@ -1,8 +1,10 @@
 ﻿@model CreateMenuItemViewModel
 @{
+
     ViewData["Title"] = "Menu Management";
     Layout = "_ManagerLayout";
 }
+
 <div class="content">
 
     <!-- Start Content-->
@@ -12,7 +14,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="page-title-box">
-                    
+
                     <h4 class="page-title">Add / Edit </h4>
                 </div>
             </div>
@@ -53,7 +55,15 @@
                             </div> *@
 
                             <div class="mb-3">
-                                <label asp-for="Category" class="form-label"></label>
+                                <label asp-for="Category" class="form-label">Category</label>
+
+
+                                @* <select asp-for="Category" class="form-control">
+                                    @foreach (var category in Model.Category.ToString())
+                                    {
+                                        <option value="@category">@category</option>
+                                    }
+                                </select> *@
                                 <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-control">
                                     <option value="">Select</option>
                                 </select>
@@ -90,16 +100,55 @@
                 </div> <!-- end col-->
             </div>
             <!-- end row -->
-                
+            @if (Model?.AvailableIngredients != null)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Choose</th>
+                            <th>Name</th>
+                            <th>Stock</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.AvailableIngredients.Count; i++)
+                        {
+                            var ingredient = Model.AvailableIngredients[i];
+                            <tr>
+                                <td>
+                                    <input type="checkbox"
+                                           name="SelectedIngredientIds"
+                                           value="@ingredient.Id"
+                                    @(Model.SelectedIngredientIds.Contains(ingredient.Id) ? "checked" : "") />
+                                </td>
+                                <td>@ingredient.Name</td>
+                                <td>@ingredient.FormattedStock</td>
+                                <td>
+                                    <input type="number"
+                                           name="IngredientQuantities[@ingredient.Id]"
+                                           step="0.01"
+                                           min="0"
+                                           class="form-control"
+                                           value="@(Model.IngredientQuantities.ContainsKey(ingredient.Id) ? Model.IngredientQuantities[ingredient.Id] : 0)" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+
+
+
             <div class="row">
-                <div class="col-12 text-center mb-3">
-                    <a asp-action="MenuItems" class="btn w-sm btn-light waves-effect">Cancel</a>
-                        <button type="submit" class="btn btn-success">Save</button>
-                    <button type="submit" formaction="@Url.Action("Delete")" class="btn w-sm btn-danger waves-effect waves-light">Delete</button>
-                </div>
+                <a asp-action="MenuItems" class="btn btn-light">Cancel</a>
+
+                <button type="submit" formaction="@Url.Action("Create", "Manager")" class="btn btn-success">Save</button>
+
+                <button type="submit" formaction="@Url.Action("Delete", "Manager", new { id = Model.Id })" class="btn btn-danger">Delete</button>
             </div>
         </form>
-        
+
         <!-- end row -->
         <!-- file preview template -->
         <div class="d-none" id="uploadPreviewTemplate">
@@ -127,4 +176,4 @@
 
     </div> <!-- container -->
 
-</div> <!-- content -->
+</div> <!-- content -->!-- content -->
