@@ -1,0 +1,62 @@
+﻿@model KitchenViewModelWithTimer
+<div class="order-column">
+    <h3 class="column-header new-orders-header">New Orders</h3>
+    @if (Model.CompositeKitchenViewModel.NewOrders != null && Model.CompositeKitchenViewModel.NewOrders.Any())
+    {
+        var ordersByTable = Model.CompositeKitchenViewModel.NewOrders.GroupBy(o => o.Table);
+        @foreach (var tableGroup in ordersByTable)
+        {
+            <div class="table-card">
+                <div class="table-header">
+                    <span class="table-name">Table @tableGroup.Key</span>
+                    <span class="order-count">@tableGroup.Count() orders</span>
+                </div>
+                @foreach (var orderViewModel in tableGroup)
+                {
+                    <div class="order-row">
+                        <div class="order-header">
+                            <span class="order-id">Order #@orderViewModel.Id</span>
+                            <span class="order-time">@orderViewModel.OrderTimestamp.ToString("HH:mm")</span>
+                        </div>
+                        @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
+                        {
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div class="order-items" style="flex: 1;">
+                                    @foreach (var item in orderViewModel.Items)
+                                    {
+                                        <div class="menu-item-row">
+                                            <div class="item-details">
+                                                <span class="item-quantity">@item.Quantity×</span>
+                                                <span class="item-name">@item.Name</span>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <!-- Button positioned on the right, vertically centered -->
+                                <div style="padding-left: 15px;">
+                                    <form method="post"
+                                          asp-action="UpdateOrderStatus"
+                                          hx-post="@Url.Action("UpdateOrderStatus", "Kitchen")"
+                                          hx-target="#processing-orders-column"
+                                          hx-swap="innerHTML">
+                                        <input type="hidden" name="id" value="@orderViewModel.Id" />
+                                        <input type="hidden" name="newStatus" value="@OrderStatus.PROCESSING" />
+                                        <button type="submit" class="btn btn-primary">Start Processing</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    @if (tableGroup.Last() != orderViewModel)
+                    {
+                        <hr class="separator" />
+                    }
+                }
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-message">No new orders at this time</div>
+    }
+</div>

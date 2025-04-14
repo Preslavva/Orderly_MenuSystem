@@ -17,8 +17,8 @@ namespace MSSQL
                 conn.Open();
 
                 string queryAddTable = """
-                            INSERT INTO [Table] (QrCode) 
-                            VALUES (@QrCode)
+                            INSERT INTO [Table] (QrCode, RestaurantId) 
+                            VALUES (@QrCode, 1)
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))

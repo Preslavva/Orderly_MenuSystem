@@ -13,7 +13,8 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
-
+        private static Dictionary<int, string> _tableGuidMap = new();
+        private int restaurantId = 1;
         public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
         {
             _logger = logger;
@@ -36,8 +37,40 @@ namespace MainOrderly.WebApp.Controllers
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);
+
+                if (!_tableGuidMap.ContainsKey(tableId))
+                {
+                    _tableGuidMap[tableId] = Guid.NewGuid().ToString();
+                }
+
+                string tableGuid = _tableGuidMap[tableId];
+
+                Response.Cookies.Append(
+                    "TableGuid",
+                    tableGuid,
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        HttpOnly = true, 
+                        Secure = true,
+                        IsEssential = true
+                    });
             }
-            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId); //from the dto i will create viewModel
+
+            if(!Request.Cookies.ContainsKey("SessiondID"))
+            {
+                string sessionID = Guid.NewGuid().ToString();
+                Response.Cookies.Append("SessiondID", sessionID,
+                    new CookieOptions
+                    {
+                        Expires = DateTime.Now.AddHours(1),
+                        HttpOnly = true, 
+                        Secure = true,
+                        IsEssential = true
+                    });
+            }
+
+            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId);
 
 
             if (!string.IsNullOrEmpty(searchTerm))
@@ -54,7 +87,7 @@ namespace MainOrderly.WebApp.Controllers
 
 
         [HttpGet]
-        public IActionResult GetItemInfo(int id, int restaurantId)
+        public IActionResult GetItemInfo(int id)
         {
             MenuItem? menuItem = _menuService.GetMenuItem(id, restaurantId); // get first the object as entities
 

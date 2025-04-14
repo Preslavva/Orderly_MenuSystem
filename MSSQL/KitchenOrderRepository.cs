@@ -14,11 +14,12 @@ namespace MSSQL
         public List<Order> GetOrderHeadersByStatus(OrderStatus status)
         {
             List<Order> orders = new();
-            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId";
+            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId AND isArchived = 0";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
             {
+               
                 command.Parameters.AddWithValue("@Status", status.ToString());
                 command.Parameters.AddWithValue("@RestaurantId", 1);
                 connection.Open();
@@ -76,7 +77,7 @@ namespace MSSQL
             List<OrderItem> orderItems = new List<OrderItem>();
 
             string query = @"
-            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Category, m.RestaurantId, om.Quantity
+            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Category, m.RestaurantId, om.Quantity, m.PrepTime
             FROM [Order_MenuItem] om
             INNER JOIN MenuItem m ON om.MenuItemId = m.Id
             WHERE om.OrderId = @OrderId";
@@ -98,11 +99,14 @@ namespace MSSQL
                         bool isAvailable = reader.GetBoolean(4);
                         string picture = reader.GetString(5);
                         string categoryString = reader.GetString(6);
-                        int quantity = reader.GetInt32(7);
+                        int quantity = reader.GetInt32(8);
                         Category category = (Category)Enum.Parse(typeof(Category), categoryString);
-                        int restaurantId = Convert.ToInt32(reader.GetInt32(8));
+                        int restaurantId = Convert.ToInt32(reader.GetInt32(7));
+                        int prepTime = reader["PrepTime"] != DBNull.Value
+    ? Convert.ToInt32(reader["PrepTime"])
+    : 0;
 
-                        MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId);
+                        MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId,prepTime);
                         OrderItem orderItem = new OrderItem(orderId, menuItemId, menuItem, quantity);
                         orderItems.Add(orderItem);
                     }
@@ -149,19 +153,27 @@ namespace MSSQL
             }
         }
 
-        public void RemoveOrder(int orderId)
+        public void RemoveOrder(List<int> orderId)
         {
             string sql = @"UPDATE [Order] SET isArchived=@isArchived WHERE Id = @Id";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@isArchived", 1);
-                cmd.Parameters.AddWithValue("@Id", orderId);
-
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                foreach (var order in orderId)
+                {
+                    cmd.Parameters.Clear();
+                    cmd.Parameters.AddWithValue("@Id", order);
+                    cmd.Parameters.AddWithValue("@isArchived", 1);
+                    cmd.ExecuteNonQuery();
+                }
+
+              
+               
             }
         }
+
+    
     }
 }

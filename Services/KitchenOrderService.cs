@@ -1,6 +1,4 @@
-﻿
-using Models;
-using Models.Entities;
+﻿using Models.Entities;
 using Models.Enums;
 using MSSQL;
 
@@ -10,6 +8,7 @@ namespace Services
     {
 
         private readonly KitchenOrderRepository _kitchenOrderRepository;
+        private readonly MenuItemRepository _menuItemRepository;
         public KitchenOrderService(KitchenOrderRepository kitchenOrderRepository)
         {
             _kitchenOrderRepository = kitchenOrderRepository;
@@ -35,15 +34,16 @@ namespace Services
             return orders;
         }
 
-
         public void UpdateOrderStatus(int orderId, OrderStatus orderStatus)
         {
             _kitchenOrderRepository.UpdateOrderStatus(orderId, orderStatus);
         }
 
-        public void RemoveOrderFromDashboard(int orderId)
+        public void RemoveOrderFromDashboard(List<int> orderId)
         {
             _kitchenOrderRepository.RemoveOrder(orderId);
         }
+
+    
     }
 }

@@ -13,6 +13,7 @@ namespace MainOrderly.WebApp.ViewModels
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
         public string Picture { get; set; }
+        public int PrepTime { get; set; }
         public Category Category { get; set; }
 
         [BindNever, ValidateNever]

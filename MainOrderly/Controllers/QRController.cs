@@ -28,8 +28,8 @@ namespace MainOrderly.WebApp.Controllers
             //new Table(4, _qrCodeService.GenerateQRCode($"https://localhost:5053/Home/Index?tableId=4")),
             //new Table(5, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=5")),
             //new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/Index?tableId=6")),
-            new Table(26, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=26")),
-            new Table(27, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=27")),
+            new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=6")),
+            //new Table(27, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=27")),
 
 
         };

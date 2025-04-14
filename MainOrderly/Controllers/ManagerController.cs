@@ -129,7 +129,9 @@ namespace MainOrderly.WebApp.Controllers
     model.IsAvailable,
     model.Picture,
     model.Category,
-    _restaurantId
+    _restaurantId,
+    model.PrepTime
+   
 );
 
             _menuService.UpdateMenuItem(updated);

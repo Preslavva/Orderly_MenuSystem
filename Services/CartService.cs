@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Models;
 using Models.Entities;
 using MSSQL;
@@ -22,7 +23,7 @@ namespace Services
             _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
 
-            string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
+            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
@@ -64,7 +65,15 @@ namespace Services
         public void SaveCart()
         {
             string jsonCart = JsonSerializer.Serialize(cart);
-            contextAccessor.HttpContext?.Session.SetString("Cart", jsonCart);
+            //contextAccessor.HttpContext?.Session.SetString("Cart", jsonCart);
+
+            contextAccessor.HttpContext?.Response.Cookies.Append("Cart", jsonCart, new CookieOptions
+            {
+                Expires = DateTime.Now.AddHours(1),
+                HttpOnly = true,
+                Secure = true,
+                IsEssential = true
+            });
         }
         // Overload that accepts a dictionary
         public void SaveCart(Dictionary<int, int> newCart)
@@ -88,17 +97,18 @@ namespace Services
             }
             return counter;
         }
-            
+         int restauranrId = 1;
         public Dictionary<MenuItem, int> GetCart()
         {
             Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
-            string? jsonCart = contextAccessor.HttpContext?.Session.GetString("Cart");
+
+            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
                 foreach (int key in cart.Keys)
                 {
-                    MenuItem? item = _menuItemRepository.GetMenuItemById(key,1);
+                    MenuItem? item = _menuItemRepository.GetMenuItemById(key, restauranrId);
                     
                     newCart[item] = cart[key];
                 }

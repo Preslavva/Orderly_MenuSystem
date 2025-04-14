@@ -13,13 +13,12 @@ namespace Models.Entities
         public decimal Price { get; }
         public bool IsAvailable { get; }
         public string Picture { get; }
-        public int Quantity { get; }
+        public int PrepTime { get; }
         public Category Category { get; set; }
         public List<Nutrition> Nutritions { get;}
         public List<MenuItemIngredient> Ingredients { get; private set; }
 
-     
-        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
+        public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId, int prepTime)
         {
             Id = id;
             Name = name;
@@ -30,6 +29,7 @@ namespace Models.Entities
             Category = category;
             Nutritions = new List<Nutrition>();
             RestaurantId = restaurantId;
+            PrepTime = prepTime;
         }
 
         public void SetIngredient(List<MenuItemIngredient> ingredients)
