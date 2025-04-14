@@ -1276,3 +1276,7 @@ footer {
     background-color: #1AD285;
     color: white;
 }
+
+.StatusButtons {
+    text-align: center;
+}

@@ -83,7 +83,10 @@ namespace MSSQL
                                         Convert.ToString(reader["Picture"])!,
                                         categoryEnum,
                                         Convert.ToInt32(reader["RestaurantId"]),
-                                        Convert.ToInt32(reader["PrepTime"])
+                                        reader["PrepTime"] != DBNull.Value
+    ? Convert.ToInt32(reader["PrepTime"])
+    : 0
+
                                 ));                           
                             }
                         }
