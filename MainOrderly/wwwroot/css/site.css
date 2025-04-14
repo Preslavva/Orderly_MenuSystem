@@ -201,66 +201,74 @@ hr {
     text-overflow: ellipsis;
 }
 
-.card-content .info-button {
-    position: absolute;
-    top: 0px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    color: #6B705C;
-    border-radius: 50%;
-    margin-left: 8px;
-    margin-bottom: 8px;
-}
-.card-content .info-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    transition: transform 0.2s ease-in-out;
-    color: #6B705C;
-    border-radius: 50%;
-}
 
-    .card-content .info-button:hover {
-        transform: scale(1.1);
-    }
 
 .card-content form {
     margin-top: 10px;
 }
 
-.card-content input[type="number"] {
-    width: 60px;
-    padding: 5px;
-    text-align: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+.buttons .info-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
     color: #6B705C;
+    border-radius: 50%;
+    margin: 5px;
 }
 
-.card-content .btn {
-    padding: 8px 12px;
-    font-size: 1rem;
-    border-radius: 5px;
+
+.card-content .info-button:hover {
+    transform: scale(1.1);
 }
 
-.card-content input[type="submit"] {
+
+.card-content form {
+    margin: 5px 0;
+}
+
+
+.buttons input[type="submit"] {
     background: #6B705C;
     border-radius: 5px;
     padding: 8px 12px;
     border: none;
     margin: 5px;
     color: white;
+    transition: transform 0.2s ease-in-out;
 }
 
-    .card-content input[type="submit"]:hover {
+    .buttons input[type="submit"]:hover {
         transform: scale(1.1);
     }
+
+
+.buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-close {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 20%;
+    font-size: 1.2rem;
+    color: #6B705C;
+    opacity: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-color: #6B705C;
+}
+
 
 .container .food-card {
     width: 100vw;
@@ -293,27 +301,7 @@ hr {
     margin: 0;
     padding: 0;
 }
-    .food-card .close-button {
-        position: absolute;
-        left: 7%;
-        transform: translateX(-100%);
-        margin-bottom: 25px;
-    }
-
-
-.btn-close {
-    position: absolute;
-    top: 10px;
-    left: 15px;
-    z-index: 10;
-    width: 30px;
-    height: 30px;
-    background-color: white;
-    border-radius: 20%;
-    font-size: 1.2rem;
-    color: #6B705C;
-    opacity: 1;
-}
+    
 .image-container2 {
     margin-top: 25px;
     height: 70vh;
@@ -370,8 +358,8 @@ p {
     font-size: 20px;
     color: grey;
 }
-    color: #6B705C;
-}
+   
+
 
 .nutrition-item {
     width: 70px;
@@ -1002,13 +990,12 @@ footer {
 }
 
 .category-tabs {
-    /*    position: sticky;
-    top: 0;*/
-    background-color: #f8f5ed; /* your page bg */
+    background-color: #f8f5ed;
     z-index: 999;
     border-bottom: 1px solid #ddd;
     margin-bottom: 20px;
     z-index: 1000;
+    overflow-x: auto;
 }
 
 

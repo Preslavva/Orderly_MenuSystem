@@ -16,7 +16,9 @@
                         <img src="@item.Picture" alt="@item.Name" class="img-fluid" />
                         <div class="card-content">
                             <h3>@item.Name</h3>
+                            <p>Price: €@item.Price</p>
 
+                            <div class="buttons">
                             <a asp-controller="Home" asp-action="GetItemInfo" asp-route-id="@item.Id" asp-route-category="@group.Key">
                                 <button class="info-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-info-square-fill" viewBox="0 0 16 16">
@@ -25,13 +27,14 @@
                                 </button>
                             </a>
 
-                            <p>Price: €@item.Price</p>
+                            
 
                             <form asp-controller="Home" asp-action="AddToCart">
                                 <input type="hidden" name="quantity" value="1" min="1" />
                                 <input type="submit" value="Add to cart" />
                                 <input type="hidden" name="id" value="@item.Id" />
                             </form>
+                            </div>
                         </div>
                     </div>
                 </div>
