@@ -68,6 +68,7 @@ header .logo {
 
 header {
     background-color: #f8f5ed;
+    z-index: 100;
 }
 
 button img {
@@ -92,6 +93,7 @@ meta[name = "format-detection"] {
 }
 
 .group {
+    margin-bottom: 10px;
     display: flex;
     align-items: center;
     line-height: 28px;
@@ -126,11 +128,12 @@ meta[name = "format-detection"] {
 }
 
 .card {
+    margin-top: 15px;
     display: flex;
     flex-direction: row;
     align-items: center;
     padding: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     border-radius: 10px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     background-color: #fff;
@@ -159,12 +162,18 @@ meta[name = "format-detection"] {
     padding: 15px;
 }
 
+
     .card-content h3 {
         margin-bottom: 5px;
         font-size: 1.5rem;
         color: #6B705C;
     }
 
+h2 {
+    color: #6B705C;
+    margin-bottom: 1px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
 h2 {
     color: #6B705C;
     margin-bottom: 1px;
@@ -176,6 +185,14 @@ hr {
 }
 
 .card-content p {
+    font-size: 1.2rem;
+    margin-bottom: 5px;
+    color: grey;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-content p {
     font-size: 1rem;
     margin-bottom: 5px;
     color: #6B705C;
@@ -184,6 +201,19 @@ hr {
     text-overflow: ellipsis;
 }
 
+.card-content .info-button {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+    color: #6B705C;
+    border-radius: 50%;
+    margin-left: 8px;
+    margin-bottom: 8px;
+}
 .card-content .info-button {
     position: absolute;
     top: 10px;
@@ -242,6 +272,12 @@ hr {
     background-color: #f8f5ed;
 }
 
+.image-container2 img {
+    object-fit: contain;
+    height: auto;
+    width: 100%;
+    display: block;
+}
 .food-card {
     display: flex;
     flex-direction: column;
@@ -252,6 +288,11 @@ hr {
     background: white;
 }
 
+.image-container2 {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
     .food-card .close-button {
         position: absolute;
         left: 7%;
@@ -260,15 +301,34 @@ hr {
     }
 
 
+.btn-close {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 10;
+    width: 30px;
+    height: 30px;
+    background-color: white;
+    border-radius: 20%;
+    font-size: 1.2rem;
+    color: #6B705C;
+    opacity: 1;
+}
 .image-container2 {
     margin-top: 25px;
     height: 70vh;
     overflow: hidden;
     margin-bottom: 1px;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-color: #6B705C;
     justify-content: center;
     align-items: center;
 }
+
+
 
     .image-container2 img {
         width: 100%;
@@ -291,6 +351,7 @@ hr {
     margin-top: 1px;
     width: 100%;
     height: 50vh;
+    height: 50vh;
     padding: 20px;
     display: flex;
     flex-direction: column;
@@ -304,11 +365,26 @@ h1 {
     color: #6B705C;
 }
 
+p {
+    font-family: 'Times New Roman', serif;
+    font-size: 20px;
+    color: grey;
+}
+    color: #6B705C;
+}
+
+.nutrition-item {
+    width: 70px;
+    mix-blend-mode: multiply;
+}
 .nutritions img {
     mix-blend-mode: multiply;
     width: 100px;
     height: 100px;
 }
+
+
+
 
 @media (max-width: 768px) {
     .food-card {
@@ -642,6 +718,24 @@ footer {
         background-color: #6B705C; /* Example greenish/brown tone */
         /* Give the footer a bit of height and padding */
         padding: 0.75rem 0;
+        /* Optional: curve the top corners to mimic a ?rounded? tab look */
+        border-top-left-radius: 16px;
+        border-top-right-radius: 16px;
+        /* Ensure content (buttons) do not overflow */
+        overflow: hidden;
+        /* Ensure the footer is above other elements if needed */
+        z-index: 9999;
+    }
+    .custom-footer {
+        /* Make footer stick to the bottom */
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        /* Adjust background color to match your design */
+        background-color: #6B705C; /* Example greenish/brown tone */
+        /* Give the footer a bit of height and padding */
+        padding: 0.75rem 0;
         /* Optional: curve the top corners to mimic a “rounded” tab look */
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
@@ -830,7 +924,7 @@ footer {
     }
 
     .PaymentContainer {
-        height:  45vh;
+        height: ?45vh;
     }
 
     #fancy-text {
@@ -888,7 +982,6 @@ footer {
         display: flex;
         gap: 10px;
         margin: 20px 0;
-        overflow-x: auto;
         padding: 10px 0;
     }
 
@@ -909,9 +1002,17 @@ footer {
 }
 
 .category-tabs {
+    /*    position: sticky;
+    top: 0;*/
+    background-color: #f8f5ed; /* your page bg */
+    z-index: 999;
     border-bottom: 1px solid #ddd;
     margin-bottom: 20px;
+    z-index: 1000;
 }
+
+
+
 
 .tab-list {
     list-style: none;
@@ -920,20 +1021,103 @@ footer {
     gap: 30px;
     padding: 0;
     margin: 0;
-    overflow-x: auto;
+    /*overflow-x: auto;*/
     white-space: nowrap;
 }
 
 
-.tab-item {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 10px 0;
-    border-bottom: 3px solid transparent;
+.tab-item a {
     color: #888;
+    text-decoration: none;
+    padding: 10px 15px;
+    display: inline-block;
     transition: color 0.2s, border-color 0.2s;
 }
 
+.tab-item.active a {
+    color: #6B705C;
+    font-weight: bold;
+    border-bottom: 3px solid #6B705C;
+}
+
+#searchContainer {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 50px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+#searchInput {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-sizing: border-box;
+    color: #6B705C;
+}
+
+    #searchInput:focus {
+        border-color: #6B705C;
+        outline: none;
+    }
+
+
+.allergen-icons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px; /* increased space from element above */
+}
+
+
+.allergen-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 60px;
+}
+
+    .allergen-icon img {
+        width: 60px; /* adjust size */
+        height: 60px;
+        object-fit: contain;
+        mix-blend-mode: multiply
+    }
+
+.toggle-ingredients-btn {
+    background-color: transparent;
+    color: #6B705C; /* Olive green like the rest of your UI */
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+    .toggle-ingredients-btn:hover {
+        text-decoration: underline;
+        color: #556050;
+    }
+
+.sticky-panel {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    background-color: #f8f5ed;
+    /* max-height: 100vh;
+    overflow-y: auto;*/
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Optional: make results scroll inside sticky panel */
+.scrollable-results {
+    max-height: 60vh; /* Adjust as needed */
+    overflow-y: auto;
+    margin-top: 10px;
+}
     .tab-item.active {
         color: #6B705C;
         border-bottom: 3px solid #6B705C;

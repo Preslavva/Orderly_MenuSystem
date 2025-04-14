@@ -4,6 +4,7 @@ using Services;
 using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
 using MainOrderly.WebApp.Helpers;
+using Models.Enums;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
@@ -13,14 +14,18 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
+        private readonly AllergenService _allergenService;
+
         private static Dictionary<int, string> _tableGuidMap = new();
         private int restaurantId = 1;
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService)
+
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService)
         {
             _logger = logger;
             _cartService = cartService;
             _menuService = menuService;
             _nutritionService = nutritionService;
+            _allergenService = allergenService;
 
         }
 
@@ -32,7 +37,7 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string searchTerm = "", int tableId = 0, int restaurantId = 0)
+        public IActionResult Index(Category? category = null, string searchTerm = "", int tableId = 0, int restaurantId = 0)
         {
             if (tableId > 0)
             {
@@ -72,39 +77,77 @@ namespace MainOrderly.WebApp.Controllers
 
             List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId);
 
+            var allMenuItems = _menuService.LoadMenuItems(restaurantId);
+
+            if (!category.HasValue)
+            {
+                category = Category.Starters;
+            }
+
+            ViewBag.AllCategories = allMenuItems
+                .Select(m => m.Category)
+                .Distinct()
+                .ToList();
 
             if (!string.IsNullOrEmpty(searchTerm))
             {
-                menu = menu.Where(m => m.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
-                           .ToList();
+                allMenuItems = allMenuItems
+                    .Where(m => m.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
             }
 
-            List<MenuItemViewModel> menuItemViewModel =  MappingHelper.ConvertToViewModels(menu);
+            if (category.HasValue)
+            {
+                allMenuItems = allMenuItems
+                    .Where(m => m.Category == category.Value)
+                    .ToList();
+            }
+
+            var menuItemViewModel = MappingHelper.ConvertToViewModels(allMenuItems);
             TempData["CartCount"] = _cartService.GetCartCount();
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_MenuItemList", menuItemViewModel);
+            }
 
             return View(menuItemViewModel);
         }
 
 
+
         [HttpGet]
-        public IActionResult GetItemInfo(int id)
+        public IActionResult GetItemInfo(int id, Category category)
         {
-            MenuItem? menuItem = _menuService.GetMenuItem(id, restaurantId); // get first the object as entities
+            var menuItem = _menuService.GetMenuItem(id, restaurantId);
+            var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
+        
 
             MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
-            List<Nutrition> nutritions = _nutritionService.GetNutritionForMenuItem(id); // same goes for nutritions.
+            var nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            var nutritionViewModels = nutritions
+                .Select(NutritionViewModel.ConvertToViewModel)
+                .ToList();
 
-            List<NutritionViewModel> nutritionViewModels = nutritions.Select(nutrition =>NutritionViewModel.ConvertToViewModel(nutrition)).ToList();
+            var allergens = _allergenService.GetAllergenForMenuItem(id);
+            var allergenViewModel = allergens
+                .Select(AllergenViewModel.ConvertToViewModel)
+                .ToList();
 
-            CompositeViewModelMenuItemNutrition compositeViewModel = new CompositeViewModelMenuItemNutrition
+            var compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
             {
-                MenuItemViewModel = menItemViewModel,
-                NutritionViewModel = nutritionViewModels
+                MenuItemViewModel = menuItemViewModel,
+                NutritionViewModel = nutritionViewModels,
+                AllergenViewModel = allergenViewModel
             };
+
+         
+            ViewBag.Category = category;
 
             return View("Info", compositeViewModel);
         }
+
 
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
@@ -125,19 +168,23 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+        //[HttpGet]
+        //public IActionResult Search(string term, Category? category)
+        //{
+        //    var allItems = _menuService.LoadMenuItems();
+        //    var menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
+        //    int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
+        //    var allItems = _menuService.LoadMenuItems(restaurantId);
 
-        [HttpGet]
-        public IActionResult Search(string term)
-        {
-            int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
-            var allItems = _menuService.LoadMenuItems(restaurantId);
+        //    List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
 
-            List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
+        //    var filtered = menuItemViewModel.Where(x =>
+        //        (string.IsNullOrWhiteSpace(term) || (!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase))) &&
+        //        (!category.HasValue || x.Category == category.Value)
+        //    ).ToList();
 
-            var filtered = string.IsNullOrWhiteSpace(term)? menuItemViewModel: menuItemViewModel.Where(x =>!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase)).ToList();
-
-            return PartialView("_MenuItemList", filtered);
-        }
+        //    return PartialView("_MenuItemList", filtered);
+        //}
 
 
     }

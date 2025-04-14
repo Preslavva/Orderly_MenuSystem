@@ -1,32 +1,69 @@
-﻿@model CompositeViewModelMenuItemNutrition
+﻿@model CompositeViewModelMenuItemNutritionAllergen
+@{
+    ViewBag.HideHeader = true;
+}
 
 @{
     ViewData["Title"] = "Info Page";
 }
-<div class="container d-flex justify-content-center align-items-center">
-    <div class="card food-card shadow-lg">
-        <a asp-controller="Home" asp-action="Index">
-            <button type="button" class="btn-close close-button" aria-label="Close"></button>
-        </a>
 
-        <div class="image-container2">
-            <img src="@Model.MenuItemViewModel.Picture" alt="@Model.MenuItemViewModel.Name">
-        </div>
+
+
+<div class="image-container2">
+    <a asp-controller="Home" asp-action="Index" asp-route-category="@ViewBag.Category" class="btn-close" aria-label="Close"></a>
+    <img src="@Model.MenuItemViewModel.Picture" alt="@Model.MenuItemViewModel.Name">
+</div>
+
+
 
         <div class="card-body2">
             <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
             <p class="card-text">@Model.MenuItemViewModel.Description</p>
 
-            <div class="nutritions row text-center">
-            @foreach (var nutrition in Model.NutritionViewModel)
-            {
-                <div class="col-6 col-md-3">
-                    <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name"> <br>
-                @nutrition.Value @((nutrition.Name == NutritionName.Kcal) ? "Kcal" : "g")
-                </div>
-            }
+            <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
+                Show Ingredients
+            </button>
+
+            <div class="collapse mt-2" id="ingredientsCollapse">
+                <p>Tomatoes, Olive Oil, Onion, Garlic, Basil, Salt, Pepper, Milk</p> @* for testing only *@
             </div>
+
+
+
+            <div class="nutritions d-flex flex-wrap justify-content-center">
+                @foreach (var nutrition in Model.NutritionViewModel)
+                {
+                    <div class="nutrition-item text-center m-1">
+                        <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name" style="width: 80px; height: 80px;" />
+                        <br />
+
+                        <div class="small">
+                            @if (nutrition.Name != NutritionName.Kcal)
+                            {
+                                @nutrition.Name <br />
+                            }
+                            else{
+                                @:Calories<br />
+                            }
+                            @nutrition.Value @(nutrition.Name == NutritionName.Kcal ? "Kcal" : "g")
+                        </div>
+                    </div>
+                }
             </div>
-        </div>
-    </div>
-</div>
+
+
+
+
+            <div class="allergen-icons">
+                @foreach (var allergen in Model.AllergenViewModel)
+                {
+                    <div class="allergen-icon">
+                        <img src="/images/@(allergen.Name).png" alt="@allergen.Name" />
+                    </div>
+                }
+            </div>
+
+            </div>
+   
+
+

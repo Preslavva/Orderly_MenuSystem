@@ -32,6 +32,10 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableService>();
             builder.Services.AddScoped<NutritionService>();
             builder.Services.AddScoped<TableRepository>();
+            builder.Services.AddScoped<AllergenRepository>();
+            builder.Services.AddScoped<AllergenService>();
+
+
             builder.Services.AddScoped<IngredientService>();
             builder.Services.AddScoped<IngredientRepository>();
             builder.Services.AddScoped<TimerHelpers>();

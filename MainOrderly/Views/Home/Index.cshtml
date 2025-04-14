@@ -1,31 +1,39 @@
-﻿@model List<MenuItemViewModel>
-
+﻿@using Models.Enums
+@model List<MenuItemViewModel>
 
 @{
-    // var categories = Enum.GetValues(typeof(Category)).Cast<Category>().ToList();
-    var categoriesFromModel = Model.Select(item => item.Category).Distinct().ToList();
+    var categoriesFromModel = (List<Category>)ViewBag.AllCategories;
+
     ViewData["Title"] = "Home Page";
 }
 
-<div class="category-tabs">
-    <ul class="tab-list">
-        <li class="tab-item active" data-category="All">All</li>
-        @foreach (var category in categoriesFromModel) // IS THIS ALLOWED??
-        {
-            <li class="tab-item" data-category="@category">@category.GetDisplayName()</li>
-        }
-    </ul>
+<div class="sticky-panel">
+    <div class="category-tabs">
+        <ul class="tab-list">
+            @foreach (var category in categoriesFromModel)
+            {
+                var selected = Context.Request.Query["category"];
+                var isActive = string.IsNullOrEmpty(selected) && category == Category.Starters
+                || selected == category.ToString()
+                ? "active" : "";
+
+                <li class="tab-item @isActive">
+                    <a href="@Url.Action("Index", new { category = category })">
+                        @category.GetDisplayName()
+                    </a>
+                </li>
+            }
+
+        </ul>
+
+    </div>
+
+    <input type="text" id="searchInput" placeholder="Search menu items..." autocomplete="off" />
+
+    <div id="searchResults" class="scrollable-results">
+        @await Html.PartialAsync("_MenuItemList", Model)
+    </div>
 </div>
-
-
-
-<input type="text" id="searchInput" placeholder="Search menu items..." autocomplete="off" class="form-control mb-3" />
-
-<div id="searchResults">
-    @await Html.PartialAsync("_MenuItemList", Model) 
-</div>
-
-
 
 @if (!string.IsNullOrWhiteSpace(ViewBag.ErrorMessage))
 {
