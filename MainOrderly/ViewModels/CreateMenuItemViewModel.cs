@@ -1,4 +1,6 @@
-﻿using Models.Entities;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Models.Entities;
 using Models.Enums;
 
 namespace MainOrderly.WebApp.ViewModels
@@ -12,6 +14,8 @@ namespace MainOrderly.WebApp.ViewModels
         public bool IsAvailable { get; set; }
         public string Picture { get; set; }
         public Category Category { get; set; }
+
+        [BindNever, ValidateNever]
         public List<IngredientViewModel> AvailableIngredients { get; set; }
         public List<int> SelectedIngredientIds { get; set; }
         public Dictionary<int, int> IngredientQuantities { get; set; }

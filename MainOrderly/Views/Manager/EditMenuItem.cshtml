@@ -21,9 +21,9 @@
         </div>
         <!-- end page title -->
 
+<form asp-action="Edit" asp-controller="Manager" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" />
 
-        <form asp-action="Edit" asp-controller="Manager" method="post" enctype="multipart/form-data">
-            <!-- <-- зміни тут -->
             <div class="row">
                 <div class="col-lg-6">
                     <div class="card">
@@ -56,14 +56,6 @@
 
                             <div class="mb-3">
                                 <label asp-for="Category" class="form-label">Category</label>
-
-
-                                @* <select asp-for="Category" class="form-control">
-                                    @foreach (var category in Model.Category.ToString())
-                                    {
-                                        <option value="@category">@category</option>
-                                    }
-                                </select> *@
                                 <select asp-for="Category" asp-items="Html.GetEnumSelectList<Category>()" class="form-control">
                                     <option value="">Select</option>
                                 </select>
@@ -100,6 +92,8 @@
                 </div> <!-- end col-->
             </div>
             <!-- end row -->
+          
+
             @if (Model?.AvailableIngredients != null)
             {
                 <table class="table">
@@ -119,9 +113,9 @@
                                 <td>
                                     <input type="checkbox"
                                            name="SelectedIngredientIds"
-                                           value="@(Model.IngredientQuantities != null && Model.IngredientQuantities.ContainsKey(ingredient.Id)
-         ? Model.IngredientQuantities[ingredient.Id]
-         : 0)" />
+                                           value="@ingredient.Id"
+                                    @(Model.IngredientQuantities != null && Model.IngredientQuantities.ContainsKey(ingredient.Id) ? "checked" : "") />
+
                                 </td>
                                 <td>@ingredient.Name</td>
                                 <td>@ingredient.FormattedStock</td>

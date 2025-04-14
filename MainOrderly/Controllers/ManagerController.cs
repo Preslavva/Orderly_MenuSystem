@@ -44,6 +44,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult Create(CreateMenuItemViewModel model)
         {
+            ModelState.Remove("AvailableIngredients");
             if (!ModelState.IsValid)
             {
                 return View("Create", model);
@@ -88,7 +89,6 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult Edit(int id)
         {
-
             var item = _menuService.GetMenuItemWithIngredient(id, _restaurantId);   
             var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(_restaurantId);
             if (item == null)
@@ -111,45 +111,49 @@ namespace MainOrderly.WebApp.Controllers
             return View("EditMenuItem", model);
 
         }
-
         [HttpPost]
         public IActionResult Edit(CreateMenuItemViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(_restaurantId);
-                model.AvailableIngredients = availableIngredients
-                    .Select(e => new IngredientViewModel { Id = e.Id, Name = e.Name })
-                    .ToList();
-
-                model.IngredientQuantities ??= new Dictionary<int, int>();
+                FillAvailableIngredients(model);
 
                 return View("EditMenuItem", model);
             }
 
-
             var updated = new MenuItem(
-                model.Id,
-                model.Name,
-                model.Description,
-                model.Price,
-                model.IsAvailable,
-                model.Picture,
-                model.Category,
-                _restaurantId
-            );
+    model.Id,
+    model.Name,
+    model.Description,
+    model.Price,
+    model.IsAvailable,
+    model.Picture,
+    model.Category,
+    _restaurantId
+);
 
             _menuService.UpdateMenuItem(updated);
 
-            _ingredientService.UpdateMenuItemIngredients(
-                model.Id,
-                model.IngredientQuantities.ToDictionary(kv => kv.Key, kv => (decimal)kv.Value)
-            );
+            var selectedIngredients = model.IngredientQuantities
+                ?.Where(kv => kv.Value > 0)
+                .ToDictionary(kv => kv.Key, kv => (decimal)kv.Value)
+                ?? new Dictionary<int, decimal>();
+
+            _ingredientService.UpdateMenuItemIngredients(model.Id, selectedIngredients);
 
             TempData["Success"] = "Menu item updated successfully!";
             return RedirectToAction("MenuItems");
+
         }
 
+
+        private void FillAvailableIngredients(CreateMenuItemViewModel model)
+        {
+            var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(_restaurantId);
+            model.AvailableIngredients = availableIngredients
+                .Select(e => new IngredientViewModel { Id = e.Id, Name = e.Name })
+                .ToList();
+        }
 
         [HttpPost]
         public IActionResult Delete(int id)
@@ -157,19 +161,32 @@ namespace MainOrderly.WebApp.Controllers
             bool success = _menuService.DeleteMenuItem(id);
             if (!success)
             {
-                Console.WriteLine("Error deleting menu item");
+                TempData["Error"] = "Could not delete the menu item.";
             }
+            else
+            {
+                TempData["Success"] = "Menu item deleted successfully.";
+            }
+
             return RedirectToAction("MenuItems");
         }
 
-        //private List<IngredientViewModel> LoadIngredients()
-        //{
-        //    var ingredients = _ingredientService.GetAllIngredients();
-        //    return ingredients.Select(i => new IngredientViewModel
-        //    {
-        //        Id = i.Id,
-        //        Name = i.Name,
-        //    }).ToList();
-        //}
+        [HttpGet]
+        public IActionResult AddIngredient()
+        {
+            //var ingredient = _ingredientService.AddIngredient(
+            //    model.Id,
+            //    model.Name,
+            //    model.Unit,
+            //    model.
+            //    )
+            return View();
+        }
+        [HttpGet]
+        public IActionResult IngredientList()
+        {
+            return View();
+        }
+
     }
 }

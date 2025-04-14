@@ -61,9 +61,9 @@ namespace MSSQL
                 {
                     conn.Open();
                     string query = @"
-                INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
-                OUTPUT INSERTED.Id
-                VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId);";
+               INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
+OUTPUT INSERTED.Id
+VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId);";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -75,7 +75,22 @@ namespace MSSQL
                         cmd.Parameters.AddWithValue("@Category", category.ToString());
                         cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
-                        return Convert.ToInt32(cmd.ExecuteScalar());
+                        object result = cmd.ExecuteScalar();
+                        Console.WriteLine("ExecuteScalar raw result: " + (result ?? "null"));
+
+                        if (result != null && result != DBNull.Value)
+                        {
+                            int id = Convert.ToInt32(result);
+                            Console.WriteLine("menuId = " + id);
+                            return id;
+                        }
+                        else
+                        {
+                            throw new Exception("No ID returned from ExecuteScalar()");
+                        }
+
+
+
                     }
                 }
             }
@@ -105,7 +120,6 @@ namespace MSSQL
 
                             while (reader.Read())
                             {
-                                //Main Course
                                 string categoryValue = Convert.ToString(reader["Category"]);
                                 Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue.Replace(" ", "_"));
 

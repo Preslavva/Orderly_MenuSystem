@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Models.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -146,27 +147,7 @@ namespace MSSQL
             }
         }
 
-        //public void DeleteIngredient(int id)
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = new SqlConnection(_connectionString))
-        //        {
-        //            conn.Open();
-        //            string query = "DELETE FROM Ingredient WHERE Id = @Id;";
-
-        //            using (SqlCommand cmd = new SqlCommand(query, conn))
-        //            {
-        //                cmd.Parameters.AddWithValue("@Id", id);
-        //                cmd.ExecuteNonQuery();
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new Exception($"Error while deleting Ingredient: {ex.Message}", ex);
-        //    }
-        //}
+      
 
         public List<MenuItemIngredient> GetIngredientsForMenuItem(int menuItemId)
         {
@@ -300,37 +281,56 @@ namespace MSSQL
         }
         public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities)
         {
+            if (menuItemId <= 0)
+                throw new ArgumentException("Invalid MenuItem ID.");
+
             try
             {
                 using (var conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-
-                    var deleteCmd = new SqlCommand("DELETE FROM MenuItem_Ingredient WHERE MenuItemId = @MenuItemId", conn);
-                    deleteCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
-                    deleteCmd.ExecuteNonQuery();
-
-                    foreach (var kvp in ingredientQuantities)
+                    using (var transaction = conn.BeginTransaction())
                     {
-                        var insertCmd = new SqlCommand(@"
-                    INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
-                    VALUES (@MenuItemId, @IngredientId, @Quantity)", conn);
+                        try
+                        {
+                            var deleteCmd = new SqlCommand(
+                                "DELETE FROM MenuItem_Ingredient WHERE MenuItemId = @MenuItemId", conn, transaction);
+                            deleteCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                            deleteCmd.ExecuteNonQuery();
 
-                        insertCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
-                        insertCmd.Parameters.AddWithValue("@IngredientId", kvp.Key);
-                        insertCmd.Parameters.AddWithValue("@Quantity", kvp.Value);
+                            if (ingredientQuantities != null && ingredientQuantities.Any())
+                            {
+                                foreach (var kvp in ingredientQuantities)
+                                {
+                                    var insertCmd = new SqlCommand(@"
+                                INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
+                                VALUES (@MenuItemId, @IngredientId, @Quantity)", conn, transaction);
 
-                        insertCmd.ExecuteNonQuery();
+                                    insertCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                                    insertCmd.Parameters.AddWithValue("@IngredientId", kvp.Key);
+                                    insertCmd.Parameters.Add("@Quantity", SqlDbType.Decimal).Value = kvp.Value;
+
+                                    insertCmd.ExecuteNonQuery();
+                                }
+                            }
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            throw new Exception("Failed to update ingredients. Transaction rolled back: " + ex.Message, ex);
+                        }
                     }
                 }
-
-                return true;
             }
             catch (Exception ex)
             {
-                throw new Exception($"Failed to update ingredients for MenuItem: {ex.Message}", ex);
+                throw new Exception($"Error updating MenuItem ingredients: {ex.Message}", ex);
             }
         }
+
 
     }
 }
