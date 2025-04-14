@@ -102,7 +102,9 @@ namespace MSSQL
                         int quantity = reader.GetInt32(8);
                         Category category = (Category)Enum.Parse(typeof(Category), categoryString);
                         int restaurantId = Convert.ToInt32(reader.GetInt32(7));
-                        int prepTime = Convert.ToInt32(reader.GetInt32(9));
+                        int prepTime = reader["PrepTime"] != DBNull.Value
+    ? Convert.ToInt32(reader["PrepTime"])
+    : 0;
 
                         MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId,prepTime);
                         OrderItem orderItem = new OrderItem(orderId, menuItemId, menuItem, quantity);

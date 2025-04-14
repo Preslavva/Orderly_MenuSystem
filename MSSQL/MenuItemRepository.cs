@@ -1,9 +1,8 @@
-﻿using Microsoft.Data.SqlClient;
-using System.Reflection;
-using System.Configuration;
-using Models.Enums;
+﻿using System.Reflection;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
+using Models.Enums;
 namespace MSSQL
 {
     public class MenuItemRepository : Repository
@@ -29,12 +28,12 @@ namespace MSSQL
                         cmd.Parameters.AddWithValue("@IsAvailable", isAvailable);
                         cmd.Parameters.AddWithValue("@Picture", picture);
                         cmd.Parameters.AddWithValue("@Category", category);
-                        cmd.Parameters.AddWithValue("@RestaurantId",restaurantId);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
 
-                       newItemId  = (int)cmd.ExecuteScalar();
+                        newItemId = (int)cmd.ExecuteScalar();
                     }
-                    
+
                     return newItemId; // need to check this.
                 }
 
@@ -63,7 +62,7 @@ namespace MSSQL
 
                     using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
                     {
-                        getMenuItems.Parameters.AddWithValue("@RestaurantId",1);
+                        getMenuItems.Parameters.AddWithValue("@RestaurantId", 1);
                         using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
 
@@ -87,7 +86,7 @@ namespace MSSQL
     ? Convert.ToInt32(reader["PrepTime"])
     : 0
 
-                                ));                           
+                                ));
                             }
                         }
                     }
@@ -135,14 +134,15 @@ namespace MSSQL
                                     Convert.ToString(reader["Picture"]),
                                     categoryEnum,
                                     Convert.ToInt32(reader["RestaurantId"]),
-                                    Convert.ToInt32(reader["PrepTime"])
- 
-                                    
+                                                                           reader["PrepTime"] != DBNull.Value
+    ? Convert.ToInt32(reader["PrepTime"])
+    : 0
+
                                 );
                             }
                         }
 
-                           
+
                     }
                 }
                 return null;
@@ -199,7 +199,7 @@ namespace MSSQL
                 throw new Exception($"Error while updating MenuItem quantity: {ex.Message}", ex);
             }
         }
-        
+
 
 
     }
