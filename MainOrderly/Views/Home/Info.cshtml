@@ -20,13 +20,16 @@
             <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
             <p class="card-text">@Model.MenuItemViewModel.Description</p>
 
-            <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
-                Show Ingredients
-            </button>
+           @if (@Model.MenuItemViewModel.Category!=Category.Drinks)
+            {
+                <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
+                    Show Ingredients
+                </button>
+            }
 
-            <div class="collapse mt-2" id="ingredientsCollapse">
-                <p>Tomatoes, Olive Oil, Onion, Garlic, Basil, Salt, Pepper, Milk</p> @* for testing only *@
-            </div>
+                      <div class="collapse mt-2" id="ingredientsCollapse">
+                        @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
+                      </div>
 
 
 

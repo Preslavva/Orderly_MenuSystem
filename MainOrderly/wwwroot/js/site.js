@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
         searchInput.addEventListener('input', function () {
             const term = searchInput.value;
 
-            fetch(/Home/Index ? searchTerm = ${ encodeURIComponent(term) } & category=${ encodeURIComponent(category) }, {
+            fetch(`/Home/Index?searchTerm=${encodeURIComponent(term)}&category=${encodeURIComponent(category)}`, {
                 headers: { "X-Requested-With": "XMLHttpRequest" }
             })
                 .then(response => response.text())
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
 
 
 function pollOrderStatus(orderId) {

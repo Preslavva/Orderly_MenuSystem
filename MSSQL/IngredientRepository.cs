@@ -332,6 +332,43 @@ namespace MSSQL
         }
 
 
+        public List<Ingredient> GetIngredientsForItem(int menuItemId)
+        {
+            List<Ingredient> Ingredients = new List<Ingredient>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                                    select [Name] from Ingredient as i
+                                    inner join MenuItem_Ingredient as mi
+                                    on i.Id = mi.IngredientId
+                                    where mi.MenuItemId = @menuId
+                                    ";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@menuId", menuItemId);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                Ingredients.Add( new Ingredient(
+                                    Convert.ToString(reader["Name"])!
+                                ));
+                            }
+                        }
+                    }
+                }
+                return Ingredients;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while retrieving Ingredients for MenuItem: {ex.Message}", ex);
+            }
+        }
     }
 }
 

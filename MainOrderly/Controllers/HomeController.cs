@@ -5,6 +5,7 @@ using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
 using MainOrderly.WebApp.Helpers;
 using Models.Enums;
+using Microsoft.AspNetCore.Components.Forms;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
@@ -15,17 +16,19 @@ namespace MainOrderly.WebApp.Controllers
         private readonly MenuService _menuService;
         private readonly NutritionService _nutritionService;
         private readonly AllergenService _allergenService;
+        private readonly IngredientService _ingredientService;
 
         private static Dictionary<int, string> _tableGuidMap = new();
         private int restaurantId = 1;
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService)
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService)
         {
             _logger = logger;
             _cartService = cartService;
             _menuService = menuService;
             _nutritionService = nutritionService;
             _allergenService = allergenService;
+            _ingredientService = ingredientService; 
 
         }
 
@@ -135,11 +138,19 @@ namespace MainOrderly.WebApp.Controllers
                 .Select(AllergenViewModel.ConvertToViewModel)
                 .ToList();
 
+            var ingredients = _ingredientService.GetIngredientsForItem(id);
+            var ingredientViewModel= ingredients
+                .Select(IngredientViewModel.ConvertToViewModel)
+                .ToList();
+
+
+
             var compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
             {
                 MenuItemViewModel = menuItemViewModel,
                 NutritionViewModel = nutritionViewModels,
-                AllergenViewModel = allergenViewModel
+                AllergenViewModel = allergenViewModel,
+                IngredientViewModel = ingredientViewModel
             };
 
          
@@ -171,12 +182,12 @@ namespace MainOrderly.WebApp.Controllers
         //[HttpGet]
         //public IActionResult Search(string term, Category? category)
         //{
-        //    var allItems = _menuService.LoadMenuItems();
+        //    var allItems = _menuService.LoadMenuItems(1);
         //    var menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
         //    int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
-        //    var allItems = _menuService.LoadMenuItems(restaurantId);
+        //    var allItem = _menuService.LoadMenuItems(1);
 
-        //    List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
+        //    List<MenuItemViewModel> menuItemModel = MappingHelper.ConvertToViewModels(allItems);
 
         //    var filtered = menuItemViewModel.Where(x =>
         //        (string.IsNullOrWhiteSpace(term) || (!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase))) &&

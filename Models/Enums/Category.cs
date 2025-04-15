@@ -8,11 +8,11 @@ namespace Models.Enums
         [Display(Name = "Starters")]
         Starters,
 
-        [Display(Name = "Main Course")]
-        Main_Course,
-
         [Display(Name = "Side Dishes")]
         Side_Dishes,
+
+        [Display(Name = "Main Course")]
+        Main_Course,
 
         [Display(Name = "Desserts")]
         Desserts,
