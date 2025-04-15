@@ -319,10 +319,12 @@ hr {
 
 
 
+
     .image-container2 img {
-        width: 100%;
+        width: 90%;
         height: 100%;
         object-fit: cover;
+        border-radius: 10%;
     }
 
 @media (max-width: 768px) {
@@ -331,9 +333,11 @@ hr {
     }
 
         .image-container2 img {
-            object-fit: contain;
+            object-fit: cover;
         }
 }
+
+
 
 
 .card-body2 {

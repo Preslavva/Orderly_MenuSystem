@@ -3,9 +3,8 @@
 
 @{
     var categoriesFromModel = ((List<Category>)ViewBag.AllCategories)
-    .OrderBy(c => c == Category.Starters ? 0 : 1)
-    .ToList();
-
+        .OrderBy(c => c == Category.Starters ? 0 : 1)
+        .ToList();
 
     ViewData["Title"] = "Home Page";
 }
@@ -17,8 +16,7 @@
             {
                 var selected = Context.Request.Query["category"];
                 var isActive = string.IsNullOrEmpty(selected) && category == Category.Starters
-                || selected == category.ToString()
-                ? "active" : "";
+                || selected == category.ToString() ? "active" : "";
 
                 <li class="tab-item @isActive">
                     <a href="@Url.Action("Index", new { category = category })">
@@ -26,9 +24,7 @@
                     </a>
                 </li>
             }
-
         </ul>
-
     </div>
 
     <input type="text" id="searchInput" placeholder="Search menu items..." autocomplete="off" />
@@ -44,7 +40,4 @@
         <strong>@ViewBag.ErrorMessage</strong>
     </div>
 }
-
-
-
 
