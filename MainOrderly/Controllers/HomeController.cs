@@ -182,12 +182,12 @@ namespace MainOrderly.WebApp.Controllers
         //[HttpGet]
         //public IActionResult Search(string term, Category? category)
         //{
-        //    var allItems = _menuService.LoadMenuItems();
+        //    var allItems = _menuService.LoadMenuItems(1);
         //    var menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
         //    int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
-        //    var allItems = _menuService.LoadMenuItems(restaurantId);
+        //    var allItem = _menuService.LoadMenuItems(1);
 
-        //    List<MenuItemViewModel> menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
+        //    List<MenuItemViewModel> menuItemModel = MappingHelper.ConvertToViewModels(allItems);
 
         //    var filtered = menuItemViewModel.Where(x =>
         //        (string.IsNullOrWhiteSpace(term) || (!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase))) &&
