@@ -24,9 +24,9 @@
                 Show Ingredients
             </button>
 
-            <div class="collapse mt-2" id="ingredientsCollapse">
-                <p>Tomatoes, Olive Oil, Onion, Garlic, Basil, Salt, Pepper, Milk</p> @* for testing only *@
-            </div>
+                      <div class="collapse mt-2" id="ingredientsCollapse">
+                        @string.Join("s, ", Model.IngredientViewModel.Select(i => i.Name))
+                      </div>
 
 
 

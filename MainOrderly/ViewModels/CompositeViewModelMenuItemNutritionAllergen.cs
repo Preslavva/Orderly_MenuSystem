@@ -7,5 +7,7 @@
 
         public List<AllergenViewModel> AllergenViewModel { get; set; }
 
+        public List<IngredientViewModel> IngredientViewModel { get; set; }  
+
     }
 }

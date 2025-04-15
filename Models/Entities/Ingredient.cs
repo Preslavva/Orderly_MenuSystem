@@ -34,5 +34,10 @@ namespace Models.Entities
             MinimumStockLevel = minimumStockLevel;
             RestaurantId= restaurantId;
         }
+
+        public Ingredient(string name)
+        {
+            Name = name;
+        }
     }
 }

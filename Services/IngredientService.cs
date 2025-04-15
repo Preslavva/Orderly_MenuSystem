@@ -27,6 +27,11 @@ namespace Services
             return _ingredientRepository.GetIngredientsByRestaurantId(restaurantId);
         }
 
+        public List<Ingredient> GetIngredientsForItem(int menuItemId)
+        {
+            return _ingredientRepository.GetIngredientsForItem(menuItemId);
+        }
+
         public int AddIngredient(Ingredient ingredient)
         {
             return _ingredientRepository.AddIngredient(ingredient);
