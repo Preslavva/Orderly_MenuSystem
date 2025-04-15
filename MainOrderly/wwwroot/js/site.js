@@ -84,9 +84,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    document.addEventListener("DOMContentLoaded", function() {
-        var activeTabLink = document.querySelector(".tab-list .tab-item.active a");
-    if (activeTabLink) {
-        activeTabLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-        }
-    });
