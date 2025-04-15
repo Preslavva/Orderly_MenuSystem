@@ -25,7 +25,7 @@
             </button>
 
                       <div class="collapse mt-2" id="ingredientsCollapse">
-                        @string.Join("s, ", Model.IngredientViewModel.Select(i => i.Name))
+                        @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
                       </div>
 
 
