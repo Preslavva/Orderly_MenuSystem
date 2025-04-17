@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
 using Models.Enums;
-using System.Configuration;
 
 
 namespace MSSQL

@@ -9,15 +9,17 @@ namespace MainOrderly.WebApp.Controllers
     public class CartController : Controller
     {
         private readonly CartService _cartService;
+        private readonly HistoryService _historyService;
 
         private Dictionary<MenuItem, int> GetOrderList()
         {
             return _cartService.GetCart();
         }
 
-        public CartController(CartService cartService)
+        public CartController(CartService cartService, HistoryService historyService)
         {
             _cartService = cartService;
+            _historyService = historyService;
         }
 
         /// <summary>
@@ -105,6 +107,7 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
+            _historyService.SaveOrderIds(newOrderId);
 
             _cartService.SaveCart(new Dictionary<int, int>());
 

@@ -1459,3 +1459,25 @@ footer {
 .StatusButtons {
     text-align: center;
 }
+
+.order-status {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.badge.order-status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.order-history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

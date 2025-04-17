@@ -1,5 +1,43 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<OrderHistoryViewModel>
+
 @{
+    ViewData["Title"] = "Order History";
 }
+
+<div class="container mt-4">
+    <h2 class="mb-4">Your Order History</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="order-history-container">
+            @foreach (var group in Model.GroupBy(order => order.Id))
+            {
+                <div class="order-summary-box">
+                    <div class="order-id">
+                        <strong>Order ID: </strong>@group.Key
+                    </div>
+                    <div class="order-details">
+                        @foreach (var item in group)
+                        {
+                            <p>@item.Quantity x @item.Name</p>
+                            <p>Price: @item.Price.ToString("0.00")</p>
+                            <p>Subtotal: @item.SubTotal.ToString("0.00")</p>
+                        }
+                    </div>
+
+                    <div class="order-status">
+                        <div class="badge order-status-badge" data-order-id="@group.Key">
+                            @group.First().Status
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div>
+            No order history found.
+        </div>
+    }
+</div>

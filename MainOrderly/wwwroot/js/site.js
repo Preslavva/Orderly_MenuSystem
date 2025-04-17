@@ -24,10 +24,51 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function pollOrderStatus(orderId) {
     fetch(`/Kitchen/GetOrderStatus?orderId=${orderId}`)
-        .then(response => response.text())
-        .then(status => updateStatusHighlight(status.trim()))
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(status => {
+            const trimmedStatus = status.trim();
+            console.log(`Polled status for order ${orderId}:`, trimmedStatus);
+
+            updateBadgeColor(orderId, trimmedStatus);
+            updateStatusHighlight(trimmedStatus);
+        })
         .catch(err => console.error("Error fetching status", err));
 }
+
+function updateBadgeColor(orderId, status) {
+    const badge = document.querySelector(`.badge[data-order-id="${orderId}"]`);
+    if (!badge) return;
+
+    badge.style.backgroundColor = '';
+    badge.style.color = '';
+
+    switch (status) {
+        case 'NEW_ORDER':
+            badge.style.backgroundColor = '#ffc107';
+            badge.style.color = '#000000';
+            break;
+        case 'PROCESSING':
+            badge.style.backgroundColor = '#0d6efd';
+            badge.style.color = '#ffffff';
+            break;
+        case 'COMPLETED':
+            badge.style.backgroundColor = '#198754';
+            badge.style.color = '#ffffff';
+            break;
+        default:
+            badge.style.backgroundColor = '#6c757d';
+            badge.style.color = '#ffffff';
+            break;
+    }
+
+    badge.textContent = status;
+}
+
 
 function updateStatusHighlight(currentStatus) {
     console.log("Updating Status Highlight for:", currentStatus);
@@ -57,16 +98,15 @@ function updateStatusHighlight(currentStatus) {
         }
 
         const svg = btn.querySelector('svg');
-        if (status === 'PROCESSING' || status === 'COMPLETED') {
+        if (svg && (status === 'PROCESSING' || status === 'COMPLETED')) {
             svg.removeAttribute('fill');
             svg.removeAttribute('stroke');
 
             const paths = svg.querySelectorAll('path');
             paths.forEach(path => {
-                path.style.fill = isSelected ? '#ffffff' : '#000000';  
-                path.style.stroke = isSelected ? '#ffffff' : '#000000'; 
+                path.style.fill = isSelected ? '#ffffff' : '#000000';
+                path.style.stroke = isSelected ? '#ffffff' : '#000000';
             });
-
         }
     });
 }
@@ -80,7 +120,16 @@ document.addEventListener('DOMContentLoaded', () => {
             setInterval(() => pollOrderStatus(orderId), 5000);
         }
     }
+
+    document.querySelectorAll('.badge[data-order-id]').forEach(badge => {
+        const orderId = badge.getAttribute('data-order-id');
+        if (orderId) {
+            pollOrderStatus(orderId);
+            setInterval(() => pollOrderStatus(orderId), 5000);
+        }
+    });
 });
+
 
 
 document.addEventListener("DOMContentLoaded", function () {
