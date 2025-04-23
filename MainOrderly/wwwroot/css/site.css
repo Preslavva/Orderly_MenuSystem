@@ -573,6 +573,7 @@ footer {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     border: none;
+    border-radius: 10%;
 }
 
     .btn-order-now:hover {
