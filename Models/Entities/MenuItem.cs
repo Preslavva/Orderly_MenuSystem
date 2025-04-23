@@ -10,7 +10,7 @@ namespace Models.Entities
         public int RestaurantId { get; set; }
         public string Name { get;  }
         public string Description { get;  }
-        public decimal Price { get; }
+        public decimal Price { get; private set; }
         public bool IsAvailable { get; }
         public string Picture { get; }
         public int PrepTime { get; }
@@ -35,6 +35,11 @@ namespace Models.Entities
         public void SetIngredient(List<MenuItemIngredient> ingredients)
         {
             Ingredients = ingredients;
+        }
+
+        public void SetMenuItemPrice(decimal price)
+        {
+            Price = price;
         }
     }
 }

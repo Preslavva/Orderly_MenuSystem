@@ -17,11 +17,12 @@ namespace MainOrderly.WebApp.Controllers
         private readonly NutritionService _nutritionService;
         private readonly AllergenService _allergenService;
         private readonly IngredientService _ingredientService;
+        private readonly TableService _tableService;
 
         private static Dictionary<int, string> _tableGuidMap = new();
         private int restaurantId = 1;
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService)
+        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService, TableService tableService)
         {
             _logger = logger;
             _cartService = cartService;
@@ -49,7 +50,7 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string token="", string searchTerm = "", int restaurantId = 1)
+        public IActionResult Index(Category? category = null,string token="", string searchTerm = "", int restaurantId = 1)
         {
             if (!string.IsNullOrEmpty(token))
             {
