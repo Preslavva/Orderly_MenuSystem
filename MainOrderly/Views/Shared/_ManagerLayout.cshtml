@@ -125,7 +125,7 @@
         <!-- ============================================================== -->
 
         <div class="content-page">
-
+       
             <!-- ========== Topbar Start ========== -->
             <div class="navbar-custom">
                 <div class="topbar">
@@ -159,10 +159,28 @@
 
                     <ul class="topbar-menu d-flex align-items-center">
                         <!-- Topbar Search Form -->
+
                         <!-- Light/Dark Mode Toggle Button -->
                         <li class="d-none d-sm-inline-block">
                             <div class="nav-link waves-effect waves-light" id="light-dark-mode" style="cursor: pointer;">
                                 🌙
+                            </div>
+                        </li>
+
+                        <li class="dropdown">
+                            <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                                🔔 <span class="badge bg-danger rounded-pill" id="notification-count"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px;">
+                                <h6 class="f-18 mb-0 dropdown-title p-3 border-bottom">Notifications</h6>
+                                <div class="notification-card" style="max-height: 300px; overflow-y: auto;">
+                                    <ul id="notification-list" class="list-unstyled m-0 p-0">
+                                        <li class="p-3">Loading...</li>
+                                    </ul>
+                                </div>
+                                <div class="p-2 text-center border-top">
+                                    <a href="/Manager/Notifications" class="btn btn-sm btn-light">View All</a>
+                                </div>
                             </div>
                         </li>
 
@@ -269,6 +287,39 @@
         };
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch("/Manager/GetNotifications")
+                .then(resp => resp.json())
+                .then(data => {
+                    const list = document.getElementById("notification-list");
+                    const count = document.getElementById("notification-count");
+                    list.innerHTML = "";
+
+                    if (data.length === 0) {
+                        list.innerHTML = '<li class="p-3 text-center text-muted">No new notifications</li>';
+                        count.style.display = "none";
+                        return;
+                    }
+
+                    count.textContent = data.length;
+                    count.style.display = "inline-block";
+
+                    data.forEach(notif => {
+                        list.innerHTML += `
+                            <li class="border-bottom p-3">
+                                <div><strong>${notif.title}</strong></div>
+                                <div class="small text-muted">${notif.time}</div>
+                                <a href="${notif.link}" class="btn btn-sm btn-outline-primary mt-1">View</a>
+                            </li>
+                        `;
+                    });
+                })
+                .catch(err => {
+                    console.error("Failed to load notifications:", err);
+                });
+        });
+    </script>
 
 </body>
 </html>

@@ -174,10 +174,17 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddIngredient(IngredientViewModel model)
+        public IActionResult AddIngredient([FromBody] IngredientViewModel model)
         {
             if (!ModelState.IsValid)
-                return BadRequest("Invalid input");
+            {
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+
+                return BadRequest(string.Join("; ", errors));
+            }
 
             var ingredient = new Ingredient(
                 id: 0,
@@ -185,13 +192,13 @@ namespace MainOrderly.WebApp.Controllers
                 unit: model.Unit,
                 quantityInStock: model.QuantityInStock,
                 minimumStockLevel: model.MinimumStockLevel,
-                restaurantId: 1 
+                restaurantId: 1
             );
 
             _ingredientService.AddIngredient(ingredient);
-
-            return Ok(); 
+            return Json(new { success = true });
         }
+
 
         [HttpGet]
         public IActionResult IngredientList()
@@ -227,6 +234,52 @@ namespace MainOrderly.WebApp.Controllers
             });
         }
 
+        [HttpPut]
+        public IActionResult UpdateIngredient([FromBody] IngredientViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid input");
+
+            var updated = new Ingredient(
+                id: model.Id,
+                name: model.Name,
+                unit: model.Unit,
+                quantityInStock: model.QuantityInStock,
+                minimumStockLevel: model.MinimumStockLevel,
+                restaurantId: 1
+            );
+
+            _ingredientService.UpdateIngredient(updated);
+
+            return Json(new { success = true });
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteIngredient(int id)
+        {
+            var ingredient = _ingredientService.GetIngredientById(id);
+            if (ingredient == null)
+                return NotFound("Ingredient not found.");
+
+            _ingredientService.DeleteIngredient(id);
+            return Json(new { success = true });
+        }
+
+        [HttpGet]
+        public IActionResult GetNotifications()
+        {
+            int restaurantId = 1; 
+            var lowStock = _ingredientService.GetLowStockIngredients(restaurantId);
+
+            var notifications = lowStock.Select(i => new
+            {
+                title = $"Low stock: {i.Name}",
+                time = DateTime.Now.ToString("HH:mm, dd MMM"),
+                link = "/Manager/IngredientList"
+            }).ToList();
+
+            return Json(notifications);
+        }
 
     }
 }
