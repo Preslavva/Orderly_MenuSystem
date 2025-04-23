@@ -31,17 +31,29 @@ namespace MainOrderly.WebApp.Controllers
             new Table(6, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=1")),
             //new Table(27, _qrCodeService.GenerateQRCode($"{_baseUrl}/Home/LoadingPage?tableId=27")),
 
+            //    foreach (Table table in tables)
+            //    {
+            //        _tableService.CreateAddTableDB(table);
+            //    }
 
-        };
+            var tables = new List<Table>();
 
-            foreach (Table table in tables)
+            for (int i = 1; i <= 3; i++)
             {
+                string guidToken = Guid.NewGuid().ToString();
+                string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
+                byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
+
+                var table = new Table(i, qrCodeImage, guidToken);
                 _tableService.CreateAddTableDB(table);
+
+                tables.Add(table);
             }
 
             return RedirectToAction("QrView");
 
         }
+
 
         public IActionResult QrView()
         {

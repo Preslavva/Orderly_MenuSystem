@@ -21,5 +21,10 @@ namespace Services
         {
             return _tableRepository.GetAllTables();
         }
+
+        public Table GetTableByToken(string token)
+        {
+            return _tableRepository.GetTableByToken(token);
+        }
     }
 }
