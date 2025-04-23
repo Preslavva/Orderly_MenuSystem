@@ -8,18 +8,19 @@ namespace Models.Enums
 {
     public enum AllergenName
     {
-        Shellfish,
+        Celery,
+        Gluten,
+        Crustaceans,    
         Eggs,
         Fish,
-        Soya,
-        Milk,
         Lupin,
-        Peaunuts,
-        Gluten,
+        Milk,
+        Molluscs,      
         Mustard,
-        Nuts,
+        Nuts,          
+        Peanuts,
         Sesame,
-        Celery,
-        Selphites
+        Soya,
+        Sulphites
     }
 }

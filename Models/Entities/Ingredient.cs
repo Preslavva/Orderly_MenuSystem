@@ -26,18 +26,6 @@ namespace Models.Entities
             RestaurantId =  restaurantId;
         }
 
-        public Ingredient(string name, string unit, int quantityInStock, int minimumStockLevel, int restaurantId)
-        {
-            Name = name;
-            Unit = unit;
-            QuantityInStock = quantityInStock;
-            MinimumStockLevel = minimumStockLevel;
-            RestaurantId= restaurantId;
-        }
-
-        public Ingredient(string name)
-        {
-            Name = name;
-        }
+       
     }
 }

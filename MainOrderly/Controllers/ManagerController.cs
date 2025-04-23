@@ -173,22 +173,60 @@ namespace MainOrderly.WebApp.Controllers
             return RedirectToAction("MenuItems");
         }
 
-        [HttpGet]
-        public IActionResult AddIngredient()
+        [HttpPost]
+        public IActionResult AddIngredient(IngredientViewModel model)
         {
-            //var ingredient = _ingredientService.AddIngredient(
-            //    model.Id,
-            //    model.Name,
-            //    model.Unit,
-            //    model.
-            //    )
-            return View();
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid input");
+
+            var ingredient = new Ingredient(
+                id: 0,
+                name: model.Name,
+                unit: model.Unit,
+                quantityInStock: model.QuantityInStock,
+                minimumStockLevel: model.MinimumStockLevel,
+                restaurantId: 1 
+            );
+
+            _ingredientService.AddIngredient(ingredient);
+
+            return Ok(); 
         }
+
         [HttpGet]
         public IActionResult IngredientList()
         {
-            return View();
+            int restaurantId = 1;
+            var ingredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId);
+
+            var viewModelList = ingredients.Select(i => new IngredientViewModel
+            {
+                Id = i.Id,
+                Name = i.Name,
+                Unit = i.Unit,
+                QuantityInStock = i.QuantityInStock,
+                MinimumStockLevel = i.MinimumStockLevel
+            }).ToList();
+
+            return View(viewModelList);
         }
+
+        [HttpGet]
+        public IActionResult GetIngredientById(int id)
+        {
+            var ingredient = _ingredientService.GetIngredientById(id);
+            if (ingredient == null) return NotFound();
+
+            return Json(new
+            {
+                id = ingredient.Id,
+                name = ingredient.Name,
+                quantityInStock = ingredient.QuantityInStock,
+                minimumStockLevel = ingredient.MinimumStockLevel,
+                unit = ingredient.Unit
+            });
+        }
+
 
     }
 }

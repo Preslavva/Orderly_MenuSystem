@@ -355,9 +355,15 @@ namespace MSSQL
                         {
                             while (reader.Read())
                             {
-                                Ingredients.Add( new Ingredient(
-                                    Convert.ToString(reader["Name"])!
-                                ));
+                                Ingredients.Add(new Ingredient(
+    Convert.ToInt32(reader["Id"]),
+    Convert.ToString(reader["Name"]),
+    Convert.ToString(reader["Unit"]),
+    Convert.ToInt32(reader["QuantityInStock"]),
+    Convert.ToInt32(reader["MinimumStockLevel"]),
+    Convert.ToInt32(reader["RestaurantId"])
+));
+
                             }
                         }
                     }
