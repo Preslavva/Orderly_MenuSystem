@@ -64,7 +64,7 @@ namespace MainOrderly.WebApp.Controllers
             List<CartViewModel> viewModel = GetCartViewModel();
 
             ViewBag.SelectedTip = tipAmount;
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(),tipAmount);
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(),tipAmount,customTip);
             ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             
             return View(viewModel);

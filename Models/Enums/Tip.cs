@@ -10,6 +10,6 @@ namespace Models.Enums
     {
         None,
         Tip15,
-        Tip25
+        Tip25,
     }
 }

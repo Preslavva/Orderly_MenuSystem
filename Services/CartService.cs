@@ -118,8 +118,11 @@ namespace Services
             return newCart;
         }
 
-        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart, Tip tipAmount)
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart, Tip tipAmount,int customTip)
         {
+            if (customTip >= 100)
+                customTip = 100;
+
             decimal totalPrice = 0;
             foreach (var element in cart)
             {
@@ -127,6 +130,7 @@ namespace Services
                 int quantity = element.Value;
                 totalPrice += quantity * item.Price;
             }
+
             if(tipAmount == Tip.Tip15)
             {
                 totalPrice += totalPrice * 0.15m;
@@ -135,6 +139,9 @@ namespace Services
             {
                 totalPrice += totalPrice * 0.25m;
             }
+            else if (customTip>0)
+                totalPrice += totalPrice * (customTip / 100m);
+            
             return totalPrice;
         }
         public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart) // overloading method, for no tipping.
