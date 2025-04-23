@@ -1,20 +1,178 @@
-﻿@{
+﻿@model List<IngredientViewModel>     
+@{
     ViewData["Title"] = "Menu Management";
     Layout = "_ManagerLayout";
 }
 
 <div class="container">
+    <div class="col-12">
+        <div class="category-button">
+            <a class="btn button-primary" href="add-products.html#!" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
+                <i class="me-2 fa fa-plus"></i> Create New Ingredient
+            </a>
+        </div>
+        <div class="modal fade" id="ingredient-modal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add New Ingredient</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="ingredientForm">
+                            <div class="mb-3">
+                                <label for="ingredientName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="ingredientName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="quantity" class="form-label">Quantity in Stock</label>
+                                <input type="number" class="form-control" id="quantity" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="minimumStock" class="form-label">Minimum Stock Level</label>
+                                <input type="number" class="form-control" id="minimumStockLevel" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="unit" class="form-label">Unit</label>
+                                <select id="unit" class="form-select" required>
+                                    <option value="g">Grams (g)</option>
+                                    <option value="ml">Milliliters (ml)</option>
+                                    <option value="pcs">Pieces</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit" form="ingredientForm">Add</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editIngredientModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-md">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Edit Ingredient</h5>
+                        <button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editIngredientForm">
+                            <div class="mb-3">
+                                <label for="editName" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="editName">
+                            </div>
+                            <div class="mb-3">
+                                <label for="minimumStock" class="form-label">Minimum Stock Level</label>
+                                <input type="number" class="form-control" id="minimumStockLevel" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editQuantity" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" id="editQuantity">
+                            </div>
+                            <div class="mb-3">
+                                <label for="editUnit" class="form-label">Unit</label>
+                                <select class="form-select" id="editUnit">
+                                    <option value="g">g</option>
+                                    <option value="ml">ml</option>
+                                    <option value="pcs">pcs</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-primary" type="submit" form="editIngredientForm">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-11">
+            <div class="table-responsive">
+                <table class="table table-centered table-nowrap mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 20px;">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="checkAll">
+                                </div>
+                            </th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Quantity in Stock</th>
+                            <th>Unit</th>
+                            <th>Minimum Stock</th>
+                            <th>Status</th>
+                            <th style="width: 125px;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var i in Model)
+                        {
+                            var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
+                            var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input">
+                                    </div>
+                                </td>
+                                <td>@i.Id</td>
+                                <td>@i.Name</td>
+                                <td>@i.QuantityInStock</td>
+                                <td>@i.Unit</td>
+                                <td>@i.MinimumStockLevel</td>
+                                <td><h5><span class="badge @badgeClass">@status</span></h5></td>
+                                <td>
+                                    <a href="javascript:void(0);"
+                                       class="action-icon edit-btn"
+                                       data-id="@i.Id"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editIngredientModal">✏️</a>
 
-            <div class="text-center">
-                <h3 class="mt-4 text-black">Stay tunned, this will be implemented soon</h3>
-                <p class="text-black-50">We're making the system more awesome.</p>
+                                    <a href="javascript:void(0);" class="action-icon">🗑️</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
 
-                
+                </table>
             </div>
+        </div>
+    </div>
+
+          
 
         </div> <!-- end col -->
     </div>
     <!-- end row -->
 </div>
+<script>
+       document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const id = this.dataset.id;
+
+           fetch(`/Manager/GetIngredientById/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editName').value = data.name;
+                    document.getElementById('editQuantity').value = data.quantityInStock;
+                    document.getElementById('minimumStockLevel').value = data.minimumStockLevel;
+                    document.getElementById('editUnit').value = data.unit;
+
+                    // Якщо хочеш передати ID (потрібно для збереження)
+                    document.getElementById('editIngredientForm').dataset.id = data.id;
+                })
+                .catch(err => {
+                    alert("Failed to load ingredient details.");
+                    console.error(err);
+                });
+        });
+            
+
+
+</script>
