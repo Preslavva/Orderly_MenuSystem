@@ -42,6 +42,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult Index(Category? category = null, string searchTerm = "", int tableId = 0, int restaurantId = 0)
         {
+            ViewData["Page"] = "Index";
             if (tableId > 0)
             {
                 HttpContext.Session.SetInt32("TableId", tableId);

@@ -18,7 +18,7 @@ namespace MSSQL
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string sql = @"select o.Id ,m.[Name], om.Quantity, m.Price, o.SubTotal, o.[Status] 
+                string sql = @"select o.Id ,m.[Name], om.Quantity, m.Price, o.SubTotal, o.[Status], o.OrderTimeStamp
                                                 from [Order] as o 
                                                 inner join Order_MenuItem as om
                                                 on om.OrderId = o.Id
@@ -38,7 +38,8 @@ namespace MSSQL
                             Convert.ToInt32(reader["Quantity"]),
                             Convert.ToDecimal(reader["Price"]),
                             Convert.ToDecimal(reader["SubTotal"]),
-                            Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!)
+                            Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!),
+                            Convert.ToDateTime(reader["OrderTimeStamp"])
                             ));
                     }
                 }

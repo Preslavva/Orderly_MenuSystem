@@ -4,8 +4,8 @@
     ViewData["Title"] = "Order History";
 }
 
+
 <div class="container mt-4">
-    <h2 class="mb-4">Your Order History</h2>
 
     @if (Model != null && Model.Any())
     {
@@ -15,19 +15,32 @@
                 <div class="order-summary-box">
                     <div class="order-id">
                         <strong>Order ID: </strong>@group.Key
+                        <hr/>
                     </div>
                     <div class="order-details">
                         @foreach (var item in group)
                         {
-                            <p>@item.Quantity x @item.Name</p>
-                            <p>Price: @item.Price.ToString("0.00")</p>
-                            <p>Subtotal: @item.SubTotal.ToString("0.00")</p>
+                            <p>
+                                <strong>@item.Quantity</strong> x @item.Name
+                            </p>
+
+                            <p>
+                                <strong>Price:</strong>  @item.Price.ToString("0.00")
+                            </p>
+
+                            <p>
+                                <strong>Subtotal:</strong> @item.SubTotal.ToString("0.00")
+                            </p>
+                            <p>
+                                <strong>Time of Order:</strong> @item.OrderTimeStamp.ToShortTimeString()
+                            </p>
                         }
                     </div>
 
                     <div class="order-status">
                         <div class="badge order-status-badge" data-order-id="@group.Key">
                             @group.First().Status
+
                         </div>
                     </div>
                 </div>

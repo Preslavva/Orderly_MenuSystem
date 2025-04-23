@@ -10,6 +10,9 @@ namespace MainOrderly.WebApp.ViewModels
         public decimal Price { get; set; }
         public decimal SubTotal { get; set; }
         public string Status { get; set; }
+        public DateTime OrderTimeStamp { get; set; }
+
+
 
         public static OrderHistoryViewModel ConvertToViewModel(OrderHistory history)
         {
@@ -20,7 +23,8 @@ namespace MainOrderly.WebApp.ViewModels
                 Quantity = history.Quantity,
                 Price = history.Price,
                 SubTotal = history.SubTotal,
-                Status = history.Status.ToString()
+                Status = history.Status.ToString(),
+                OrderTimeStamp = history.OrderTimeStamp
             };
 
 

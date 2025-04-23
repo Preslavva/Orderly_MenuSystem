@@ -16,6 +16,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult History()
         {
+            ViewData["Page"] = "History";
             List<OrderHistory> orders = _historyService.GetHistory();
             List<OrderHistoryViewModel> historyViewModel = orders.Select(OrderHistoryViewModel.ConvertToViewModel).ToList();
             return View(historyViewModel);

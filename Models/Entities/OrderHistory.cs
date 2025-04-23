@@ -10,8 +10,10 @@ namespace Models.Entities
         public decimal Price { get; }
         public decimal SubTotal { get; }
         public OrderStatus Status { get; }
+        public DateTime OrderTimeStamp { get; }
 
-        public OrderHistory(int id, string name, int quantity, decimal price, decimal subtotal, OrderStatus status)
+
+        public OrderHistory(int id, string name, int quantity, decimal price, decimal subtotal, OrderStatus status, DateTime orderTimeStamp )
         {
             this.Id = id;   
             this.Name = name;
@@ -19,6 +21,7 @@ namespace Models.Entities
             this.Price = price;
             this.SubTotal = subtotal;
             this.Status = status;
+            this.OrderTimeStamp = orderTimeStamp;
         }
     }
 }
