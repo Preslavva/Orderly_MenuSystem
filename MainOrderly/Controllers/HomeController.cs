@@ -164,8 +164,22 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
         {
-            _cartService.AddToCart(id, quantity);
-            ViewBag.CartCount = _cartService.GetCartCount();
+            if (Request.Cookies["order-restricted"] == "true")
+            {
+                TempData["Anti-Abuse"] = $"Sorry, you will have to wait until you can order again! ";
+            }
+            else
+            {
+                _cartService.AddToCart(id, quantity);
+                ViewBag.CartCount = _cartService.GetCartCount();
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public IActionResult DismissMessage()
+        {
+            TempData["Anti-Abuse"] = null;
             return RedirectToAction("Index", "Home");
         }
 
@@ -180,24 +194,5 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        //[HttpGet]
-        //public IActionResult Search(string term, Category? category)
-        //{
-        //    var allItems = _menuService.LoadMenuItems(1);
-        //    var menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
-        //    int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
-        //    var allItem = _menuService.LoadMenuItems(1);
-
-        //    List<MenuItemViewModel> menuItemModel = MappingHelper.ConvertToViewModels(allItems);
-
-        //    var filtered = menuItemViewModel.Where(x =>
-        //        (string.IsNullOrWhiteSpace(term) || (!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase))) &&
-        //        (!category.HasValue || x.Category == category.Value)
-        //    ).ToList();
-
-        //    return PartialView("_MenuItemList", filtered);
-        //}
-
-
     }
 }

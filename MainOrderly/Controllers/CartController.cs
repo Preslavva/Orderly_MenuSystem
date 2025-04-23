@@ -79,6 +79,16 @@ namespace MainOrderly.WebApp.Controllers
             {
                 Id = orderId
             };
+
+            if(!_cartService.CheckTimeBetweenOrders(orderId))
+            {
+                Response.Cookies.Append("order-restricted", "true", new CookieOptions
+                {
+                    IsEssential = true, 
+                    Expires = DateTime.Now.AddMinutes(5) 
+                });
+            }
+
             return View(orderModel);
         }
 
@@ -128,5 +138,32 @@ namespace MainOrderly.WebApp.Controllers
             TempData["Receipt"] = "The receipt was sent to your email!";
             return RedirectToAction("PaymentConfirmationPage", "Cart");
         }
+
+        public IActionResult Timer(int orderId)
+        {
+            TimeSpan endOfTimer = _cartService.GetEndOfTimer(orderId);  
+            TimeSpan remainingTime = endOfTimer - DateTime.Now.TimeOfDay;
+
+            if (remainingTime.TotalSeconds <= 0)
+            {
+                Response.Cookies.Delete("order-restricted");
+                return Content(null);
+            }
+            else
+            {
+                Response.Cookies.Append("order-restricted", "true", new CookieOptions
+                {
+                    IsEssential = true,
+                    Expires = DateTime.Now.AddMinutes(5)
+                });
+            }
+
+
+            string countdownHtml = $"<div id='countdown' class='AntiAbuseTimer'  data-order-id='{orderId}'>" +
+                                   $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}</div>";
+
+            return Content(countdownHtml, "text/html");
+        }
+
     }
 }

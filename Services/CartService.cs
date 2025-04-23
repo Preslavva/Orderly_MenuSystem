@@ -1,10 +1,7 @@
-﻿using Azure.Core;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Models;
 using Models.Entities;
 using MSSQL;
-using System.Collections.Generic;
-using System.Text.Json;
 namespace Services
 {
     public class CartService
@@ -14,6 +11,7 @@ namespace Services
         private Dictionary<int, int> cart;
         private readonly CartRepository _cartRepository;
         private readonly CheckoutService _checkoutService;
+        private const int timer = 5;
 
         public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService)
         {
@@ -97,10 +95,10 @@ namespace Services
             }
             return counter;
         }
-         int restauranrId = 1;
+        int restauranrId = 1;
         public Dictionary<MenuItem, int> GetCart()
         {
-            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
+            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
 
             string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
@@ -109,7 +107,7 @@ namespace Services
                 foreach (int key in cart.Keys)
                 {
                     MenuItem? item = _menuItemRepository.GetMenuItemById(key, restauranrId);
-                    
+
                     newCart[item] = cart[key];
                 }
             }
@@ -134,5 +132,24 @@ namespace Services
 
             return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
+
+        public bool CheckTimeBetweenOrders(int orderId)
+        {
+            TimeSpan orderTime = _cartRepository.GetOrderPlacingTime(orderId).TimeOfDay;
+            TimeSpan now = DateTime.Now.TimeOfDay;
+            TimeSpan difference = now - orderTime;
+            if(difference.TotalMinutes <= 5)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public TimeSpan GetEndOfTimer(int orderId)
+        {
+            TimeSpan orderTime = _cartRepository.GetOrderPlacingTime(orderId).TimeOfDay;
+            return orderTime + TimeSpan.FromMinutes(5);
+        }
+
     }
 }

@@ -20,8 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
-
 function pollOrderStatus(orderId) {
     fetch(`/Kitchen/GetOrderStatus?orderId=${orderId}`)
         .then(response => {
@@ -40,6 +38,21 @@ function pollOrderStatus(orderId) {
         .catch(err => console.error("Error fetching status", err));
 }
 
+(function () {
+    setInterval(function () {
+        const countdownDiv = document.getElementById("countdown");
+        if (!countdownDiv) return;
+
+        const orderId = countdownDiv.getAttribute("data-order-id");
+        if (!orderId) return;
+
+        htmx.ajax('GET', `/Cart/Timer?orderId=${orderId}`, {
+            target: '#countdown',
+            swap: 'outerHTML'
+        });
+    }, 1000);
+})();
+
 function updateBadgeColor(orderId, status) {
     const badge = document.querySelector(`.badge[data-order-id="${orderId}"]`);
     if (!badge) return;
@@ -49,24 +62,26 @@ function updateBadgeColor(orderId, status) {
 
     switch (status) {
         case 'NEW_ORDER':
+            badge.innerText = 'New Order';
             badge.style.backgroundColor = '#ffc107';
             badge.style.color = '#000000';
             break;
         case 'PROCESSING':
+            badge.innerText = 'Processing';
             badge.style.backgroundColor = '#0d6efd';
             badge.style.color = '#ffffff';
             break;
         case 'COMPLETED':
+            badge.innerText = 'Completed';
             badge.style.backgroundColor = '#198754';
             badge.style.color = '#ffffff';
             break;
         default:
+            badge.innerText = 'Unknown';
             badge.style.backgroundColor = '#6c757d';
             badge.style.color = '#ffffff';
             break;
     }
-
-    badge.textContent = status;
 }
 
 

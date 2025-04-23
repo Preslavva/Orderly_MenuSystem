@@ -38,11 +38,14 @@
                     </div>
 
                     <div class="order-status">
-                        <div class="badge order-status-badge" data-order-id="@group.Key">
+                        <div class="badge order-status-badge"
+                             data-order-id="@group.Key"
+                             data-status="@group.First().Status">
                             @group.First().Status
 
                         </div>
                     </div>
+
                 </div>
             }
         </div>

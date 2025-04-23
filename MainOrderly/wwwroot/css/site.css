@@ -1507,3 +1507,39 @@ footer {
 .history {
     width: 50px;
 }
+
+.AntiAbuseTimer {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ffc107; 
+    color: #212529;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 1rem;
+    min-width: 100px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-left: 135px;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.AntiAbuseTimer {
+    animation: pulse 2s infinite;
+}
