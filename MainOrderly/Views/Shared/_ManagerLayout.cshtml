@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Menu</title>
+    <title>Restaurant Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+
     <!-- App favicon -->
     <link rel="shortcut icon" href="~/assets/images/favicon.ico">
 
@@ -25,250 +25,308 @@
     <!-- Icons css -->
     <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-
 </head>
 
 <body>
 
-    <!-- Begin page -->
-    <div id="wrapper">
+<!-- Begin page -->
+<div id="wrapper">
 
+    <!-- ========== Menu ========== -->
+    <div class="app-menu">
 
-        <!-- ========== Menu ========== -->
-        <div class="app-menu">
-
-            <!-- Brand Logo -->
-            <div class="logo-box">
-                <!-- Brand Logo Light -->
-                <a href="index.html" class="logo-light">
-                  @*   <img src="~assets/images/logo-light.png" alt="logo" class="logo-lg">
+        <!-- Brand Logo -->
+        <div class="logo-box">
+            <!-- Brand Logo Light -->
+            <a href="index.html" class="logo-light">
+                @*   <img src="~assets/images/logo-light.png" alt="logo" class="logo-lg">
                     <img src="~assets/images/logo-sm.png" alt="small logo" class="logo-sm"> *@
-                </a>
+            </a>
 
-                <!-- Brand Logo Dark -->
-                <a href="index.html" class="logo-dark">
-                  @*   <img src="~/assets/images/logo-dark.png" alt="dark logo" class="logo-lg">
+            <!-- Brand Logo Dark -->
+            <a href="index.html" class="logo-dark">
+                @*   <img src="~/assets/images/logo-dark.png" alt="dark logo" class="logo-lg">
                     <img src="~/assets/images/logo-sm.png" alt="small logo" class="logo-sm"> *@
-                </a>
-            </div>
-
-            <!-- menu-left -->
-            <div class="scrollbar">
-
-               
-                <!--- Menu -->
-                <ul class="menu">
-
-
-
-                    <li class="menu-title">Apps</li>
-
-                    
-                    <li class="menu-item">
-                        <a href="index.html#menuEcommerce" data-bs-toggle="collapse" class="menu-link">
-                            <span class="menu-icon"></span>
-                            <span class="menu-text"> Menu Management </span>
-                            <i data-feather="chevron-down" class="menu-arrow"></i>
-                        </a>
-                        <div class="collapse" id="menuEcommerce">
-                            <ul class="sub-menu">
-
-                                <li class="menu-item">
-                                    <a href="@Url.Action("MenuItems", "Manager")" class="menu-link">
-                                        <span class="menu-text">Menu</span>
-                                    </a>
-                                </li>
-                                <li class="menu-item">
-                                    <a href="@Url.Action("Create", "Manager")" class="menu-link">
-                                        <span class="menu-text">Add</span>
-                                    </a>
-                                </li>
-
-
-                            </ul>
-                        </div>
-                    </li>
-
-
-                    <li class="menu-item">
-                        <a href="index.html#menuProjects" data-bs-toggle="collapse" class="menu-link">
-                            <span class="menu-icon"></span>
-                            <span class="menu-text"> Ingredient </span>
-                            <i data-feather="chevron-down" class="menu-arrow"></i>
-                        </a>
-                        <div class="collapse" id="menuProjects">
-                            <ul class="sub-menu">
-                                <li class="menu-item">
-                                    <a href="@Url.Action("AddIngredient", "Manager")" class="menu-link">
-                                        <span class="menu-text">Add</span>
-                                    </a>
-                                </li>
-                                <li class="menu-item">
-                                    <a href="@Url.Action("IngredientList", "Manager")" class="menu-link">
-                                        <span class="menu-text">List</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-
-                </ul>
-                <!--- End Menu -->
-                <div class="clearfix"></div>
-            </div>
-        </div>
-        <!-- ========== Left menu End ========== -->
-        <!-- ============================================================== -->
-        <!-- Start Page Content here -->
-        <!-- ============================================================== -->
-
-        <div class="content-page">
-
-            <!-- ========== Topbar Start ========== -->
-            <div class="navbar-custom">
-                <div class="topbar">
-                    <div class="topbar-menu d-flex align-items-center gap-1">
-
-                        <!-- Topbar Brand Logo -->
-                        <div class="logo-box">
-                            <!-- Brand Logo Light -->
-                            <a href="index.html" class="logo-light">
-                                <img src="~/assets/images/logo-light.png" alt="logo" class="logo-lg">
-                                <img src="~/assets/images/logo-sm.png" alt="small logo" class="logo-sm">
-                            </a>
-
-                            <!-- Brand Logo Dark -->
-                            <a href="index.html" class="logo-dark">
-                                <img src="~/assets/images/logo-dark.png" alt="dark logo" class="logo-lg">
-                                <img src="~/assets/images/logo-sm.png" alt="small logo" class="logo-sm">
-                            </a>
-                        </div>
-
-                        <!-- Sidebar Menu Toggle Button -->
-                        <button class="button-toggle-menu">
-                            <i data-feather="menu"></i>
-
-                        </button>
-
-
-                        <!-- Mega Menu Dropdown -->
-
-                    </div>
-
-                    <ul class="topbar-menu d-flex align-items-center">
-                        <!-- Topbar Search Form -->
-                        <!-- Light/Dark Mode Toggle Button -->
-                        <li class="d-none d-sm-inline-block">
-                            <div class="nav-link waves-effect waves-light" id="light-dark-mode" style="cursor: pointer;">
-                                🌙
-                            </div>
-                        </li>
-
-
-                        <!-- User Dropdown -->
-                        <li class="dropdown">
-                            <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="index.html#" role="button" aria-haspopup="false" aria-expanded="false">
-
-                                <span class="ms-1 d-none d-md-inline-block">
-                                    Manager <span style="font-size: 12px;">⏷</span>
-                                </span>
-
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end profile-dropdown ">
-                                <!-- item-->
-                                <div class="dropdown-header noti-title">
-                                    <h6 class="text-overflow m-0">Welcome !</h6>
-                                </div>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <span>My Account</span>
-                                </a>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <span>Settings</span>
-                                </a>
-
-                                <!-- item-->
-                                <a href="javascript:void(0);" class="dropdown-item notify-item">
-                                    <span>Logout</span>
-                                </a>
-
-                            </div>
-                        </li>
-
-                    </ul>
-                </div>
-            </div>
-            <!-- ========== Topbar End ========== -->
-
-            <div class="content">
-
-                <!-- Start Content-->
-                <div class="container-fluid">
-
-
-                    <!-- end row-->
-                    <!-- end row -->
-                    @RenderBody()
-                </div> <!-- container -->
-
-            </div> <!-- content -->
-            <!-- Footer Start -->
-            <footer class="footer">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div><script>document.write(new Date().getFullYear())</script> © Menu - <a href="../../../index.html" target="_blank">Group-2</a></div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="d-none d-md-flex gap-4 align-item-center justify-content-md-end footer-links">
-                                <a href="javascript: void(0);">About</a>
-                                <a href="javascript: void(0);">Support</a>
-                                <a href="javascript: void(0);">Contact Us</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-            <!-- end Footer -->
-
+            </a>
         </div>
 
-        <!-- ============================================================== -->
-        <!-- End Page content -->
-        <!-- ============================================================== -->
+        <!-- menu-left -->
+        <div class="scrollbar">
 
+            <!--- Menu -->
+            <ul class="menu">
+                <li class="menu-title">Apps</li>
+                <li class="menu-item">
+                    <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
+                        <span class="menu-icon"><i data-feather="coffee"></i></span>
+                        <span class="menu-text">Restaurant</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="@Url.Action("Index", "Company")" class="menu-link">
+                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                        <span class="menu-text">Company Details</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="index.html#menuStaff" data-bs-toggle="collapse" class="menu-link">
+                        <span class="menu-icon"><i data-feather="users"></i></span>
+                        <span class="menu-text">Staff Manager</span>
+                        <i data-feather="chevron-down" class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="menuStaff">
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="@Url.Action("AllStaff", "Staff")" class="menu-link">
+                                    <span class="menu-text">All Staff</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="@Url.Action("AddStaff", "Staff")" class="menu-link">
+                                    <span class="menu-text">Add New</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="@Url.Action("Permissions", "Staff")" class="menu-link">
+                                    <span class="menu-text">Permissions</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <a href="index.html#menuEcommerce" data-bs-toggle="collapse" class="menu-link">
+                        <span class="menu-icon"><i data-feather="book-open"></i></span>
+                        <span class="menu-text">Menu Management</span>
+                        <i data-feather="chevron-down" class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="menuEcommerce">
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="@Url.Action("MenuItems", "Manager")" class="menu-link">
+                                    <span class="menu-text">Menu</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="@Url.Action("Create", "Manager")" class="menu-link">
+                                    <span class="menu-text">Add</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <a href="index.html#menuProjects" data-bs-toggle="collapse" class="menu-link">
+                        <span class="menu-icon"><i data-feather="package"></i></span>
+                        <span class="menu-text">Ingredient</span>
+                        <i data-feather="chevron-down" class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="menuProjects">
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="@Url.Action("AddIngredient", "Manager")" class="menu-link">
+                                    <span class="menu-text">Add</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="@Url.Action("IngredientList", "Manager")" class="menu-link">
+                                    <span class="menu-text">List</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <a href="index.html#menuTable" data-bs-toggle="collapse" class="menu-link">
+                        <span class="menu-icon"><i data-feather="grid"></i></span>
+                        <span class="menu-text">Table Management</span>
+                        <i data-feather="chevron-down" class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="menuTable">
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="@Url.Action("AddTable", "Table")" class="menu-link">
+                                    <span class="menu-text">Add Table</span>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="@Url.Action("TableList", "Table")" class="menu-link">
+                                    <span class="menu-text">List of Tables</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <a href="index.html#menuAnalytics" data-bs-toggle="collapse" class="menu-link">
+                        <span class="menu-icon"><i data-feather="bar-chart-2"></i></span>
+                        <span class="menu-text">Analytics</span>
+                        <i data-feather="chevron-down" class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="menuAnalytics">
+                        <ul class="sub-menu">
+                            <li class="menu-item">
+                                <a href="@Url.Action("TotalRevenue", "Analytics")" class="menu-link">
+                                    <span class="menu-text">Total Revenue</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="menu-item">
+                    <a href="@Url.Action("Kitchen", "Dashboard")" class="menu-link">
+                        <span class="menu-icon"><i data-feather="clock"></i></span>
+                        <span class="menu-text">Kitchen Dashboard</span>
+                    </a>
+                </li>
+                <li class="menu-item">
+                    <a href="@Url.Action("Orders", "Waiter")" class="menu-link">
+                        <span class="menu-icon"><i data-feather="clipboard"></i></span>
+                        <span class="menu-text">Waiter Tab</span>
+                    </a>
+                </li>
+
+            </ul>
+            <!--- End Menu -->
+            <div class="clearfix"></div>
+        </div>
     </div>
-    <!-- END wrapper -->
-    <!-- Vendor js -->
-    <script src="~/assets/js/vendor.min.js"></script>
+    <!-- ========== Left menu End ========== -->
+    <!-- ============================================================== -->
+    <!-- Start Page Content here -->
+    <!-- ============================================================== -->
 
-    <!-- App js -->
-    <script src="~/assets/js/app.min.js"></script>
+    <div class="content-page">
 
-    <!-- Plugins js-->
-    <script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
+        <!-- ========== Topbar Start ========== -->
+        <div class="navbar-custom">
+            <div class="topbar">
+                <div class="topbar-menu d-flex align-items-center gap-1">
 
-    <script src="~/assets/libs/selectize/js/standalone/selectize.min.js"></script>
+                    <!-- Topbar Brand Logo -->
+                    <div class="logo-box">
+                        <!-- Brand Logo Light -->
+                        <a href="index.html" class="logo-light">
+                            <img src="~/assets/images/logo-light.png" alt="logo" class="logo-lg">
+                            <img src="~/assets/images/logo-sm.png" alt="small logo" class="logo-sm">
+                        </a>
 
-    <!-- Dashboar 1 init js-->
-    <script src="~/assets/js/pages/dashboard-1.init.js"></script>
+                        <!-- Brand Logo Dark -->
+                        <a href="index.html" class="logo-dark">
+                            <img src="~/assets/images/logo-dark.png" alt="dark logo" class="logo-lg">
+                            <img src="~/assets/images/logo-sm.png" alt="small logo" class="logo-sm">
+                        </a>
+                    </div>
 
-    <script>
-        const toggle = document.getElementById('light-dark-mode');
+                    <!-- Sidebar Menu Toggle Button -->
+                    <button class="button-toggle-menu">
+                        <i data-feather="menu"></i>
+                    </button>
 
-        let dark = false;
-        toggle.onclick = () => {
-            dark = !dark;
-            toggle.innerText = dark ? '☀️' : '🌙';
-            document.body.classList.toggle('dark-mode', dark);
-        };
-    </script>
+                </div>
 
+                <ul class="topbar-menu d-flex align-items-center">
+                    <!-- Light/Dark Mode Toggle Button -->
+                    <li class="d-none d-sm-inline-block">
+                        <div class="nav-link waves-effect waves-light" id="light-dark-mode" style="cursor: pointer;">
+                            🌙
+                        </div>
+                    </li>
 
+                    <!-- User Dropdown -->
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                                <span class="d-flex align-items-center">
+                                    <div class="d-none d-md-inline-block">
+                                        <span id="user-role">Manager</span> <span style="font-size: 12px;">⏷</span>
+                                    </div>
+                                </span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end profile-dropdown">
+                            <!-- item-->
+                            <div class="dropdown-header noti-title">
+                                <h6 class="text-overflow m-0">Welcome!</h6>
+                            </div>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <i data-feather="user" class="icon-dual icon-xs me-1"></i>
+                                <span>My Account</span>
+                            </a>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <i data-feather="settings" class="icon-dual icon-xs me-1"></i>
+                                <span>Settings</span>
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+
+                            <!-- item-->
+                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                                <i data-feather="log-out" class="icon-dual icon-xs me-1"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- ========== Topbar End ========== -->
+
+        <div class="content">
+            <!-- Start Content-->
+            <div class="container-fluid">
+                @RenderBody()
+            </div> <!-- container -->
+        </div> <!-- content -->
+
+        <!-- Footer Start -->
+        <footer class="footer">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div><script>document.write(new Date().getFullYear())</script> © Restaurant Management System - <a href="javascript:void(0);" target="_blank">Group-2</a></div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-none d-md-flex gap-4 align-item-center justify-content-md-end footer-links">
+                            <a href="javascript: void(0);">About</a>
+                            <a href="javascript: void(0);">Support</a>
+                            <a href="javascript: void(0);">Contact Us</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- end Footer -->
+    </div>
+    <!-- ============================================================== -->
+    <!-- End Page content -->
+    <!-- ============================================================== -->
+</div>
+<!-- END wrapper -->
+<!-- Vendor js -->
+<script src="~/assets/js/vendor.min.js"></script>
+
+<!-- App js -->
+<script src="~/assets/js/app.min.js"></script>
+
+<!-- Plugins js-->
+<script src="~/assets/libs/flatpickr/flatpickr.min.js"></script>
+<script src="~/assets/libs/selectize/js/standalone/selectize.min.js"></script>
+
+<!-- Dashboard init js-->
+<script src="~/assets/js/pages/dashboard-1.init.js"></script>
+
+<!-- Dark mode toggle -->
+<script>
+    const toggle = document.getElementById('light-dark-mode');
+    let dark = false;
+    toggle.onclick = () => {
+        dark = !dark;
+        toggle.innerText = dark ? '☀️' : '🌙';
+        document.body.classList.toggle('dark-mode', dark);
+    };
+</script>
 </body>
 </html>
