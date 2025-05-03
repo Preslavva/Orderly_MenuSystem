@@ -26,5 +26,10 @@ namespace Services
         {
             return _tableRepository.GetTableByToken(token);
         }
+
+        public List<Table> GetTablesByRestaurantId(int restaurantId)
+        {
+            return _tableRepository.GetTablesByRestaurantId(restaurantId);
+        }
     }
 }

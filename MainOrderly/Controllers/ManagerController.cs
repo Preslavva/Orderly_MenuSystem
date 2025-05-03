@@ -12,13 +12,15 @@ namespace MainOrderly.WebApp.Controllers
         private readonly MenuService _menuService;
         private readonly IngredientService _ingredientService;
         private readonly NutritionService _nutritionService;
+        private readonly TableService _tableService;
         private readonly int _restaurantId = 1;
 
-        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService)
+        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService, TableService tableService)
         {
             _menuService = menuService;
             _ingredientService = ingredientService;
             _nutritionService = nutritionService;
+            _tableService = tableService;
         }
 
         public IActionResult Index()
@@ -227,6 +229,20 @@ namespace MainOrderly.WebApp.Controllers
             });
         }
 
+        [HttpGet]
+        public IActionResult TableList()
+        {
+            int restaurantId = 1;
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
+
+            var viewModelList = tables.Select(t => new TableViewModel
+            {
+                Id = t.Id,
+                QrCode = t.QrCode
+            }).ToList();
+
+            return View(viewModelList);
+        }
 
     }
 }

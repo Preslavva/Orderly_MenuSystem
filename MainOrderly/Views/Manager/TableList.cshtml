@@ -1,0 +1,13 @@
+﻿@model List<TableViewModel>
+@{
+    ViewData["Title"] = "Table Management";
+    Layout = "_ManagerLayout";
+}
+
+@foreach (var table in Model)
+{
+    <div>
+        <p>Table Number (ID): @table.Id</p>
+        <img src="data:image/png;base64,@Convert.ToBase64String(table.QrCode)" alt="QR Code" />
+    </div>
+}

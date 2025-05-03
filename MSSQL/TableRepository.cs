@@ -87,5 +87,40 @@ namespace MSSQL
 
             return null;
         }
+
+        public List<Table> GetTablesByRestaurantId(int restaurantId)
+        {
+            List<Table> tables = new List<Table>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"SELECT Id, QrCode
+                               FROM [Table] WHERE RestaurantId = @RestaurantId";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                tables.Add(new Table(
+                                    Convert.ToInt32(reader["Id"]),
+                                    (byte[])reader["QrCode"]
+                                ));
+                            }
+                        }
+                    }
+                }
+                return tables;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while retrieving Tables for Restaurant: {ex.Message}", ex);
+            }
+        }
     }
 }
