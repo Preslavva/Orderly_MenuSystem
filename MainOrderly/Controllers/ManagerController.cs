@@ -13,14 +13,18 @@ namespace MainOrderly.WebApp.Controllers
         private readonly IngredientService _ingredientService;
         private readonly NutritionService _nutritionService;
         private readonly TableService _tableService;
+        private readonly QRCodeService _qrCodeService;
         private readonly int _restaurantId = 1;
+        private readonly string _baseUrl;
 
-        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService, TableService tableService)
+        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService, TableService tableService, QRCodeService qrCodeService, IConfiguration configuration)
         {
             _menuService = menuService;
             _ingredientService = ingredientService;
             _nutritionService = nutritionService;
             _tableService = tableService;
+            _qrCodeService = qrCodeService;
+            _baseUrl = configuration["AppSettings:BaseUrl"]!;
         }
 
         public IActionResult Index()
@@ -244,5 +248,26 @@ namespace MainOrderly.WebApp.Controllers
             return View(viewModelList);
         }
 
+        [HttpGet]
+        public IActionResult AddTable()
+        {
+            int restaurantId = 1;
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
+
+            return View(tables.Count);
+        }
+
+        [HttpPost]
+        public IActionResult AddNewTable()
+        {
+            string guidToken = Guid.NewGuid().ToString();
+            string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
+            byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
+
+            var table = new Table(qrCodeImage, guidToken);
+            _tableService.CreateAddTableDB(table);
+
+            return RedirectToAction("TableList");
+        }
     }
 }

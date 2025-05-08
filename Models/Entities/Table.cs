@@ -14,6 +14,12 @@
             GuidToken = guidToken;
         }
 
+        public Table(byte[] qrCode, string guidToken)
+        {
+            QrCode = qrCode;
+            GuidToken = guidToken;
+        }
+
         public Table(int id, byte[] qrCode)
         {
             Id = id;

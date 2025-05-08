@@ -1,0 +1,14 @@
+﻿@model int
+
+@{
+    ViewData["Title"] = "Add Table";
+    Layout = "_ManagerLayout";
+}
+
+<h1>Add a new Table</h1>
+
+<h3>There are currently @Model tables in the restaurant</h3>
+
+<form asp-controller="Manager" asp-action="AddNewTable">
+    <button type="submit">Create Table @(Model+1) with QR code</button>
+</form>
