@@ -4,10 +4,25 @@
     Layout = "_ManagerLayout";
 }
 
+<div class="container mt-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="padding-left: 3rem;">Table Management</h1>
+    <a asp-controller="Manager" asp-action="AddTable" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Add New Table
+    </a>
+</div>
+
+<div class="row">
 @foreach (var table in Model)
 {
-    <div>
-        <p>Table Number (ID): @table.Id</p>
-        <img src="data:image/png;base64,@Convert.ToBase64String(table.QrCode)" alt="QR Code" />
+    <div class="col-md-4 mb-4 d-flex justify-content-center">
+    <div class="card" style="width: 18rem;">
+        <img src="data:image/png;base64,@Convert.ToBase64String(table.QrCode)" class="card-img-top" alt="QR Code" />
+        <div class="card-body">
+            <h5 class="card-title">Table Number (ID): @table.Id</h5>
+        </div>
+    </div>
     </div>
 }
+</div>
+</div>
