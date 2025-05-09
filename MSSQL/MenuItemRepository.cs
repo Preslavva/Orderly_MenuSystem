@@ -5,6 +5,7 @@ using Models.Entities;
 using System.Diagnostics;
 using System.Data;
 using Models.Enums;
+using System.ComponentModel.DataAnnotations;
 namespace MSSQL
 {
     public class MenuItemRepository : Repository
@@ -245,6 +246,8 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Error while updating MenuItem quantity: {ex.Message}", ex);
             }
         }
+
+
         public bool DeleteMenuItem(int menuItemId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -297,8 +300,154 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Database error occurred while updating menu item: {sqlEx.Message}", sqlEx);
             }
         }
+        public void AddAllergenToMenuItem(int menuItemId, AllergenName allergen)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    string getAllergenIdQuery = "SELECT Id FROM Allergen WHERE Name = @Name";
+                    int? allergenId = null;
+
+                    using (SqlCommand cmd = new SqlCommand(getAllergenIdQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Name", allergen.ToString());
+                        object result = cmd.ExecuteScalar();
+                        if (result != null)
+                            allergenId = (int)result;
+                    }
+
+                    if (allergenId == null)
+                        throw new Exception($"Allergen '{allergen}' not found in table 'Allergen'.");
+
+                    string insertQuery = @"INSERT INTO MenuItem_Allergen (MenuItemId, AllergenId)
+                                   VALUES (@MenuItemId, @AllergenId);";
+
+                    using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                        cmd.Parameters.AddWithValue("@AllergenId", allergenId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error adding allergen to menu item: {ex.Message}", ex);
+            }
+        }
+        public List<AllergenName> GetAllergensForMenuItem(int menuItemId)
+        {
+            var allergens = new List<AllergenName>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string query = @"
+            SELECT a.Name
+            FROM Allergen a
+            INNER JOIN MenuItem_Allergen ma ON a.Id = ma.AllergenId
+            WHERE ma.MenuItemId = @MenuItemId;";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var name = reader.GetString(0);
+                            if (Enum.TryParse(name, out AllergenName allergen))
+                                allergens.Add(allergen);
+                        }
+                    }
+                }
+            }
+
+            return allergens;
+        }
+        public void DeleteAllergensForMenuItem(int menuItemId)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+
+                    string deleteQuery = "DELETE FROM MenuItem_Allergen WHERE MenuItemId = @MenuItemId";
+                    using (SqlCommand cmd = new SqlCommand(deleteQuery, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting allergens for MenuItem {menuItemId}: {ex.Message}", ex);
+            }
+        }
 
 
+        public List<MenuItem> LoadMenuItemsByCategory(Category category)
+        {
+            var menuItems = new List<MenuItem>();
+          
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                SELECT Id, [Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId, PrepTime
+                FROM MenuItem
+                WHERE RestaurantId = @RestaurantId AND Category = @Category";
 
+                    using (SqlCommand command = new SqlCommand(query, conn))
+                    {
+                        command.Parameters.AddWithValue("@RestaurantId", 1);
+                        command.Parameters.AddWithValue("@Category", category.ToString());
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string categoryValue = reader["Category"].ToString();
+                                Category categoryEnum = (Category)Enum.Parse(typeof(Category), categoryValue.Replace(" ", "_"));
+
+                                var item = new MenuItem(
+                                    Convert.ToInt32(reader["Id"]),
+                                    reader["Name"]?.ToString() ?? string.Empty,
+                                    reader["Description"]?.ToString() ?? string.Empty,
+                                    reader["Price"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["Price"]),
+                                    reader["IsAvailable"] != DBNull.Value && Convert.ToBoolean(reader["IsAvailable"]),
+                                    reader["Picture"]?.ToString() ?? string.Empty,
+                                    categoryEnum,
+                                    reader["RestaurantId"] == DBNull.Value ? 0 : Convert.ToInt32(reader["RestaurantId"]),
+                                    reader["PrepTime"] == DBNull.Value ? 0 : Convert.ToInt32(reader["PrepTime"])
+                                );
+
+                                menuItems.Add(item);
+                            }
+                        }
+                    }
+                }
+
+                return menuItems;
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred while filtering menu items: {sqlEx.Message}", sqlEx);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
+            }
+        }
+
+   
     }
 }

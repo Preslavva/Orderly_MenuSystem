@@ -5,12 +5,43 @@
 }
 
 <div class="container">
-    <div class="col-12">
-        <div class="category-button">
-            <a class="btn button-primary" href="add-products.html#!" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
-                <i class="me-2 fa fa-plus"></i> Create New Ingredient
-            </a>
+    
+    <div class="col-12"> 
+        <div class="row mb-4 mt-4 align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">🧂 Ingredient Stock</h1>
+                </div>
+            <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search ingredients...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0 d-flex justify-content-end align-items-center gap-2">
+                <!-- Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter by Category
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="categoryFilterDropdown">
+                        <li><a class="dropdown-item" href="#" data-category="all">All Categories</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="g">Grams</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="ml">Milliliters</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="pcs">Pieces</a></li>
+                    </ul>
+                </div>
+
+                <!-- Create button -->
+                <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
+                    <i class="fa fa-plus me-1"></i> Add Ingredient
+                </a>
+            </div>
         </div>
+        </div>
+
+       
         <div class="modal fade" id="ingredient-modal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
@@ -111,7 +142,27 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var i in Model)
+                    @foreach (var i in Model)
+                    {
+                        var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
+                        var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
+
+                        <tr data-unit="@i.Unit.ToLower()">
+                            <td>@i.Id</td>
+                            <td>@i.Name</td>
+                            <td>@i.QuantityInStock</td>
+                            <td>@i.Unit</td>
+                            <td>@i.MinimumStockLevel</td>
+                            <td><h5><span class="badge @badgeClass">@status</span></h5></td>
+                            <td>
+                                <a href="javascript:void(0);" class="action-icon edit-btn"
+                                   data-id="@i.Id" data-bs-toggle="modal" data-bs-target="#editIngredientModal">✏️</a>
+                                <a href="javascript:void(0);" class="action-icon delete-btn" data-id="@i.Id">🗑️</a>
+                            </td>
+                        </tr>
+                    }
+
+                       @*  @foreach (var i in Model)
                         {
                             var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
                             var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
@@ -136,7 +187,7 @@
 
                                 </td>
                             </tr>
-                        }
+                        } *@
                     </tbody>
 
                 </table>
@@ -150,6 +201,68 @@
     </div>
     <!-- end row -->
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const categoryLinks = document.querySelectorAll(".dropdown-menu a[data-category]");
+        const tableRows = document.querySelectorAll("tbody tr");
+
+        let currentSearch = "";
+        let currentCategory = "all";
+
+        function applyFilters() {
+            tableRows.forEach(row => {
+                const name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                const unit = row.dataset.unit;
+
+                const matchesName = name.includes(currentSearch);
+                const matchesUnit = currentCategory === "all" || unit === currentCategory;
+
+                row.style.display = matchesName && matchesUnit ? "" : "none";
+            });
+        }
+
+        // Handle search input
+        searchInput.addEventListener("input", function () {
+            currentSearch = this.value.toLowerCase().trim();
+            applyFilters();
+        });
+
+        // Handle category dropdown
+        categoryLinks.forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                currentCategory = this.dataset.category;
+                applyFilters();
+
+                // Optionally: update dropdown button text
+                document.getElementById("categoryFilterDropdown").textContent =
+                    this.textContent.trim();
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const tableRows = document.querySelectorAll("tbody tr");
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+
+            tableRows.forEach(row => {
+                const nameCell = row.querySelector("td:nth-child(2)"); // assuming Name is in 2nd column
+                const name = nameCell.textContent.toLowerCase();
+
+                row.style.display = name.includes(query) ? "" : "none";
+            });
+        });
+    });
+</script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         console.log("✅ DOM FULLY LOADED");
