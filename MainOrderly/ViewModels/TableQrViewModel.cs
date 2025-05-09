@@ -1,8 +1,8 @@
 ﻿namespace MainOrderly.WebApp.ViewModels
 {
-    public class TableViewModel
+    public class TableQrViewModel
     {
-        public int Id { get; set; }
         public int TableNumber { get; set; }
+        public byte[] QrCode { get; set; }
     }
 }

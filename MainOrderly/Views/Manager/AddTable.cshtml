@@ -11,8 +11,11 @@
     There are currently <strong>@Model</strong> tables in the restaurant.
 </h4>
 
-<form asp-controller="Manager" asp-action="AddNewTable">
+<form asp-controller="Manager" asp-action="AddNewTable" style="padding-left: 3rem;">
+    <label>Table Number:</label>
+    <input type="number" name="tableNumber" min="1" step="1" required />
+
     <button type="submit" class="btn btn-success" style="margin-left: 3rem;">
         <i class="bi bi-plus-circle me-2" ></i>
-        Create Table @(Model + 1) with QR code</button>
+        Create Table with QR code</button>
 </form>

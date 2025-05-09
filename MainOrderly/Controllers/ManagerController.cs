@@ -242,7 +242,7 @@ namespace MainOrderly.WebApp.Controllers
             var viewModelList = tables.Select(t => new TableViewModel
             {
                 Id = t.Id,
-                QrCode = t.QrCode
+                TableNumber = t.Number
             }).ToList();
 
             return View(viewModelList);
@@ -258,16 +258,41 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddNewTable()
+        public IActionResult AddNewTable(int tableNumber)
         {
             string guidToken = Guid.NewGuid().ToString();
             string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
             byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
 
-            var table = new Table(qrCodeImage, guidToken);
-            _tableService.CreateAddTableDB(table);
+            var table = new Table(qrCodeImage, guidToken, tableNumber);
+            _tableService.CreateTableWitNumber(table);
 
             return RedirectToAction("TableList");
+        }
+
+        [HttpGet]
+        public IActionResult TableQR(int tableId)
+        {
+            if (tableId == 0)
+            {
+                return View("Error"); 
+            }
+
+            var qrCode = _tableService.GetTableQRById(tableId);
+            var tableNum = _tableService.GetTableNumberById(tableId);
+
+            if(qrCode == null || tableNum == null)
+            {
+                return View("Error");
+            }
+            var model = new TableQrViewModel
+            {
+                TableNumber = (int)tableNum,
+                QrCode = qrCode
+            };
+
+            return PartialView("TableQR", model);
+
         }
     }
 }
