@@ -1453,3 +1453,8 @@ footer {
 .StatusButtons {
     text-align: center;
 }
+
+/*table list page*/
+.table-card {
+    display: none; 
+}
