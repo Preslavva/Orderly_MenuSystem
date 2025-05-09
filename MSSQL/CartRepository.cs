@@ -26,7 +26,7 @@ namespace MSSQL
             }
         }
 
-        public DateTime GetOrderPlacingTime(int orderId)
+        public DateTime GetOrderPlacingTime(int? orderId)
         {
             DateTime orderTimestamp = DateTime.MinValue;
             using SqlConnection connection = new SqlConnection(_connectionString);  

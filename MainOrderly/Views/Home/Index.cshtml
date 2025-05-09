@@ -5,21 +5,9 @@
     var categoriesFromModel = ((List<Category>)ViewBag.AllCategories)
     .OrderBy(c => c == Category.Starters ? 0 : 1)
     .ToList();
-
+    
 
     ViewData["Title"] = "Home Page";
-}
-
-@if (TempData["Anti-Abuse"] != null)
-{
-    <div class="alert alert-danger" role="alert">
-        <strong>
-            @Html.Raw(TempData["Anti-Abuse"])
-        </strong>
-        <form method="post" asp-action="DismissMessage" asp-controller="Home" class="close-form">
-            <button type="submit" class="btn-close" aria-label="Close"></button>
-        </form>
-    </div>
 }
 
 

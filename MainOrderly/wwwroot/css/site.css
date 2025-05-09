@@ -1448,22 +1448,18 @@ footer {
         transition: background-color 0.3s ease, color 0.3s ease;
     }
 
-    .StatusButtons .selected-new {
-        background-color: #00000000;
-    }
+.selected-new {
+    background-color: #00000000 !important;
+}
 
-    .StatusButtons .selected-processing {
-        background-color: #3998FF;
-        color: white;
-    }
+.selected-processing {
+    background-color: #3998FF !important;
+    color: white !important;
+}
 
-    .StatusButtons .selected-completed {
-        background-color: #1AD285;
-        color: white;
-    }
-
-.StatusButtons {
-    text-align: center;
+.selected-completed {
+    background-color: #1AD285 !important;
+    color: white !important;
 }
 
 .order-status {

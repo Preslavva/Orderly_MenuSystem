@@ -1,11 +1,10 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Services;
-using Models.Entities;
-using MainOrderly.WebApp.ViewModels;
 using MainOrderly.WebApp.Helpers;
+using MainOrderly.WebApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Models.Enums;
-using Microsoft.AspNetCore.Components.Forms;
+using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
@@ -28,14 +27,14 @@ namespace MainOrderly.WebApp.Controllers
             _menuService = menuService;
             _nutritionService = nutritionService;
             _allergenService = allergenService;
-            _ingredientService = ingredientService; 
+            _ingredientService = ingredientService;
 
         }
 
         //this controller is the first thing that user you will see.
         public IActionResult LoadingPage(int tableId)
         {
-            ViewBag.TableId = tableId;  
+            ViewBag.TableId = tableId;
             return View("~/Views/loading.cshtml");
         }
 
@@ -60,20 +59,20 @@ namespace MainOrderly.WebApp.Controllers
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
-                        HttpOnly = true, 
+                        HttpOnly = true,
                         Secure = true,
                         IsEssential = true
                     });
             }
 
-            if(!Request.Cookies.ContainsKey("SessiondID"))
+            if (!Request.Cookies.ContainsKey("SessiondID"))
             {
                 string sessionID = Guid.NewGuid().ToString();
                 Response.Cookies.Append("SessiondID", sessionID,
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
-                        HttpOnly = true, 
+                        HttpOnly = true,
                         Secure = true,
                         IsEssential = true
                     });
@@ -125,7 +124,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             var menuItem = _menuService.GetMenuItem(id, restaurantId);
             var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
-        
+
 
             MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
@@ -140,7 +139,7 @@ namespace MainOrderly.WebApp.Controllers
                 .ToList();
 
             var ingredients = _ingredientService.GetIngredientsForItem(id);
-            var ingredientViewModel= ingredients
+            var ingredientViewModel = ingredients
                 .Select(IngredientViewModel.ConvertToViewModel)
                 .ToList();
 
@@ -154,7 +153,7 @@ namespace MainOrderly.WebApp.Controllers
                 IngredientViewModel = ingredientViewModel
             };
 
-         
+
             ViewBag.Category = category;
 
             return View("Info", compositeViewModel);
@@ -164,15 +163,8 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
         {
-            if (Request.Cookies["order-restricted"] == "true")
-            {
-                TempData["Anti-Abuse"] = $"Sorry, you will have to wait until you can order again! ";
-            }
-            else
-            {
-                _cartService.AddToCart(id, quantity);
-                ViewBag.CartCount = _cartService.GetCartCount();
-            }
+            _cartService.AddToCart(id, quantity);
+            ViewBag.CartCount = _cartService.GetCartCount();
             return RedirectToAction("Index", "Home");
         }
 

@@ -1,5 +1,4 @@
-﻿
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
     const searchInput = document.getElementById('searchInput');
     const resultsContainer = document.getElementById('searchResults');
     const category = new URLSearchParams(window.location.search).get('category') || '';
@@ -20,38 +19,66 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+    const countdownDiv = document.getElementById("countdown");
+    if (!countdownDiv) return;
+
+    const orderId = countdownDiv.getAttribute("data-order-id");
+    if (!orderId) return;
+
+    function updateCountdown() {
+        fetch(`/Cart/Timer?orderId=${orderId}`)
+            .then(response => response.text())
+            .then(time => {
+                if (time === "Time's up") {
+                    countdownDiv.textContent = "Time's up";
+                } else {
+                    countdownDiv.textContent = time;
+                }
+            })
+            .catch(err => console.error("Error fetching timer:", err));
+    }
+
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+});
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Poll order status for buttons and badges
+    const pollOrderStatusForElements = () => {
+        document.querySelectorAll('.badge[data-order-id], #orderStatusButtons[data-order-id]').forEach(element => {
+            const orderId = element.getAttribute('data-order-id');
+            if (orderId) {
+                pollOrderStatus(orderId);
+                setInterval(() => pollOrderStatus(orderId), 5000);
+            }
+        });
+    };
+
+    pollOrderStatusForElements();
+
+    // Scroll active tab into view
+    const activeTabLink = document.querySelector(".tab-list .tab-item.active a");
+    if (activeTabLink) {
+        activeTabLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    // Update status highlight
+    updateStatusHighlight("@Model.Status");
+});
+
 function pollOrderStatus(orderId) {
     fetch(`/Kitchen/GetOrderStatus?orderId=${orderId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.text();
-        })
+        .then(response => response.text())
         .then(status => {
             const trimmedStatus = status.trim();
             console.log(`Polled status for order ${orderId}:`, trimmedStatus);
-
             updateBadgeColor(orderId, trimmedStatus);
             updateStatusHighlight(trimmedStatus);
         })
         .catch(err => console.error("Error fetching status", err));
 }
-
-(function () {
-    setInterval(function () {
-        const countdownDiv = document.getElementById("countdown");
-        if (!countdownDiv) return;
-
-        const orderId = countdownDiv.getAttribute("data-order-id");
-        if (!orderId) return;
-
-        htmx.ajax('GET', `/Cart/Timer?orderId=${orderId}`, {
-            target: '#countdown',
-            swap: 'outerHTML'
-        });
-    }, 1000);
-})();
 
 function updateBadgeColor(orderId, status) {
     const badge = document.querySelector(`.badge[data-order-id="${orderId}"]`);
@@ -83,7 +110,6 @@ function updateBadgeColor(orderId, status) {
             break;
     }
 }
-
 
 function updateStatusHighlight(currentStatus) {
     console.log("Updating Status Highlight for:", currentStatus);
@@ -126,32 +152,3 @@ function updateStatusHighlight(currentStatus) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const container = document.getElementById('orderStatusButtons');
-    if (container) {
-        const orderId = container.getAttribute('data-order-id');
-        if (orderId) {
-            pollOrderStatus(orderId);
-            setInterval(() => pollOrderStatus(orderId), 5000);
-        }
-    }
-
-    document.querySelectorAll('.badge[data-order-id]').forEach(badge => {
-        const orderId = badge.getAttribute('data-order-id');
-        if (orderId) {
-            pollOrderStatus(orderId);
-            setInterval(() => pollOrderStatus(orderId), 5000);
-        }
-    });
-});
-
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    // Find the active category link
-    var activeTabLink = document.querySelector(".tab-list .tab-item.active a");
-    if (activeTabLink) {
-        // Scroll it into view within its container, centering it horizontally
-        activeTabLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-    }
-});

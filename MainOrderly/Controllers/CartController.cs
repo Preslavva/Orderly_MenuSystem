@@ -2,7 +2,6 @@
 using Services;
 using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
-using System.Runtime.CompilerServices;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -80,15 +79,6 @@ namespace MainOrderly.WebApp.Controllers
                 Id = orderId
             };
 
-            if(!_cartService.CheckTimeBetweenOrders(orderId))
-            {
-                Response.Cookies.Append("order-restricted", "true", new CookieOptions
-                {
-                    IsEssential = true, 
-                    Expires = DateTime.Now.AddMinutes(5) 
-                });
-            }
-
             return View(orderModel);
         }
 
@@ -111,14 +101,25 @@ namespace MainOrderly.WebApp.Controllers
                 "123 Test Street"
             );
 
+            int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
+            if (oldOrderId != null)
+            {
+                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId);
+                if (!IsNotExpired)
+                {
+                    TempData["ErrorMessage"] = "You cannot place another order because the time restriction has expired.";
+                    return RedirectToAction("OrderSummaryPage", "Cart");
+                }
+            }
+
             List<CartViewModel> viewModel = GetCartViewModel();
             if (viewModel.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
-
             int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
             _historyService.SaveOrderIds(newOrderId);
+            HttpContext.Session.SetInt32("oldOrderId", newOrderId);
 
             _cartService.SaveCart(new Dictionary<int, int>());
 
@@ -141,29 +142,17 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult Timer(int orderId)
         {
-            TimeSpan endOfTimer = _cartService.GetEndOfTimer(orderId);  
-            TimeSpan remainingTime = endOfTimer - DateTime.Now.TimeOfDay;
+            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId);  
+            TimeSpan remainingTime = endOfTimer - DateTime.Now;
 
             if (remainingTime.TotalSeconds <= 0)
             {
-                Response.Cookies.Delete("order-restricted");
-                return Content(null);
-            }
-            else
-            {
-                Response.Cookies.Append("order-restricted", "true", new CookieOptions
-                {
-                    IsEssential = true,
-                    Expires = DateTime.Now.AddMinutes(5)
-                });
+                return Content("Time's up");
             }
 
+            string formattedTime = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
 
-            string countdownHtml = $"<div id='countdown' class='AntiAbuseTimer'  data-order-id='{orderId}'>" +
-                                   $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}</div>";
-
-            return Content(countdownHtml, "text/html");
+            return Content(formattedTime);
         }
-
     }
 }

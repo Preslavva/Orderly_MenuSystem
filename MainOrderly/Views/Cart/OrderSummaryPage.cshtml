@@ -5,6 +5,13 @@
 
 <link rel="stylesheet" href="~/css/orderSummary.css" />
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <div class="order-summary-container">
     <div class="order-summary-title">
         Summary

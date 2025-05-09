@@ -133,22 +133,23 @@ namespace Services
             return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
 
-        public bool CheckTimeBetweenOrders(int orderId)
+        public bool CheckTimeBetweenOrders(int? orderId)
         {
-            TimeSpan orderTime = _cartRepository.GetOrderPlacingTime(orderId).TimeOfDay;
-            TimeSpan now = DateTime.Now.TimeOfDay;
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            DateTime now = DateTime.Now;
             TimeSpan difference = now - orderTime;
-            if(difference.TotalMinutes <= 5)
+            if(difference.TotalSeconds <= 20)
             {
                 return false;
             }
             return true;
         }
 
-        public TimeSpan GetEndOfTimer(int orderId)
+        public DateTime GetEndOfTimer(int orderId)
         {
-            TimeSpan orderTime = _cartRepository.GetOrderPlacingTime(orderId).TimeOfDay;
-            return orderTime + TimeSpan.FromMinutes(5);
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            //return orderTime + TimeSpan.FromMinutes(5);
+            return orderTime + TimeSpan.FromSeconds(20);
         }
 
     }
