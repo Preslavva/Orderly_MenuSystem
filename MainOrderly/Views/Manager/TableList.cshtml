@@ -26,7 +26,7 @@
     <div class="row" id="tableContainer">
         @foreach (var table in Model)
         {
-            <div class="col-md-4 mb-4 d-flex justify-content-center table-card" data-tablenumber="@table.Id.ToString()">
+            <div class="col-md-4 mb-4 d-flex justify-content-center table-card" data-tablenumber="@table.TableNumber">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body text-center">
                         <form asp-controller="Manager" asp-action="TableQR" method="post">
@@ -72,10 +72,10 @@
         const tableCards = document.querySelectorAll(".table-card");
 
         searchInput.addEventListener("input", function () {
-            const query = this.value.toLowerCase().trim();
+            const query = this.value.trim();
 
             tableCards.forEach(card => {
-                const tableNumber = card.dataset.tablenumber.toLowerCase();
+                const tableNumber = card.dataset.tablenumber;
                 card.style.display = tableNumber.includes(query) ? "flex" : "none";
             });
         });
@@ -89,10 +89,8 @@
             button.addEventListener("click", function () {
                 const tableId = this.getAttribute("data-table-id");
 
-                // Show loading text while fetching
                 qrModalBody.innerHTML = "<p class='text-muted'>Loading...</p>";
 
-                // Fetch the partial view via AJAX
                 fetch(`/Manager/TableQR?tableId=${tableId}`)
                     .then(response => {
                         if (!response.ok) throw new Error("Network error");
