@@ -5,10 +5,11 @@
     var categoriesFromModel = ((List<Category>)ViewBag.AllCategories)
     .OrderBy(c => c == Category.Starters ? 0 : 1)
     .ToList();
-
+    
 
     ViewData["Title"] = "Home Page";
 }
+
 
 <div class="sticky-panel">
     <div class="category-tabs">

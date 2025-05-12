@@ -1,6 +1,5 @@
-﻿using Azure.Core;
+﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
-using Models;
 using Models.Entities;
 using MSSQL;
 using System.Collections.Generic;
@@ -16,6 +15,7 @@ namespace Services
         private Dictionary<int, int> cart;
         private readonly CartRepository _cartRepository;
         private readonly CheckoutService _checkoutService;
+        private const int timer = 5;
         private readonly IngredientService _ingredientService;
         private readonly IngredientRepository _ingredientRepository;
 
@@ -105,10 +105,10 @@ namespace Services
             }
             return counter;
         }
-         int restauranrId = 1;
+        int restauranrId = 1;
         public Dictionary<MenuItem, int> GetCart()
         {
-            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem,int>();
+            Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
 
             string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
@@ -117,7 +117,7 @@ namespace Services
                 foreach (int key in cart.Keys)
                 {
                     MenuItem? item = _menuItemRepository.GetMenuItemById(key, restauranrId);
-                    
+
                     newCart[item] = cart[key];
                 }
             }
@@ -179,5 +179,25 @@ namespace Services
             
             return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
+
+        public bool CheckTimeBetweenOrders(int? orderId)
+        {
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            DateTime now = DateTime.Now;
+            TimeSpan difference = now - orderTime;
+            if(difference.TotalSeconds <= 20)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public DateTime GetEndOfTimer(int orderId)
+        {
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            //return orderTime + TimeSpan.FromMinutes(5);
+            return orderTime + TimeSpan.FromSeconds(20);
+        }
+
     }
 }

@@ -1,11 +1,10 @@
 using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
-using Services;
-using Models.Entities;
-using MainOrderly.WebApp.ViewModels;
 using MainOrderly.WebApp.Helpers;
+using MainOrderly.WebApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Models.Entities;
 using Models.Enums;
-using Microsoft.AspNetCore.Components.Forms;
+using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
@@ -30,7 +29,7 @@ namespace MainOrderly.WebApp.Controllers
             _tableService = tableService;
             _nutritionService = nutritionService;
             _allergenService = allergenService;
-            _ingredientService = ingredientService; 
+            _ingredientService = ingredientService;
 
         }
 
@@ -78,20 +77,20 @@ namespace MainOrderly.WebApp.Controllers
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
-                        HttpOnly = true, 
+                        HttpOnly = true,
                         Secure = true,
                         IsEssential = true
                     });
             }
 
-            if(!Request.Cookies.ContainsKey("SessiondID"))
+            if (!Request.Cookies.ContainsKey("SessiondID"))
             {
                 string sessionID = Guid.NewGuid().ToString();
                 Response.Cookies.Append("SessiondID", sessionID,
                     new CookieOptions
                     {
                         Expires = DateTime.Now.AddHours(1),
-                        HttpOnly = true, 
+                        HttpOnly = true,
                         Secure = true,
                         IsEssential = true
                     });
@@ -143,7 +142,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             var menuItem = _menuService.GetMenuItem(id, restaurantId);
             var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
-        
+
 
             MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
 
@@ -158,7 +157,7 @@ namespace MainOrderly.WebApp.Controllers
                 .ToList();
 
             var ingredients = _ingredientService.GetIngredientsForItem(id);
-            var ingredientViewModel= ingredients
+            var ingredientViewModel = ingredients
                 .Select(IngredientViewModel.ConvertToViewModel)
                 .ToList();
 
@@ -172,7 +171,7 @@ namespace MainOrderly.WebApp.Controllers
                 IngredientViewModel = ingredientViewModel
             };
 
-         
+
             ViewBag.Category = category;
 
             return View("Info", compositeViewModel);
@@ -187,6 +186,13 @@ namespace MainOrderly.WebApp.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [HttpPost]
+        public IActionResult DismissMessage()
+        {
+            TempData["Anti-Abuse"] = null;
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpGet]
         public IActionResult Privacy()
         {
@@ -198,24 +204,5 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-        //[HttpGet]
-        //public IActionResult Search(string term, Category? category)
-        //{
-        //    var allItems = _menuService.LoadMenuItems(1);
-        //    var menuItemViewModel = MappingHelper.ConvertToViewModels(allItems);
-        //    int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 0;
-        //    var allItem = _menuService.LoadMenuItems(1);
-
-        //    List<MenuItemViewModel> menuItemModel = MappingHelper.ConvertToViewModels(allItems);
-
-        //    var filtered = menuItemViewModel.Where(x =>
-        //        (string.IsNullOrWhiteSpace(term) || (!string.IsNullOrEmpty(x.Name) && x.Name.Contains(term, StringComparison.OrdinalIgnoreCase))) &&
-        //        (!category.HasValue || x.Category == category.Value)
-        //    ).ToList();
-
-        //    return PartialView("_MenuItemList", filtered);
-        //}
-
-
     }
 }

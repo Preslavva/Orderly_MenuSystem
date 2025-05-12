@@ -34,7 +34,8 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableRepository>();
             builder.Services.AddScoped<AllergenRepository>();
             builder.Services.AddScoped<AllergenService>();
-
+            builder.Services.AddScoped<OrderHistoryRepository>();
+            builder.Services.AddScoped<HistoryService>();
 
             builder.Services.AddScoped<IngredientService>();
             builder.Services.AddScoped<IngredientRepository>();

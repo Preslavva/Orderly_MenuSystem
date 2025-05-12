@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Models.Enums;
-using MSSQL;
 using Services;
 using MainOrderly.WebApp.Helpers;
-using System.Collections.Generic;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -151,7 +149,6 @@ namespace MainOrderly.WebApp.Controllers
         {
             OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId));
             return Content(order.Status.ToString());
-            //return PartialView("orderButtons",order);
         }
 
         public IActionResult RemoveOrderDashboard(List<int> id)

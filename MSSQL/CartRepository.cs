@@ -25,5 +25,25 @@ namespace MSSQL
                 cmd.ExecuteNonQuery();
             }
         }
+
+        public DateTime GetOrderPlacingTime(int? orderId)
+        {
+            DateTime orderTimestamp = DateTime.MinValue;
+            using SqlConnection connection = new SqlConnection(_connectionString);  
+            connection.Open();
+
+            string sql = @"select OrderTimeStamp
+                           from [Order]
+                           where Id = @Id";
+            using SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@Id", orderId);
+
+            using SqlDataReader reader = command.ExecuteReader();
+            if(reader.Read())
+            {
+                orderTimestamp = reader.GetDateTime(0);
+            }
+            return orderTimestamp;
+        }
     }
 }

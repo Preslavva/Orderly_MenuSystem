@@ -174,6 +174,7 @@ h2 {
     margin-bottom: 1px;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
+
 h2 {
     color: #6B705C;
     margin-bottom: 1px;
@@ -192,6 +193,7 @@ hr {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .card-content p {
     font-size: 1rem;
     margin-bottom: 5px;
@@ -286,6 +288,7 @@ hr {
     width: 100%;
     display: block;
 }
+
 .food-card {
     display: flex;
     flex-direction: column;
@@ -360,13 +363,14 @@ p {
     font-size: 20px;
     color: grey;
 }
-   
+
 
 
 .nutrition-item {
     width: 70px;
     mix-blend-mode: multiply;
 }
+
 .nutritions img {
     mix-blend-mode: multiply;
     width: 100px;
@@ -386,7 +390,6 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-
     height: 60px;
     background-color: #6B705C;
 }
@@ -570,6 +573,7 @@ footer {
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
     border: none;
+    border-radius: 10%;
 }
 
     .btn-order-now:hover {
@@ -716,6 +720,7 @@ footer {
         /* Ensure the footer is above other elements if needed */
         z-index: 9999;
     }
+
     .custom-footer {
         /* Make footer stick to the bottom */
         position: fixed;
@@ -726,7 +731,7 @@ footer {
         background-color: #6B705C; /* Example greenish/brown tone */
         /* Give the footer a bit of height and padding */
         padding: 0.75rem 0;
-        /* Optional: curve the top corners to mimic a “rounded” tab look */
+        /* Optional: curve the top corners to mimic a ?rounded? tab look */
         border-top-left-radius: 16px;
         border-top-right-radius: 16px;
         /* Ensure content (buttons) do not overflow */
@@ -1005,7 +1010,7 @@ footer {
 .tab-list {
     list-style: none;
     display: flex;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     gap: 30px;
     padding: 0;
     margin: 0;
@@ -1107,10 +1112,11 @@ footer {
     overflow-y: auto;
     margin-top: 10px;
 }
-    .tab-item.active {
-        color: #6B705C;
-        border-bottom: 3px solid #6B705C;
-    }
+
+.tab-item.active {
+    color: #6B705C;
+    border-bottom: 3px solid #6B705C;
+}
 
 
 
@@ -1396,7 +1402,7 @@ footer {
     }
 }
 
-    }
+}
 
 /*payment confirmation page*/
 
@@ -1418,38 +1424,119 @@ footer {
     margin-top: 20px;
 }
 
-.PaymentTitle,
-.PaymentText {
-    text-align: center;
+.PaymentTitle img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-    .PaymentTitle h1 {
-        color: black;
-    }
+.PaymentTitle h1 {
+    color: black;
+}
 
 .PaymentText {
     margin-top: 50px;
     text-align: center;
 }
 
-.StatusButtons .btn {
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.StatusButtons .selected-new {
-    background-color: #00000000;
-}
-
-.StatusButtons .selected-processing {
-    background-color: #3998FF;
-    color: white;
-}
-
-.StatusButtons .selected-completed {
-    background-color: #1AD285;
-    color: white;
-}
-
 .StatusButtons {
     text-align: center;
+    margin-top: -130px;
+}
+
+    .StatusButtons .btn {
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+.selected-new {
+    background-color: #00000000 !important;
+}
+
+.selected-processing {
+    background-color: #3998FF !important;
+    color: white !important;
+}
+
+.selected-completed {
+    background-color: #1AD285 !important;
+    color: white !important;
+}
+
+.order-status {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.badge.order-status-badge {
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.order-history-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.order-id {
+    text-align: center;
+    font-size: 20px;
+    color: #6B705C;
+}
+
+
+
+.order-status {
+    display: flex;
+    justify-content: center;
+}
+
+.order-status-badge {
+    margin-left: 90px;
+}
+
+.history {
+    width: 50px;
+}
+
+.AntiAbuseTimer {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ffc107; 
+    color: #212529;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin-top: 1rem;
+    min-width: 100px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    margin-left: 135px;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+.AntiAbuseTimer {
+    animation: pulse 2s infinite;
 }

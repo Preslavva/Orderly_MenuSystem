@@ -11,15 +11,18 @@ namespace MainOrderly.WebApp.Controllers
     {
         private readonly CartService _cartService;
         private readonly IngredientService _ingredientService;
+        private readonly HistoryService _historyService;
+
         private Dictionary<MenuItem, int> GetOrderList()
         {
             return _cartService.GetCart();
         }
 
-        public CartController(CartService cartService, IngredientService ingredientService)
+        public CartController(CartService cartService, IngredientService ingredientService, HistoryService histortyService)
         {
             _cartService = cartService;
             _ingredientService = ingredientService;
+            _historyService = histortyService;
         }
 
         /// <summary>
@@ -80,10 +83,12 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult PaymentConfirmationPage(int orderId)
         {
+            ViewData["Page"] = "Payment";
             OrderViewModel orderModel = new OrderViewModel()
             {
                 Id = orderId
             };
+
             return View(orderModel);
         }
 
@@ -106,14 +111,26 @@ namespace MainOrderly.WebApp.Controllers
                 "123 Test Street"
             );
 
+            int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
+            if (oldOrderId != null)
+            {
+                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId);
+                if (!IsNotExpired)
+                {
+                    TempData["ErrorMessage"] = "You cannot place another order because the time restriction has expired.";
+                    return RedirectToAction("OrderSummaryPage", "Cart");
+                }
+            }
+
             List<CartViewModel> viewModel = GetCartViewModel();
             if (viewModel.Count == 0)
             {
                 return RedirectToAction("OrderList");
             }
-
             int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
-         
+            _historyService.SaveOrderIds(newOrderId);
+            HttpContext.Session.SetInt32("oldOrderId", newOrderId);
+
             _cartService.SaveCart(new Dictionary<int, int>());
 
             _cartService.ClearCart();
@@ -131,6 +148,21 @@ namespace MainOrderly.WebApp.Controllers
         {
             TempData["Receipt"] = "The receipt was sent to your email!";
             return RedirectToAction("PaymentConfirmationPage", "Cart");
+        }
+
+        public IActionResult Timer(int orderId)
+        {
+            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId);  
+            TimeSpan remainingTime = endOfTimer - DateTime.Now;
+
+            if (remainingTime.TotalSeconds <= 0)
+            {
+                return Content("Time's up");
+            }
+
+            string formattedTime = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
+
+            return Content(formattedTime);
         }
     }
 }
