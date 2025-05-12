@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using MainOrderly.WebApp.Extensions
+@{
+    var user = Context.Session.GetAuthenticatedUser();
+}
+
+<!DOCTYPE html>
 <html lang="en" data-topbar-color="dark">
 
 <head>
@@ -56,135 +61,159 @@
             <!--- Menu -->
             <ul class="menu">
                 <li class="menu-title">Apps</li>
-                <li class="menu-item">
-                    <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
-                        <span class="menu-icon"><i data-feather="coffee"></i></span>
-                        <span class="menu-text">Restaurant</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="@Url.Action("Index", "Company")" class="menu-link">
-                        <span class="menu-icon"><i data-feather="briefcase"></i></span>
-                        <span class="menu-text">Company Details</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="index.html#menuStaff" data-bs-toggle="collapse" class="menu-link">
-                        <span class="menu-icon"><i data-feather="users"></i></span>
-                        <span class="menu-text">Staff Manager</span>
-                        <i data-feather="chevron-down" class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="menuStaff">
-                        <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("AllStaff", "Staff")" class="menu-link">
-                                    <span class="menu-text">All Staff</span>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="@Url.Action("AddStaff", "Staff")" class="menu-link">
-                                    <span class="menu-text">Add New</span>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="@Url.Action("Permissions", "Staff")" class="menu-link">
-                                    <span class="menu-text">Permissions</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a href="index.html#menuEcommerce" data-bs-toggle="collapse" class="menu-link">
-                        <span class="menu-icon"><i data-feather="book-open"></i></span>
-                        <span class="menu-text">Menu Management</span>
-                        <i data-feather="chevron-down" class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="menuEcommerce">
-                        <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("MenuItems", "Manager")" class="menu-link">
-                                    <span class="menu-text">Menu</span>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="@Url.Action("Create", "Manager")" class="menu-link">
-                                    <span class="menu-text">Add</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a href="index.html#menuProjects" data-bs-toggle="collapse" class="menu-link">
-                        <span class="menu-icon"><i data-feather="package"></i></span>
-                        <span class="menu-text">Ingredient</span>
-                        <i data-feather="chevron-down" class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="menuProjects">
-                        <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("AddIngredient", "Manager")" class="menu-link">
-                                    <span class="menu-text">Add</span>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="@Url.Action("IngredientList", "Manager")" class="menu-link">
-                                    <span class="menu-text">List</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a href="index.html#menuTable" data-bs-toggle="collapse" class="menu-link">
-                        <span class="menu-icon"><i data-feather="grid"></i></span>
-                        <span class="menu-text">Table Management</span>
-                        <i data-feather="chevron-down" class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="menuTable">
-                        <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("AddTable", "Table")" class="menu-link">
-                                    <span class="menu-text">Add Table</span>
-                                </a>
-                            </li>
-                            <li class="menu-item">
-                                <a href="@Url.Action("TableList", "Table")" class="menu-link">
-                                    <span class="menu-text">List of Tables</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a href="index.html#menuAnalytics" data-bs-toggle="collapse" class="menu-link">
-                        <span class="menu-icon"><i data-feather="bar-chart-2"></i></span>
-                        <span class="menu-text">Analytics</span>
-                        <i data-feather="chevron-down" class="menu-arrow"></i>
-                    </a>
-                    <div class="collapse" id="menuAnalytics">
-                        <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("TotalRevenue", "Analytics")" class="menu-link">
-                                    <span class="menu-text">Total Revenue</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </li>
-                <li class="menu-item">
-                    <a href="@Url.Action("Kitchen", "Dashboard")" class="menu-link">
-                        <span class="menu-icon"><i data-feather="clock"></i></span>
-                        <span class="menu-text">Kitchen Dashboard</span>
-                    </a>
-                </li>
-                <li class="menu-item">
-                    <a href="@Url.Action("Orders", "Waiter")" class="menu-link">
-                        <span class="menu-icon"><i data-feather="clipboard"></i></span>
-                        <span class="menu-text">Waiter Tab</span>
-                    </a>
-                </li>
+
+                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager")))
+                {
+                    <li class="menu-item">
+                        <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
+                            <span class="menu-icon"><i data-feather="coffee"></i></span>
+                            <span class="menu-text">Restaurant</span>
+                        </a>
+                    </li>
+                }
+
+                @if (user != null && user.Roles.Contains("Owner"))
+                {
+                    <li class="menu-item">
+                        <a href="@Url.Action("Index", "Company")" class="menu-link">
+                            <span class="menu-icon"><i data-feather="briefcase"></i></span>
+                            <span class="menu-text">Company Details</span>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="index.html#menuStaff" data-bs-toggle="collapse" class="menu-link">
+                            <span class="menu-icon"><i data-feather="users"></i></span>
+                            <span class="menu-text">Staff Manager</span>
+                            <i data-feather="chevron-down" class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menuStaff">
+                            <ul class="sub-menu">
+                                <li class="menu-item">
+                                    <a href="@Url.Action("AllStaff", "Staff")" class="menu-link">
+                                        <span class="menu-text">All Staff</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="@Url.Action("AddStaff", "Staff")" class="menu-link">
+                                        <span class="menu-text">Add New</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="@Url.Action("Permissions", "Staff")" class="menu-link">
+                                        <span class="menu-text">Permissions</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                }
+
+                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager")))
+                {
+                    <li class="menu-item">
+                        <a href="index.html#menuEcommerce" data-bs-toggle="collapse" class="menu-link">
+                            <span class="menu-icon"><i data-feather="book-open"></i></span>
+                            <span class="menu-text">Menu Management</span>
+                            <i data-feather="chevron-down" class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menuEcommerce">
+                            <ul class="sub-menu">
+                                <li class="menu-item">
+                                    <a href="@Url.Action("MenuItems", "Manager")" class="menu-link">
+                                        <span class="menu-text">Menu</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="@Url.Action("Create", "Manager")" class="menu-link">
+                                        <span class="menu-text">Add</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="index.html#menuProjects" data-bs-toggle="collapse" class="menu-link">
+                            <span class="menu-icon"><i data-feather="package"></i></span>
+                            <span class="menu-text">Ingredient</span>
+                            <i data-feather="chevron-down" class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menuProjects">
+                            <ul class="sub-menu">
+                                <li class="menu-item">
+                                    <a href="@Url.Action("AddIngredient", "Manager")" class="menu-link">
+                                        <span class="menu-text">Add</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="@Url.Action("IngredientList", "Manager")" class="menu-link">
+                                        <span class="menu-text">List</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="index.html#menuTable" data-bs-toggle="collapse" class="menu-link">
+                            <span class="menu-icon"><i data-feather="grid"></i></span>
+                            <span class="menu-text">Table Management</span>
+                            <i data-feather="chevron-down" class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menuTable">
+                            <ul class="sub-menu">
+                                <li class="menu-item">
+                                    <a href="@Url.Action("AddTable", "Table")" class="menu-link">
+                                        <span class="menu-text">Add Table</span>
+                                    </a>
+                                </li>
+                                <li class="menu-item">
+                                    <a href="@Url.Action("TableList", "Table")" class="menu-link">
+                                        <span class="menu-text">List of Tables</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="index.html#menuAnalytics" data-bs-toggle="collapse" class="menu-link">
+                            <span class="menu-icon"><i data-feather="bar-chart-2"></i></span>
+                            <span class="menu-text">Analytics</span>
+                            <i data-feather="chevron-down" class="menu-arrow"></i>
+                        </a>
+                        <div class="collapse" id="menuAnalytics">
+                            <ul class="sub-menu">
+                                <li class="menu-item">
+                                    <a href="@Url.Action("TotalRevenue", "Analytics")" class="menu-link">
+                                        <span class="menu-text">Total Revenue</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                }
+
+                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager") || user.Roles.Contains("Chef")))
+                {
+                    <li class="menu-item">
+                        <a href="@Url.Action("Dashboard", "Kitchen")" class="menu-link">
+                            <span class="menu-icon"><i data-feather="clock"></i></span>
+                            <span class="menu-text">Kitchen Dashboard</span>
+                        </a>
+                    </li>
+                }
+
+                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager") || user.Roles.Contains("Waiter")))
+                {
+                    <li class="menu-item">
+                        <a href="@Url.Action("Orders", "Waiter")" class="menu-link">
+                            <span class="menu-icon"><i data-feather="clipboard"></i></span>
+                            <span class="menu-text">Waiter Tab</span>
+                        </a>
+                    </li>
+                }
 
             </ul>
             <!--- End Menu -->
@@ -238,14 +267,14 @@
                         <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                                 <span class="d-flex align-items-center">
                                     <div class="d-none d-md-inline-block">
-                                        <span id="user-role">Manager</span> <span style="font-size: 12px;">⏷</span>
+                                        <span id="user-role">@(user?.UserType ?? "Guest")</span> <span style="font-size: 12px;">⏷</span>
                                     </div>
                                 </span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end profile-dropdown">
                             <!-- item-->
                             <div class="dropdown-header noti-title">
-                                <h6 class="text-overflow m-0">Welcome!</h6>
+                                <h6 class="text-overflow m-0">Welcome @(user?.FullName ?? "Guest")!</h6>
                             </div>
 
                             <!-- item-->
@@ -263,7 +292,7 @@
                             <div class="dropdown-divider"></div>
 
                             <!-- item-->
-                            <a href="javascript:void(0);" class="dropdown-item notify-item">
+                            <a href="@Url.Action("Logout", "BusinessAccount")" class="dropdown-item notify-item">
                                 <i data-feather="log-out" class="icon-dual icon-xs me-1"></i>
                                 <span>Logout</span>
                             </a>

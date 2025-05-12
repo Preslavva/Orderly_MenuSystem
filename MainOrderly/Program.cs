@@ -11,14 +11,17 @@ namespace MainOrderly.WebApp
     {
         public static void Main(string[] args)
         {
-            
-
             var builder = WebApplication.CreateBuilder(args);
-            // Add services to the container.
             builder.Services.AddControllersWithViews();
-            builder.Services.AddSession();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromHours(2);
+                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+            });
             builder.Services.AddHttpContextAccessor();
 
+            // Existing services
             builder.Services.AddScoped<CartService>();
             builder.Services.AddScoped<MenuItemRepository>();
             builder.Services.AddScoped<NutritionRepository>();
@@ -34,14 +37,15 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<TableRepository>();
             builder.Services.AddScoped<AllergenRepository>();
             builder.Services.AddScoped<AllergenService>();
-
-
             builder.Services.AddScoped<IngredientService>();
             builder.Services.AddScoped<IngredientRepository>();
             builder.Services.AddScoped<TimerHelpers>();
 
-
-
+            // New services for authentication
+            builder.Services.AddScoped<OwnerRepository>();
+            builder.Services.AddScoped<StaffRepository>();
+            builder.Services.AddScoped<RoleRepository>();
+            builder.Services.AddScoped<AuthenticationService>();
 
             var app = builder.Build();
 
@@ -55,7 +59,6 @@ namespace MainOrderly.WebApp
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
 
             app.UseSession();
 
