@@ -23,4 +23,5 @@ namespace Models.Entities
 
         public Nutrition() { }
     }
+   
 }

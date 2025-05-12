@@ -1,9 +1,21 @@
 ﻿@model List<MainOrderly.WebApp.ViewModels.MenuItemViewModel>
+@using System.ComponentModel.DataAnnotations
+
 @{
     ViewData["Title"] = "Menu Management";
     Layout = "_ManagerLayout";
+    string selected = ViewBag.SelectedCategory as string ?? "all";
 }
 
+@functions {
+    string GetDisplayName(Enum value)
+    {
+        var field = value.GetType().GetField(value.ToString());
+        var attr = field?.GetCustomAttributes(typeof(DisplayAttribute), false)
+                         .FirstOrDefault() as DisplayAttribute;
+        return attr?.Name ?? value.ToString();
+    }
+}
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1>Menu Items Management</h1>
@@ -13,14 +25,11 @@
     </div>
 
     <div class="row mb-3">
+
         <div class="col-md-6">
-            <div class="input-group">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search menu items...">
-                <button class="btn btn-outline-secondary" type="button">
-                    <i class="bi bi-search"></i>
-                </button>
-            </div>
+           
         </div>
+
         <div class="col-md-6">
             <div class="d-flex justify-content-end">
                 <div class="dropdown">
@@ -28,11 +37,24 @@
                         Filter by Category
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="categoryFilter">
-                        <li><a class="dropdown-item" href="#" data-category="all">All Categories</a></li>
-                        @foreach (var category in Enum.GetValues(typeof(Models.Enums.Category)))
+                        <li>
+                            <a class="dropdown-item @(selected == "all" ? "active" : "")"
+                               href="@Url.Action("MenuItems", "Manager", new { category = "all" })">
+                                All Categories
+                            </a>
+                        </li>
+                        @foreach (Models.Enums.Category category in Enum.GetValues(typeof(Models.Enums.Category)))
                         {
-                            <li><a class="dropdown-item" href="#" data-category="@category">@category</a></li>
+                            var enumValue = category.ToString();
+                            <li>
+                                <a class="dropdown-item @(selected == enumValue ? "active" : "")"
+                                   href="@Url.Action("MenuItems", "Manager", new { category = enumValue })">
+                                    @GetDisplayName(category)  
+                                </a>
+                            </li>
                         }
+
+
                     </ul>
                 </div>
             </div>
@@ -61,7 +83,7 @@
                                 <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
                                     @(item.IsAvailable ? "Available" : "Unavailable")
                                 </span>
-                                <span class="badge bg-info">@item.Category</span>
+                                <span class="badge bg-info">@GetDisplayName(item.Category)</span>
                             </div>
                         </div>
                         <div class="card-footer bg-transparent">
@@ -80,3 +102,5 @@
         </div>
     }
 </div>
+
+

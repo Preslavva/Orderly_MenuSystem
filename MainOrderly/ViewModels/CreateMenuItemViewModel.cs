@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Models.Entities;
 using Models.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MainOrderly.WebApp.ViewModels
 {
@@ -12,6 +13,10 @@ namespace MainOrderly.WebApp.ViewModels
         public string Description { get; set; }
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
+
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
+
         public string Picture { get; set; }
         public int PrepTime { get; set; }
         public Category Category { get; set; }
@@ -20,6 +25,9 @@ namespace MainOrderly.WebApp.ViewModels
         public List<IngredientViewModel> AvailableIngredients { get; set; }
         public List<int> SelectedIngredientIds { get; set; }
         public Dictionary<int, int> IngredientQuantities { get; set; }
+        public List<AllergenName> SelectedAllergens { get; set; } = new();
+        public List<NutritionEntry> NutritionValues { get; set; } = new();
+
 
         public static CreateMenuItemViewModel Initialize(List<IngredientViewModel> availableIngredients)
         {
@@ -34,4 +42,10 @@ namespace MainOrderly.WebApp.ViewModels
 
 
     }
+    public class NutritionEntry
+    {
+        public NutritionName Name { get; set; }
+        public double Value { get; set; }
+    }
+
 }

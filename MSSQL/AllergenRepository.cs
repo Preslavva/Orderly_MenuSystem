@@ -58,5 +58,7 @@ WHERE ma.MenuItemId  = @MenuItemId;";
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
+
+
     }
 }
