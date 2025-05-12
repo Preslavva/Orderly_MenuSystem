@@ -1,0 +1,108 @@
+﻿@model List<TableViewModel>
+@{
+    ViewData["Title"] = "Table Management";
+    Layout = "_ManagerLayout";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 style="padding-left: 3rem;">Table Management</h1>
+        <a asp-controller="Manager" asp-action="AddTable" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Add New Table
+        </a>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6 offset-md-3">
+            <div class="input-group">
+                <input type="text" id="searchInput2" class="form-control" placeholder="Search table number...">
+                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                    <i class="bi bi-search"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="tableContainer">
+        @foreach (var table in Model)
+        {
+            <div class="col-md-4 mb-4 d-flex justify-content-center table-card" data-tablenumber="@table.TableNumber">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-body text-center">
+                        <form asp-controller="Manager" asp-action="TableQR" method="post">
+                            <input type="text" value="@table.Id" name="Id" hidden />
+                            <button type="button"
+                                    class="btn btn-link show-qr-btn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#qrModal"
+                                    data-table-id="@table.Id">
+                                <i class="bi bi-qr-code" style="font-size: 2rem;"></i>
+                            </button>
+                        </form>
+                        <h5 class="card-title mt-2">Table Number: @table.TableNumber</h5>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <button id="seeMoreBtn" class="btn btn-secondary">See More</button>
+</div>
+
+
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Table QR Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="qrModalBody">
+                <p class="text-muted">Loading...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput2");
+        const tableCards = document.querySelectorAll(".table-card");
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.trim();
+
+            tableCards.forEach(card => {
+                const tableNumber = card.dataset.tablenumber;
+                card.style.display = tableNumber.includes(query) ? "flex" : "none";
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const qrModal = document.getElementById("qrModal");
+        const qrModalBody = document.getElementById("qrModalBody");
+
+        document.querySelectorAll(".show-qr-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const tableId = this.getAttribute("data-table-id");
+
+                qrModalBody.innerHTML = "<p class='text-muted'>Loading...</p>";
+
+                fetch(`/Manager/TableQR?tableId=${tableId}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error");
+                        return response.text();
+                    })
+                    .then(html => {
+                        qrModalBody.innerHTML = html;
+                    })
+                    .catch(err => {
+                        qrModalBody.innerHTML = "<p class='text-danger'>Failed to load QR code.</p>";
+                    });
+            });
+        });
+    });
+</script>

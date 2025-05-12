@@ -12,13 +12,19 @@ namespace MainOrderly.WebApp.Controllers
         private readonly MenuService _menuService;
         private readonly IngredientService _ingredientService;
         private readonly NutritionService _nutritionService;
+        private readonly TableService _tableService;
+        private readonly QRCodeService _qrCodeService;
         private readonly int _restaurantId = 1;
+        private readonly string _baseUrl;
 
-        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService)
+        public ManagerController(MenuService menuService, IngredientService ingredientService, NutritionService nutritionService, TableService tableService, QRCodeService qrCodeService, IConfiguration configuration)
         {
             _menuService = menuService;
             _ingredientService = ingredientService;
             _nutritionService = nutritionService;
+            _tableService = tableService;
+            _qrCodeService = qrCodeService;
+            _baseUrl = configuration["AppSettings:BaseUrl"]!;
         }
 
         public IActionResult Index()
@@ -372,6 +378,66 @@ namespace MainOrderly.WebApp.Controllers
 
             return Json(notifications);
         }
+        [HttpGet]
+        public IActionResult TableList()
+        {
+            int restaurantId = 1;
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
 
+            var viewModelList = tables.Select(t => new TableViewModel
+            {
+                Id = t.Id,
+                TableNumber = t.Number
+            }).ToList();
+
+            return View(viewModelList);
+        }
+
+        [HttpGet]
+        public IActionResult AddTable()
+        {
+            int restaurantId = 1;
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
+
+            return View(tables.Count);
+        }
+
+        [HttpPost]
+        public IActionResult AddNewTable(int tableNumber)
+        {
+            string guidToken = Guid.NewGuid().ToString();
+            string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
+            byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
+
+            var table = new Table(qrCodeImage, guidToken, tableNumber);
+            _tableService.CreateTableWitNumber(table);
+
+            return RedirectToAction("TableList");
+        }
+
+        [HttpGet]
+        public IActionResult TableQR(int tableId)
+        {
+            if (tableId == 0)
+            {
+                return View("Error"); 
+            }
+
+            var qrCode = _tableService.GetTableQRById(tableId);
+            var tableNum = _tableService.GetTableNumberById(tableId);
+
+            if(qrCode == null || tableNum == null)
+            {
+                return View("Error");
+            }
+            var model = new TableQrViewModel
+            {
+                TableNumber = (int)tableNum,
+                QrCode = qrCode
+            };
+
+            return PartialView("TableQR", model);
+
+        }
     }
 }

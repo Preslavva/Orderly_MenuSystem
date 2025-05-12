@@ -1,0 +1,16 @@
+﻿@model TableQrViewModel
+
+@{
+    ViewData["Title"] = "Table QR";
+}
+
+<h3 style="padding-left: 3rem;">Table Number: @Model.TableNumber</h3>
+
+@if (Model.QrCode != null && Model.QrCode.Length > 0)
+{
+    <img src="data:image/png;base64,@Convert.ToBase64String(Model.QrCode)" alt="QR Code for Table @Model.TableNumber" style="width: 250px; height: 200px; padding-left: 3rem;">
+}
+else
+{
+    <p>QR code not available for this table.</p>
+}

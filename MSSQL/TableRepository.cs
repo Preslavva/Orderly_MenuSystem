@@ -31,6 +31,73 @@ namespace MSSQL
             }
         }
 
+        public void CreateTableWithNumber(Table table)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string queryAddTable = """
+                            INSERT INTO [Table] (QrCode, RestaurantId, GuidToken, TableNumber) 
+                            VALUES (@QrCode, 1, @GuidToken, @TableNumber)
+                        """;
+
+                using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
+                {
+                    cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode);
+                    cmdAddTable.Parameters.AddWithValue("@GuidToken", table.GuidToken);
+                    cmdAddTable.Parameters.AddWithValue("@TableNumber", table.Number);
+
+                    cmdAddTable.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public byte[] GetTableQRById(int tableId)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string queryAddTable = """
+                            SELECT QrCode FROM [Table]
+                            WHERE Id = @TableId
+                        """;
+
+                using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
+                {
+                    cmdAddTable.Parameters.AddWithValue("@TableId", tableId);
+
+                    var result = cmdAddTable.ExecuteScalar();
+
+                    byte[] QrCode = result as byte[];
+
+                    return QrCode;
+                }
+            }
+        }
+
+        public int GetTableNumberById(int tableId)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+
+                string queryAddTable = """
+                            SELECT TableNumber FROM [Table]
+                            WHERE Id = @TableId
+                        """;
+
+                using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
+                {
+                    cmdAddTable.Parameters.AddWithValue("@TableId", tableId);
+
+                    var result = Convert.ToInt32(cmdAddTable.ExecuteScalar());
+                    return result;
+                }
+            }
+        }
+
         public List<Table> GetAllTables()
         {
             var tables = new List<Table>();
@@ -86,6 +153,42 @@ namespace MSSQL
             }
 
             return null;
+        }
+
+        public List<Table> GetTablesByRestaurantId(int restaurantId)
+        {
+            List<Table> tables = new List<Table>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"SELECT Id, QrCode, TableNumber
+                               FROM [Table] WHERE RestaurantId = @RestaurantId";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                tables.Add(new Table(
+                                    Convert.ToInt32(reader["Id"]),
+                                    (byte[])reader["QrCode"],
+                                    Convert.ToInt32(reader["TableNumber"])
+                                ));
+                            }
+                        }
+                    }
+                }
+                return tables;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while retrieving Tables for Restaurant: {ex.Message}", ex);
+            }
         }
     }
 }
