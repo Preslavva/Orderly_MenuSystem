@@ -5,12 +5,43 @@
 }
 
 <div class="container">
-    <div class="col-12">
-        <div class="category-button">
-            <a class="btn button-primary" href="add-products.html#!" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
-                <i class="me-2 fa fa-plus"></i> Create New Ingredient
-            </a>
+    
+    <div class="col-12"> 
+        <div class="row mb-4 mt-4 align-items-center">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="h3 mb-0">🧂 Ingredient Stock</h1>
+                </div>
+            <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search ingredients...">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+            </div>
+            <div class="col-md-6 text-md-end mt-3 mt-md-0 d-flex justify-content-end align-items-center gap-2">
+                <!-- Filter -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter by Category
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="categoryFilterDropdown">
+                        <li><a class="dropdown-item" href="#" data-category="all">All Categories</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="g">Grams</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="ml">Milliliters</a></li>
+                        <li><a class="dropdown-item" href="#" data-category="pcs">Pieces</a></li>
+                    </ul>
+                </div>
+
+                <!-- Create button -->
+                <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
+                    <i class="fa fa-plus me-1"></i> Add Ingredient
+                </a>
+            </div>
         </div>
+        </div>
+
+       
         <div class="modal fade" id="ingredient-modal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
@@ -49,6 +80,7 @@
                 </div>
             </div>
         </div>
+
         <div class="modal fade" id="editIngredientModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-md">
                 <div class="modal-content">
@@ -58,17 +90,19 @@
                     </div>
                     <div class="modal-body">
                         <form id="editIngredientForm">
+                            <input type="hidden" id="editId" />
+
                             <div class="mb-3">
                                 <label for="editName" class="form-label">Name</label>
                                 <input type="text" class="form-control" id="editName">
                             </div>
                             <div class="mb-3">
-                                <label for="minimumStock" class="form-label">Minimum Stock Level</label>
-                                <input type="number" class="form-control" id="minimumStockLevel" required>
-                            </div>
-                            <div class="mb-3">
                                 <label for="editQuantity" class="form-label">Quantity</label>
                                 <input type="number" class="form-control" id="editQuantity">
+                            </div>
+                            <div class="mb-3">
+                                <label for="minimumStockLevel" class="form-label">Minimum Stock Level</label>
+                                <input type="number" class="form-control" id="editMinimumStockLevel" required>
                             </div>
                             <div class="mb-3">
                                 <label for="editUnit" class="form-label">Unit</label>
@@ -79,6 +113,7 @@
                                 </select>
                             </div>
                         </form>
+
                     </div>
                     <div class="modal-footer">
                         <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancel</button>
@@ -96,11 +131,7 @@
                 <table class="table table-centered table-nowrap mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th style="width: 20px;">
-                                <div class="form-check">
-                                    <input type="checkbox" class="form-check-input" id="checkAll">
-                                </div>
-                            </th>
+                            
                             <th>ID</th>
                             <th>Name</th>
                             <th>Quantity in Stock</th>
@@ -111,16 +142,32 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var i in Model)
+                    @foreach (var i in Model)
+                    {
+                        var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
+                        var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
+
+                        <tr data-unit="@i.Unit.ToLower()">
+                            <td>@i.Id</td>
+                            <td>@i.Name</td>
+                            <td>@i.QuantityInStock</td>
+                            <td>@i.Unit</td>
+                            <td>@i.MinimumStockLevel</td>
+                            <td><h5><span class="badge @badgeClass">@status</span></h5></td>
+                            <td>
+                                <a href="javascript:void(0);" class="action-icon edit-btn"
+                                   data-id="@i.Id" data-bs-toggle="modal" data-bs-target="#editIngredientModal">✏️</a>
+                                <a href="javascript:void(0);" class="action-icon delete-btn" data-id="@i.Id">🗑️</a>
+                            </td>
+                        </tr>
+                    }
+
+                       @*  @foreach (var i in Model)
                         {
                             var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
                             var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
                             <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input type="checkbox" class="form-check-input">
-                                    </div>
-                                </td>
+                                
                                 <td>@i.Id</td>
                                 <td>@i.Name</td>
                                 <td>@i.QuantityInStock</td>
@@ -134,10 +181,13 @@
                                        data-bs-toggle="modal"
                                        data-bs-target="#editIngredientModal">✏️</a>
 
-                                    <a href="javascript:void(0);" class="action-icon">🗑️</a>
+                                    <a href="javascript:void(0);"
+                                       class="action-icon delete-btn"
+                                       data-id="@i.Id">🗑️</a>
+
                                 </td>
                             </tr>
-                        }
+                        } *@
                     </tbody>
 
                 </table>
@@ -151,28 +201,204 @@
     </div>
     <!-- end row -->
 </div>
+
+
 <script>
-       document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            const id = this.dataset.id;
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const categoryLinks = document.querySelectorAll(".dropdown-menu a[data-category]");
+        const tableRows = document.querySelectorAll("tbody tr");
 
-           fetch(`/Manager/GetIngredientById/${id}`)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('editName').value = data.name;
-                    document.getElementById('editQuantity').value = data.quantityInStock;
-                    document.getElementById('minimumStockLevel').value = data.minimumStockLevel;
-                    document.getElementById('editUnit').value = data.unit;
+        let currentSearch = "";
+        let currentCategory = "all";
 
-                    // Якщо хочеш передати ID (потрібно для збереження)
-                    document.getElementById('editIngredientForm').dataset.id = data.id;
+        function applyFilters() {
+            tableRows.forEach(row => {
+                const name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                const unit = row.dataset.unit;
+
+                const matchesName = name.includes(currentSearch);
+                const matchesUnit = currentCategory === "all" || unit === currentCategory;
+
+                row.style.display = matchesName && matchesUnit ? "" : "none";
+            });
+        }
+
+        // Handle search input
+        searchInput.addEventListener("input", function () {
+            currentSearch = this.value.toLowerCase().trim();
+            applyFilters();
+        });
+
+        // Handle category dropdown
+        categoryLinks.forEach(link => {
+            link.addEventListener("click", function (e) {
+                e.preventDefault();
+                currentCategory = this.dataset.category;
+                applyFilters();
+
+                // Optionally: update dropdown button text
+                document.getElementById("categoryFilterDropdown").textContent =
+                    this.textContent.trim();
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const searchInput = document.getElementById("searchInput");
+        const tableRows = document.querySelectorAll("tbody tr");
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.toLowerCase().trim();
+
+            tableRows.forEach(row => {
+                const nameCell = row.querySelector("td:nth-child(2)"); // assuming Name is in 2nd column
+                const name = nameCell.textContent.toLowerCase();
+
+                row.style.display = name.includes(query) ? "" : "none";
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("✅ DOM FULLY LOADED");
+
+        const form = document.getElementById("ingredientForm");
+
+        if (!form) {
+            console.error("❌ ingredientForm NOT FOUND in DOM!");
+            return;
+        }
+
+        console.log("✅ ingredientForm found!");
+
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
+            console.log("✅ FORM SUBMIT TRIGGERED");
+
+            const data = {
+                name: document.getElementById("ingredientName").value,
+                unit: document.getElementById("unit").value,
+                quantityInStock: parseInt(document.getElementById("quantity").value),
+                minimumStockLevel: parseInt(document.getElementById("minimumStockLevel").value)
+            };
+
+            fetch("/Manager/AddIngredient", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(resp => {
+                console.log("Response:", resp);
+                if (!resp.ok) throw new Error("Server error");
+                return resp.json();
+            })
+            .then(result => {
+                alert("✅ Ingredient added!");
+                location.reload();
+            })
+            .catch(err => {
+                console.error("❌ FETCH ERROR:", err);
+                alert("❌ Error: " + err.message);
+            });
+        });
+    });
+</script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("✅ Edit Ingredient Script Loaded");
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const id = this.dataset.id;
+                 console.log("✏️ Trying to load ingredient with ID:", id); 
+                fetch(`/Manager/GetIngredientById/${id}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('editId').value = data.id;
+                        document.getElementById('editName').value = data.name;
+                        document.getElementById('editQuantity').value = data.quantityInStock;
+                            document.getElementById('editMinimumStockLevel').value = data.minimumStockLevel;
+    document.getElementById('editUnit').value = data.unit;
+                    })
+                    .catch(err => {
+                        alert("❌ Failed to load ingredient details.");
+                        console.error(err);
+                    });
+            });
+        });
+
+        document.getElementById("editIngredientForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const data = {
+                id: parseInt(document.getElementById("editId").value),
+                name: document.getElementById("editName").value,
+                unit: document.getElementById("editUnit").value,
+                quantityInStock: parseInt(document.getElementById("editQuantity").value),
+     minimumStockLevel: parseInt(document.getElementById("editMinimumStockLevel").value)
+            };
+
+            console.log("🔄 Updating ingredient:", data);
+
+            fetch("/Manager/UpdateIngredient", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(resp => {
+                if (!resp.ok) {
+                    return resp.text().then(text => { throw new Error(text); });
+                }
+                return resp.json();
+            })
+            .then(result => {
+                alert("✅ Ingredient updated successfully!");
+                location.reload();
+            })
+            .catch(err => {
+                alert("❌ Update error: " + err.message);
+                console.error("UPDATE ERROR:", err);
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".delete-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const id = this.dataset.id;
+                if (!confirm("❗ Are you sure you want to delete this ingredient?")) return;
+
+                fetch(`/Manager/DeleteIngredient/${id}`, {
+                    method: "DELETE"
+                })
+                .then(resp => {
+                    if (!resp.ok) throw new Error("Failed to delete ingredient.");
+                    return resp.json();
+                })
+                .then(result => {
+                    alert("✅ Ingredient deleted!");
+                    location.reload(); // або видалити рядок з DOM
                 })
                 .catch(err => {
-                    alert("Failed to load ingredient details.");
-                    console.error(err);
+                    alert("❌ Error: " + err.message);
                 });
+            });
         });
-            
-
-
+    });
 </script>

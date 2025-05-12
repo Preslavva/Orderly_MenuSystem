@@ -42,6 +42,20 @@ namespace Services
             return _ingredientRepository.UpdateMenuItemIngredients(menuItemId, ingredientQuantities);
         }
 
+        public void UpdateIngredient(Ingredient ingredient)
+        {
+            _ingredientRepository.UpdateIngredient(ingredient);
+        }
+        public void DeleteIngredient(int id)
+        {
+            _ingredientRepository.Delete(id);
+        }
+       
+        public List<Ingredient> GetLowStockIngredients(int restaurantId)
+        {
+            var ingredients = _ingredientRepository.GetIngredientsByRestaurantId(restaurantId);
+            return ingredients.Where(i => i.QuantityInStock < i.MinimumStockLevel).ToList();
+        }
         public void SubstractStock(MenuItem menuItem)
         {
             

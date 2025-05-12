@@ -402,6 +402,43 @@ namespace MSSQL
                 throw new Exception($"Error while retrieving Ingredients for MenuItem: {ex.Message}", ex);
             }
         }
+
+
+        public void UpdateIngredient(Ingredient ingredient)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = @"UPDATE Ingredient 
+                         SET Name = @Name, Unit = @Unit, QuantityInStock = @QuantityInStock, MinimumStockLevel = @MinimumStockLevel
+                         WHERE Id = @Id";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", ingredient.Id);
+                    cmd.Parameters.AddWithValue("@Name", ingredient.Name);
+                    cmd.Parameters.AddWithValue("@Unit", ingredient.Unit);
+                    cmd.Parameters.AddWithValue("@QuantityInStock", ingredient.QuantityInStock);
+                    cmd.Parameters.AddWithValue("@MinimumStockLevel", ingredient.MinimumStockLevel);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public void Delete(int id)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = "DELETE FROM Ingredient WHERE Id = @Id";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 }
 
