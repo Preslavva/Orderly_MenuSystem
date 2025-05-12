@@ -83,4 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
+document.addEventListener("DOMContentLoaded", function () {
+    // Find the active category link
+    var activeTabLink = document.querySelector(".tab-list .tab-item.active a");
+    if (activeTabLink) {
+        // Scroll it into view within its container, centering it horizontally
+        activeTabLink.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+});

@@ -1,6 +1,7 @@
 ﻿@model List<CartViewModel>
 @{
     ViewData["Title"] = "Order Summary";
+    var selected = (Tip?)ViewBag.SelectedTip ?? Tip.None;
 }
 
 <link rel="stylesheet" href="~/css/orderSummary.css" />
@@ -19,14 +20,149 @@
                 </p>
             }
         </div>
-
-        <div class="order-total">
-            <span>Total Price:</span>
-            <span>@ViewBag.TotalPrice.ToString("C")</span>
+        <!-- Tipping Section -->
+        <div class="tipping-section">
+            <div class="tipping-title">Add a tip</div>
+            <div class="tipping-options">
+                <form asp-action="OrderSummaryPage" method="get">
+                    <div class="tip-buttons-row">
+                        <button type="submit" name="tipAmount" value="None" class="tip-btn @(selected == Tip.None ? "active" : "")">No Tip</button>
+                        <button type="submit" name="tipAmount" value="Tip15" class="tip-btn @(selected == Tip.Tip15 ? "active" : "")">15%</button>
+                        <button type="submit" name="tipAmount" value="Tip25" class="tip-btn @(selected == Tip.Tip25 ? "active" : "")">25%</button>
+                    </div>
+                    <div class="custom-tip">
+                        <input formtype="number" id="customTipInput" name="customTip" placeholder="Custom %" min="0" max="100" />
+                        <button type="submit" class="tip-btn">Apply</button>
+                    </div>
+                </form>
+            </div>
+            <div class="grand-total">
+                <span>Grand Total:</span>
+                <span id="grandTotal">@ViewBag.TotalPrice.ToString("C")</span>
+            </div>
+            <div>
+                <span>Total without tip:</span>
+                <span id="withoutTip">@ViewBag.NoTipTotalPrice.ToString("C")</span>
+            </div>
         </div>
-
         <form asp-controller="Cart" asp-action="CheckOut" method="post">
             <input type="submit" value="Pay now" class="btn-order-now" />
         </form>
     </div>
 </div>
+<style>
+    /* Tipping Section Styles */
+    .tipping-section {
+        margin-top: 20px;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 15px;
+    }
+
+    .tipping-title {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .tipping-options {
+        margin-bottom: 15px;
+    }
+
+    .tip-buttons-row {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .tip-btn {
+        padding: 8px 15px;
+        background-color: #f5f5f5;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s;
+        flex: 1;
+        max-width: 100px;
+    }
+
+        .tip-btn:hover {
+            background-color: #e9e9e9;
+        }
+
+        .tip-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #0069d9;
+        }
+
+    .custom-tip {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        margin-top: 10px;
+    }
+
+    #customTipInput {
+        width: 80px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    #applyCustomTip {
+        padding: 8px 10px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+        #applyCustomTip:hover {
+            background-color: #218838;
+        }
+
+    .tip-amount, .grand-total {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+
+    .grand-total {
+        font-weight: 700;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e0e0e0;
+    }
+</style>
+
+<!-- CSS for the services modal -->
+<style>
+    .service-card {
+        transition: all 0.2s ease;
+        border: 1px solid #dee2e6;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .service-card.selected {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+
+    .form-check-input:checked ~ .card-body {
+        background-color: #f8f9fa;
+    }
+
+    /* Make the whole card clickable */
+    .service-card .form-check {
+        z-index: 2;
+    }
+</style>

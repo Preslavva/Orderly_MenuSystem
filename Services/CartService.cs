@@ -5,6 +5,8 @@ using Models.Entities;
 using MSSQL;
 using System.Collections.Generic;
 using System.Text.Json;
+using Models.Enums;
+
 namespace Services
 {
     public class CartService
@@ -116,7 +118,33 @@ namespace Services
             return newCart;
         }
 
-        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart)
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart, Tip tipAmount,int customTip)
+        {
+            if (customTip >= 100)
+                customTip = 100;
+
+            decimal totalPrice = 0;
+            foreach (var element in cart)
+            {
+                MenuItem item = element.Key;
+                int quantity = element.Value;
+                totalPrice += quantity * item.Price;
+            }
+
+            if(tipAmount == Tip.Tip15)
+            {
+                totalPrice += totalPrice * 0.15m;
+            }
+            else if (tipAmount == Tip.Tip25)
+            {
+                totalPrice += totalPrice * 0.25m;
+            }
+            else if (customTip>0)
+                totalPrice += totalPrice * (customTip / 100m);
+            
+            return totalPrice;
+        }
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart) // overloading method, for no tipping.
         {
             decimal totalPrice = 0;
             foreach (var element in cart)
@@ -125,6 +153,7 @@ namespace Services
                 int quantity = element.Value;
                 totalPrice += quantity * item.Price;
             }
+            
             return totalPrice;
         }
 

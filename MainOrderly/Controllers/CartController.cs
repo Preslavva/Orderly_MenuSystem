@@ -3,6 +3,7 @@ using Services;
 using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
 using System.Runtime.CompilerServices;
+using Models.Enums;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -35,6 +36,8 @@ namespace MainOrderly.WebApp.Controllers
         {
             ViewData["Page"] = "Order overview";
             List<CartViewModel> model = GetCartViewModel();
+
+
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
@@ -55,11 +58,15 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult OrderSummaryPage()
+        public IActionResult OrderSummaryPage(Tip tipAmount, int customTip)    
         {
             ViewData["Page"] = "Order summary";
             List<CartViewModel> viewModel = GetCartViewModel();
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+
+            ViewBag.SelectedTip = tipAmount;
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(),tipAmount,customTip);
+            ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+            
             return View(viewModel);
         }
 

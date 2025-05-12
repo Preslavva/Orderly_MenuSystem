@@ -12,6 +12,9 @@ namespace MainOrderly.WebApp.ViewModels
         public int Quantity { get; set; }
         public string ItemPriceFormatted => ItemPrice.ToString("C", CultureInfo.CurrentCulture);
 
+
+
+
         public static CartViewModel ConvertToViewModel(MenuItem item, int quantity)
         {
             return new CartViewModel()

@@ -1,7 +1,6 @@
 ﻿@{
 
     ViewData["Title"] = "Test Page";
-    var tableId = ViewBag.TableId;
 }
 <!DOCTYPE html>
 <html>
@@ -23,10 +22,13 @@
         </div>
         <div id="progress-bar"></div>
     </div>
+    @{
+        var token = Context.Request.Query["token"];
+    }
     <script>
         // Wait for 3 seconds, then redirect to the Home/Index page
         setTimeout(function() {
-            window.location.href = '@Url.Action("Index", "Home",new{tableId = tableId})';
+            window.location.href = '@Url.Action("Index", "Home", new { token = Context.Request.Query["token"] })';
         }, 3000);
     </script>
 </body>
