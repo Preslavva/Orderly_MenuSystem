@@ -16,9 +16,14 @@ namespace Services
         private Dictionary<int, int> cart;
         private readonly CartRepository _cartRepository;
         private readonly CheckoutService _checkoutService;
+        private readonly IngredientService _ingredientService;
+        private readonly IngredientRepository _ingredientRepository;
 
-        public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService)
+
+        public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService, IngredientService ingredientService,IngredientRepository ingredientRepository)
         {
+            _ingredientRepository = ingredientRepository;
+            _ingredientService = ingredientService;
             _checkoutService = checkoutService;
             _cartRepository = cartRepository;
             contextAccessor = contxtAccessor;
@@ -31,6 +36,7 @@ namespace Services
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
             }
 
+            _ingredientService = ingredientService;
         }
 
         public void AddToCart(int id, int quantity)
@@ -159,8 +165,18 @@ namespace Services
 
         public int FinalizeOrder(int tableId, Restaurant restaurant)
         {
+
+            tableId = 6; // test, to remove later
             Dictionary<MenuItem, int> cart = GetCart();
 
+            foreach(var element in cart)
+            {
+                var ingredient = _ingredientRepository.GetIngredientsForMenuItem(element.Key.Id);
+                MenuItem item = element.Key;
+                item.SetIngredient(ingredient);
+                _ingredientService.SubstractStock(item);
+            }
+            
             return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
     }

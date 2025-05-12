@@ -42,6 +42,17 @@ namespace Services
             return _ingredientRepository.UpdateMenuItemIngredients(menuItemId, ingredientQuantities);
         }
 
+        public void SubstractStock(MenuItem menuItem)
+        {
+            
+            menuItem.Ingredients.ForEach(ingredient =>
+            {
+                var ingredientToUpdate= _ingredientRepository.GetIngredientById(ingredient.IngredientId);
+                var quantityToSubstract = menuItem.Ingredients.Sum(ingredient => ingredient.Quantity);
+                _ingredientRepository.SubstractIngredientStock(ingredient.IngredientId, quantityToSubstract);
+
+            });
+        }
 
     }
 }

@@ -331,6 +331,33 @@ namespace MSSQL
             }
         }
 
+        public void SubstractIngredientStock(int id, decimal quantityToSubtract)
+        {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(_connectionString))
+                {
+                    conn.Open();
+                    string query = @"
+                UPDATE Ingredient 
+                SET QuantityInStock = QuantityInStock - @QuantityToSubtract 
+                WHERE Id = @Id;";
+
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@QuantityToSubtract", quantityToSubtract);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error while subtracting Ingredient stock: {ex.Message}", ex);
+            }
+        }
+
 
         public List<Ingredient> GetIngredientsForItem(int menuItemId)
         {
