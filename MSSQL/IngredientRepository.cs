@@ -383,12 +383,12 @@ namespace MSSQL
                             while (reader.Read())
                             {
                                 Ingredients.Add(new Ingredient(
-    Convert.ToInt32(reader["Id"]),
-    Convert.ToString(reader["Name"]),
-    Convert.ToString(reader["Unit"]),
-    Convert.ToInt32(reader["QuantityInStock"]),
-    Convert.ToInt32(reader["MinimumStockLevel"]),
-    Convert.ToInt32(reader["RestaurantId"])
+                                Convert.ToInt32(reader["Id"]),
+                                Convert.ToString(reader["Name"]),
+                                Convert.ToString(reader["Unit"]), 
+                                Convert.ToInt32(reader["QuantityInStock"]),
+                                Convert.ToInt32(reader["MinimumStockLevel"]),
+                                Convert.ToInt32(reader["RestaurantId"])
 ));
 
                             }
@@ -401,6 +401,40 @@ namespace MSSQL
             {
                 throw new Exception($"Error while retrieving Ingredients for MenuItem: {ex.Message}", ex);
             }
+        }
+
+        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId) // redundant!!!!
+        {
+
+            List<Ingredient> Ingredients = new List<Ingredient>();
+
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = @"
+                                    select [Name] from Ingredient as i
+                                    inner join MenuItem_Ingredient as mi
+                                    on i.Id = mi.IngredientId
+                                    where mi.MenuItemId = @menuId
+                                    ";
+                using (SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@menuId", menuItemId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Ingredients.Add(new Ingredient(
+                                Convert.ToString(reader["Name"])
+
+                            ));
+                        }
+                    }
+
+                }
+
+            }
+            return Ingredients;
         }
 
 

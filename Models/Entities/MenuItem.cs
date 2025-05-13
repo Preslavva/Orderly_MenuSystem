@@ -11,7 +11,7 @@ namespace Models.Entities
         public string Name { get;  }
         public string Description { get;  }
         public decimal Price { get; private set; }
-        public bool IsAvailable { get; }
+        public bool IsAvailable { get; private set; }
         public string Picture { get; }
         public int PrepTime { get; }
         public Category Category { get; set; }
@@ -40,6 +40,11 @@ namespace Models.Entities
         public void SetMenuItemPrice(decimal price)
         {
             Price = price;
+        }
+
+        public void SetMenuItemAvailability(bool isAvailable)
+        {
+            IsAvailable = isAvailable;
         }
     }
 }

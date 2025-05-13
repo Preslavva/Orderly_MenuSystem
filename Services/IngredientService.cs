@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Services
 {
@@ -32,6 +33,9 @@ namespace Services
             return _ingredientRepository.GetIngredientsForItem(menuItemId);
         }
 
+        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId) => _ingredientRepository.GetIngredientsForItemOnlyName(menuItemId);
+        
+
         public int AddIngredient(Ingredient ingredient)
         {
             return _ingredientRepository.AddIngredient(ingredient);
@@ -50,6 +54,7 @@ namespace Services
         {
             _ingredientRepository.Delete(id);
         }
+
        
         public List<Ingredient> GetLowStockIngredients(int restaurantId)
         {
@@ -59,14 +64,28 @@ namespace Services
         public void SubstractStock(MenuItem menuItem)
         {
             
+            
             menuItem.Ingredients.ForEach(ingredient =>
             {
                 var ingredientToUpdate= _ingredientRepository.GetIngredientById(ingredient.IngredientId);
-                var quantityToSubstract = menuItem.Ingredients.Sum(ingredient => ingredient.Quantity);
+                if(ingredientToUpdate.QuantityInStock < ingredient.Quantity)
+                {
+                    menuItem.SetMenuItemAvailability(false);
+                    throw new Exception($"Not enough stock for ingredient {ingredientToUpdate.Name}");
+                }
+                var quantityToSubstract = ingredient.Quantity;
                 _ingredientRepository.SubstractIngredientStock(ingredient.IngredientId, quantityToSubstract);
-
             });
         }
+
+        
+        public List<MenuItemIngredient> GetIngredientForMenuItem_MenuItemIngredient(int id)
+        {
+              return  _ingredientRepository.GetIngredientsForMenuItem(id);
+        }
+
+
+
 
     }
 }

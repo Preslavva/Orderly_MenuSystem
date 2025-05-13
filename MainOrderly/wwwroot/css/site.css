@@ -1540,3 +1540,28 @@ footer {
 .AntiAbuseTimer {
     animation: pulse 2s infinite;
 }
+
+
+/* Any disabled “Add to cart” submit button */
+input[type="submit"][disabled] {
+    background-color: #d3d3d3; /* light-grey */
+    border-color: #d3d3d3;
+    color: #696969; /* dark-grey text */
+    cursor: not-allowed;
+    opacity: 1; /* keep it fully opaque */
+}
+
+
+.badge-unavailable {
+    position: absolute;
+    top: .5rem; /* distance from top edge */
+    right: .5rem; /* distance from right edge */
+    background: #dc3545; /* red */
+    color: #fff;
+    font-size: .7rem;
+    padding: .25rem .6rem;
+    border-radius: .25rem;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    pointer-events: none; /* badge itself isn’t clickable */
+}

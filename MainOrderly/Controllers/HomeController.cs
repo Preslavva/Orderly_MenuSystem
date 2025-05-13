@@ -1,9 +1,11 @@
 using System.Diagnostics;
+using System.Xml.Linq;
 using MainOrderly.WebApp.Helpers;
 using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Models.Enums;
+using MSSQL;
 using Services;
 
 namespace MainOrderly.WebApp.Controllers
@@ -99,6 +101,28 @@ namespace MainOrderly.WebApp.Controllers
             List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId);
 
             var allMenuItems = _menuService.LoadMenuItems(restaurantId);
+        
+
+            foreach (var item in allMenuItems)
+            {
+                var ingredients = _ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id);
+                item.SetIngredient(ingredients);
+            }
+    
+
+            foreach (var menuItem in allMenuItems)
+            {
+                menuItem.Ingredients.ForEach(ingredient =>
+                {
+                    var ingredientToUpdate = _ingredientService.GetIngredientById(ingredient.IngredientId);
+                    if (ingredientToUpdate.QuantityInStock < ingredient.Quantity)
+                    {
+                        menuItem.SetMenuItemAvailability(false);
+                    }
+                });
+            }
+
+
 
             if (!category.HasValue)
             {
@@ -124,6 +148,7 @@ namespace MainOrderly.WebApp.Controllers
                     .ToList();
             }
 
+            
             var menuItemViewModel = MappingHelper.ConvertToViewModels(allMenuItems);
             TempData["CartCount"] = _cartService.GetCartCount();
 
@@ -156,7 +181,8 @@ namespace MainOrderly.WebApp.Controllers
                 .Select(AllergenViewModel.ConvertToViewModel)
                 .ToList();
 
-            var ingredients = _ingredientService.GetIngredientsForItem(id);
+            var ingredients = _ingredientService.GetIngredientsForItemOnlyName(id);
+            
             var ingredientViewModel = ingredients
                 .Select(IngredientViewModel.ConvertToViewModel)
                 .ToList();

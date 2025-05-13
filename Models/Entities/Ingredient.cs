@@ -26,6 +26,11 @@ namespace Models.Entities
             RestaurantId =  restaurantId;
         }
 
+        public Ingredient(string name)
+        {
+            Name = name;
+        }
+
         public void SetQuantityInStock(int quantity)
         {
             QuantityInStock = quantity;
