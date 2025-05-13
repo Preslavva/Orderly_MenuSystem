@@ -2,11 +2,17 @@
 
 @{
     ViewBag.HideHeader = true;
+    ViewBag.HideFooter = true;
 }
 
 @{
     ViewData["Title"] = "Order Confirmation Page";
 }
+
+<a class="navbar-brand mx-auto position-absolute start-0 mt-4" asp-area="" asp-controller="History" asp-action="History">
+    <img class="history" src="/images/history.png" />
+</a>
+
 <div class="PaymentTitle">
     <img src="~/images/logo.png" alt="Logo" class="logo">
 </div>
@@ -54,7 +60,11 @@
     </button>
 </div>
 
-<div id="countdown" data-order-id="@Model.Id">00:00</div>
+<div id="countdown" data-order-id="@Model.Id" class="text-center mt-3 countdown-timer">
+    00:00
+</div>
+
+
 
     <form asp-controller="Home" asp-action="Index" method="get">
         <div class="PaymentContainer">
