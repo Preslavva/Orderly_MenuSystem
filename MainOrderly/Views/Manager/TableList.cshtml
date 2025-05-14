@@ -104,5 +104,42 @@
                 filterTables();
             });
         });
+                     document.addEventListener("DOMContentLoaded", function () {
+            const qrModal = document.getElementById("qrModal");
+            const qrModalBody = document.getElementById("qrModalBody");
+
+            if (!qrModal || !qrModalBody) {
+                console.warn("❗ QR modal or body not found in the DOM");
+                return;
+            } else {
+                console.log("✅ QR modal and body found");
+            }
+
+            document.querySelectorAll(".show-qr-btn").forEach(button => {
+                button.addEventListener("click", function () {
+                    const tableId = this.getAttribute("data-table-id");
+                    console.log(`🖱️ QR button clicked for tableId: ${tableId}`);
+
+                    qrModalBody.innerHTML = "<p class='text-muted'>Loading...</p>";
+
+                    fetch(`/Manager/TableQR?tableId=${tableId}`)
+                        .then(response => {
+                            console.log("🌐 Fetch request completed:", response.status);
+                            if (!response.ok) throw new Error("Network error");
+                            return response.text();
+                        })
+                        .then(html => {
+                            console.log("📦 HTML content received for QR modal:");
+                            console.log(html);
+                            qrModalBody.innerHTML = html;
+                        })
+                        .catch(err => {
+                            console.error("❌ Error loading QR code:", err);
+                            qrModalBody.innerHTML = "<p class='text-danger'>Failed to load QR code.</p>";
+                        });
+                });
+            });
+        });
+
     </script>
 }
