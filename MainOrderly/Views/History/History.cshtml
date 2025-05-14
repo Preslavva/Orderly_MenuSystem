@@ -7,52 +7,53 @@
 
 <div class="container mt-4">
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="order-history-container">
-            @foreach (var group in Model.GroupBy(order => order.Id))
-            {
-                <div class="order-summary-box">
-                    <div class="order-id">
-                        <strong>Order ID: </strong>@group.Key
-                        <hr/>
-                    </div>
-                    <div class="order-details">
-                        @foreach (var item in group)
-                        {
-                            <p>
-                                <strong>@item.Quantity</strong> x @item.Name
-                            </p>
+	@if (Model != null && Model.Any())
+	{
+		<div class="order-history-container">
+			@foreach (var group in Model.GroupBy(order => order.Id))
+			{
+				<div class="order-summary-box">
+					<div class="order-id">
+						<strong>Order ID: </strong>@group.Key
+						<hr/>
+					</div>
+					<div class="order-details">
+						@foreach (var item in group)
+						{
+							<p>
+								<strong>@item.Quantity</strong> x @item.Name
+							</p>
 
                       
-                        }
+						}
 
-                        <p>
-                            <strong>Subtotal:</strong> @group.First().SubTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
+						<p>
+							<strong>Subtotal:</strong> @group.First().SubTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
 
-                        </p>
-                        <p>
-                            <strong>Time of Order:</strong> @group.First().OrderTimeStamp.ToShortTimeString()
-                        </p>
-                    </div>
+						</p>
+						<p>
+							<strong>Time of Order:</strong> @group.First().OrderTimeStamp.ToShortTimeString()
+						</p>
+					</div>
 
-                    <div class="order-status">
-                        <div class="badge order-status-badge"
-                             data-order-id="@group.Key"
-                             data-status="@group.First().Status">
-                            @group.First().Status
+					<div class="order-status">
+						<div class="badge order-status-badge"
+						     data-order-id="@group.Key"
+						     data-status="@group.First().Status">
+							@group.First().Status
 
-                        </div>
-                    </div>
+						</div>
+					</div>
 
-                </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div>
-            No order history found.
-        </div>
-    }
+				</div>
+			}
+		</div>
+	}
+	else
+	{
+		<div>
+			No order history found.
+		</div>
+	}
 </div>
+

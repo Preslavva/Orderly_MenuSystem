@@ -152,3 +152,4 @@ function updateStatusHighlight(currentStatus) {
     });
 }
 
+

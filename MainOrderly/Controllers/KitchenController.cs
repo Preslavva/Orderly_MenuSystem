@@ -6,10 +6,10 @@ using Services;
 using MainOrderly.WebApp.Helpers;
 using System.Collections.Generic;
 using MainOrderly.WebApp.Attributes;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    [RequireRole("Owner", "Manager", "Chef")]
     public class KitchenController : Controller
     {
         private KitchenOrderService _kitchenOrderService;
@@ -21,6 +21,7 @@ namespace MainOrderly.WebApp.Controllers
             _timerHelpers = timerHelpers;
         }
 
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult Dashboard(int id)
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
@@ -38,8 +39,9 @@ namespace MainOrderly.WebApp.Controllers
             };
          
             return View(vmWithTimer);
-        }   
+        }
 
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult GetNewOrders()
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
@@ -80,6 +82,7 @@ namespace MainOrderly.WebApp.Controllers
         //    return PartialView("_ProcessingOrdersPartial", kitchenViewModelWithTimer);
         //}
 
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult GetProcessingOrders()
         {
             var km = new KitchenOrderManager();
@@ -98,7 +101,7 @@ namespace MainOrderly.WebApp.Controllers
             return PartialView("_ProcessingOrdersPartial", wrapper);
         }
 
-
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult GetCompletedOrders()
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
@@ -116,6 +119,7 @@ namespace MainOrderly.WebApp.Controllers
 
 
         [HttpPost]
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult UpdateOrderItemStatus(int orderId, int menuItemId, OrderStatus newStatus)
         {
             _kitchenOrderService.UpdateOrderItemStatus(orderId, menuItemId, newStatus);
@@ -139,6 +143,7 @@ namespace MainOrderly.WebApp.Controllers
 
 
         [HttpPost]
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult UpdateOrderStatus(int id, OrderStatus newStatus)
         {
             if (newStatus == OrderStatus.PROCESSING)
@@ -194,11 +199,17 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetOrderStatus(int orderId)
         {
+            if (orderId == 0)
+                return BadRequest("Order ID is required.");
+
             OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId));
             return Content(order.Status.ToString());
         }
+
+        [RequireRole("Owner", "Manager", "Chef")]
 
         public IActionResult RemoveOrderDashboard(List<int> id)
         {
@@ -215,7 +226,8 @@ namespace MainOrderly.WebApp.Controllers
 
             return PartialView("_CompletedOrdersPartial", kitchenViewModelWithTimer);
         }
-        
+
+        [RequireRole("Owner", "Manager", "Chef")]
         public IActionResult Logout()
         {
             return RedirectToAction("Logout", "BusinessAccount");
