@@ -102,6 +102,7 @@ namespace MSSQL
                         Category category = (Category)Enum.Parse(typeof(Category), categoryString);
                         int restaurantId = Convert.ToInt32(reader.GetInt32(7));
                         int prepTime = reader["PrepTime"] != DBNull.Value ? Convert.ToInt32(reader["PrepTime"]) : 0;
+                        
                         var status = Enum.Parse<OrderStatus>(Convert.ToString(reader["OrderStatus"])!);
 
                         MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId,prepTime);

@@ -185,7 +185,7 @@ namespace Services
             DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
             DateTime now = DateTime.Now;
             TimeSpan difference = now - orderTime;
-            if(difference.TotalSeconds <= 300)
+            if(difference.TotalSeconds <= 60)
             {
                 return false;
             }
@@ -195,7 +195,7 @@ namespace Services
         public DateTime GetEndOfTimer(int orderId)
         {
             DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
-            return orderTime + TimeSpan.FromMinutes(5);
+            return orderTime + TimeSpan.FromMinutes(1);
         }
 
     }

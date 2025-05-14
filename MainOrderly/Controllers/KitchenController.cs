@@ -121,6 +121,13 @@ namespace MainOrderly.WebApp.Controllers
             manager.SetPendingOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.PROCESSING));
             manager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
 
+            var menuItems = _kitchenOrderService.GetMenuItemsOrder(OrderStatus.PROCESSING,orderId);
+
+            var orderPartialComplete = menuItems.Any(m => m.Status == OrderStatus.PROCESSING);
+
+            if(!orderPartialComplete)
+                _kitchenOrderService.UpdateOrderStatus(orderId,OrderStatus.COMPLETED);
+
             var vm = CompositeKitchenViewModel.ConvertToViewModel(manager,(orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
                 orderId => _timerHelpers.GetRemainingTime(orderId, out _));
             return PartialView("_ProcessingOrdersPartial", new KitchenViewModelWithTimer { CompositeKitchenViewModel = vm, TimerViewModel = new() });
@@ -167,6 +174,8 @@ namespace MainOrderly.WebApp.Controllers
             {
                 KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
                 kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
+
+            
 
                 CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId), orderId => _timerHelpers.GetRemainingTime(orderId, out _));
                 KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
