@@ -210,7 +210,6 @@ namespace MSSQL
                 {
                     conn.Open();
                     
-                    // First check if the staff-role relationship already exists
                     string checkQuery = @"SELECT COUNT(*) FROM StaffRole 
                                         WHERE StaffId = @StaffId AND RoleId = @RoleId;";
                     
@@ -223,7 +222,6 @@ namespace MSSQL
                         
                         if (exists > 0)
                         {
-                            // Update existing record
                             string updateQuery = @"UPDATE StaffRole 
                                                 SET isActive = 1 
                                                 WHERE StaffId = @StaffId AND RoleId = @RoleId;";
@@ -237,7 +235,6 @@ namespace MSSQL
                         }
                         else
                         {
-                            // Insert new record
                             string insertQuery = @"INSERT INTO StaffRole (StaffId, RoleId, isActive)
                                                 VALUES (@StaffId, @RoleId, 1);";
                             
@@ -366,7 +363,6 @@ namespace MSSQL
                     {
                         try
                         {
-                            // First, deactivate all roles for this staff
                             string deactivateRolesQuery = @"UPDATE StaffRole 
                                               SET isActive = 0 
                                               WHERE StaffId = @StaffId;";
@@ -377,7 +373,6 @@ namespace MSSQL
                                 cmd.ExecuteNonQuery();
                             }
                             
-                            // Now, truly delete the staff record
                             string deleteStaffQuery = @"DELETE FROM Staff 
                                              WHERE Id = @Id;";
                                              
