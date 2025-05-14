@@ -116,7 +116,7 @@ namespace MainOrderly.WebApp.Controllers
                 bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId);
                 if (!IsNotExpired)
                 {
-                    TempData["ErrorMessage"] = "You cannot place another order because the time restriction has expired.";
+                    TempData["ErrorMessage"] = "You cannot place another order because the time restriction has not expired.";
                     return RedirectToAction("OrderSummaryPage", "Cart");
                 }
             }
