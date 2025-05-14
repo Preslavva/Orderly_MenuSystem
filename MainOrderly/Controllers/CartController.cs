@@ -83,7 +83,6 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult PaymentConfirmationPage(int orderId)
         {
-            ViewData["Page"] = "Payment";
             OrderViewModel orderModel = new OrderViewModel()
             {
                 Id = orderId

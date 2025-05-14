@@ -53,6 +53,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult Index(Category? category = null,string token="", string searchTerm = "", int restaurantId = 1)
         {
+            ViewData["Page"] = "Index";
             if (!string.IsNullOrEmpty(token))
             {
                 var table = _tableService.GetTableByToken(token);
