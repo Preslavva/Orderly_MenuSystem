@@ -25,6 +25,50 @@
     <!-- Icons css -->
     <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+
+        .hover-bg:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        @@keyframes pulse {
+            0%{
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+
+        }
+
+        .badge-pulse {
+            animation: pulse 1.5s infinite;
+        }
+
+        #notificationList::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #notificationList::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        #notificationList::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+
+            #notificationList::-webkit-scrollbar-thumb:hover {
+                background: #a8a8a8;
+            }
+    </style>
+
 </head>
 
 <body>
@@ -123,11 +167,7 @@
                     </a>
                     <div class="collapse" id="menuProjects">
                         <ul class="sub-menu">
-                            <li class="menu-item">
-                                <a href="@Url.Action("AddIngredient", "Manager")" class="menu-link">
-                                    <span class="menu-text">Add</span>
-                                </a>
-                            </li>
+                            
                             <li class="menu-item">
                                 <a href="@Url.Action("IngredientList", "Manager")" class="menu-link">
                                     <span class="menu-text">List</span>
@@ -233,6 +273,54 @@
                         </div>
                     </li>
 
+                        <!-- Bootstrap Icons CDN (make sure to include this in <head>) -->
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-bell fs-4 text-light"></i>
+
+                                <!-- Notification Badge -->
+                                <span id="notificationCount"
+                                      class="position-absolute badge rounded-pill bg-danger badge-pulse"
+                                      style="top: 4px; right: 0px; transform: translate(50%, 0); font-size: 0.7rem; padding: 3px 6px; z-index: 10;">
+                                    7
+                                </span>
+
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg py-0 shadow-lg"
+                                 aria-labelledby="notificationDropdown" style="width: 360px;">
+                                <div class="d-flex justify-content-between align-items-center border-bottom px-3 py-2 bg-light">
+                                    <h6 class="mb-0 fw-semibold">Notifications</h6>
+                                    
+                                </div>
+                                <div id="notificationList" class="overflow-auto" style="max-height: 400px;">
+                                    <!-- Example notification item -->
+                                    <div class="d-flex px-3 py-2 border-bottom hover-bg">
+                                        <div class="flex-shrink-0 text-primary me-2">
+                                            <i class="bi bi-info-circle-fill"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <div class="d-flex justify-content-between">
+                                                <p class="mb-1 fw-medium">System Update</p>
+                                                <small class="text-muted">2 min ago</small>
+                                            </div>
+                                            <p class="small mb-0">Scheduled maintenance tonight at 11 PM</p>
+                                        </div>
+                                    </div>
+                                    <!-- Empty state -->
+                                    <div class="text-center py-4 d-none" id="emptyNotifications">
+                                        <i class="bi bi-bell-slash fs-2 text-muted"></i>
+                                        <p class="text-muted mb-0">No new notifications</p>
+                                    </div>
+                                </div>
+                                <div class="text-center border-top py-2">
+                                    <a href="/Manager/IngredientList" class="small text-decoration-none">View all notifications</a>
+                                </div>
+                            </div>
+                        </li>
+
+
                     <!-- User Dropdown -->
                     <li class="dropdown">
                         <a class="nav-link dropdown-toggle nav-user me-0 waves-effect waves-light" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
@@ -328,5 +416,48 @@
         document.body.classList.toggle('dark-mode', dark);
     };
 </script>
+
+    <script>
+        function loadNotifications() {
+            fetch("/Manager/GetNotifications")
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById("notificationList");
+                    const count = document.getElementById("notificationCount");
+
+                    list.innerHTML = "";
+                    count.textContent = data.length;
+
+                    if (data.length === 0) {
+                        count.style.display = "none";
+                        list.innerHTML = "<p class='text-muted'>No alerts 🎉</p>";
+                        return;
+                    }
+
+                    count.style.display = "inline-block";
+
+                    data.forEach(n => {
+                        const item = document.createElement("a");
+                        item.classList.add("dropdown-item", "text-wrap");
+                        item.href = n.link;
+                        item.innerHTML = `<strong>${n.title}</strong><br/><small class="text-muted">${n.time}</small>`;
+                        list.appendChild(item);
+                    });
+                })
+                .catch(err => {
+                    console.error("❌ Notification error:", err);
+                    document.getElementById("notificationList").innerHTML = "<p class='text-danger'>Failed to load</p>";
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            loadNotifications();
+            setInterval(loadNotifications, 60000); // Refresh every 60 sec
+        });
+    </script>
+
+    @RenderSection("Scripts", required: false)
+
 </body>
 </html>
+

@@ -22,12 +22,15 @@ namespace MainOrderly.WebApp.ViewModels
         public Category Category { get; set; }
 
         [BindNever, ValidateNever]
-        public List<IngredientViewModel> AvailableIngredients { get; set; }
+        public List<IngredientViewModel> AvailableIngredients { get; set; } = new();
         public List<int> SelectedIngredientIds { get; set; }
         public Dictionary<int, int> IngredientQuantities { get; set; }
         public List<AllergenName> SelectedAllergens { get; set; } = new();
         public List<NutritionEntry> NutritionValues { get; set; } = new();
 
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 5;
+        public int TotalItems { get; set; }
 
         public static CreateMenuItemViewModel Initialize(List<IngredientViewModel> availableIngredients)
         {

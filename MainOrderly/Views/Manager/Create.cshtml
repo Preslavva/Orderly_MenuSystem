@@ -3,6 +3,7 @@
 
     ViewData["Title"] = "Menu Management";
     Layout = "_ManagerLayout";
+    ViewData["ButtonClass"] = "page-btn";
 }
 
 <div class="content">
@@ -23,7 +24,6 @@
 
 
         <form asp-action="Create" asp-controller="Manager" method="post" enctype="multipart/form-data">
-            <!-- <-- зміни тут -->
             <div class="row">
                 <div class="col-lg-6">
                     <div class="card">
@@ -48,11 +48,8 @@
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
 
-                            @* <div class="mb-3">
-                                <label asp-for="Quantity" class="form-label"></label>
-                                <input asp-for="Quantity" class="form-control" />
-                                <span asp-validation-for="Quantity" class="text-danger"></span>
-                            </div> *@
+                            
+                            
                             <div class="mb-3">
                                 <label class="form-label">Allergens</label>
                                 <div>
@@ -70,6 +67,36 @@
                                 </div>
                             </div>
 
+
+                           
+                        </div>
+                    </div>
+                </div> <!-- end col -->
+
+                <div class="col-lg-6">
+
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
+
+                            <div class="mb-3">
+                                <label class="form-label">Upload Image (max 2MB (1024X1024))</label>
+                                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
+                                <input type="hidden" asp-for="Picture" /> <!-- ✅ сохраняет путь, если новое изображение не загружено -->
+                                <span asp-validation-for="ImageFile" class="text-danger"></span>
+                            </div>
+
+
+
+
+                            <!-- Preview -->
+                            <div class="dropzone-previews mt-3" id="file-previews"></div>
+                            <p></p>
+                            <div class="mb-3">
+                                <label asp-for="PrepTime" class="form-label">Preparation time</label>
+                                <input asp-for="PrepTime" class="form-control" />
+                                <span asp-validation-for="PrepTime" class="text-danger"></span>
+                            </div>
 
                             <div class="mb-3">
                                 <label class="form-label">Nutrition Facts</label>
@@ -95,70 +122,21 @@
                                 <input asp-for="IsAvailable" class="form-check-input" />
                                 <label asp-for="IsAvailable" class="form-check-label"></label>
                             </div>
+
                         </div>
-                    </div>
-                </div> <!-- end col -->
-
-                <div class="col-lg-6">
-
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="text-uppercase mt-0 mb-3 bg-light p-2">Product Images</h5>
-
-                            <div class="mb-3">
-                                <label class="form-label">Upload Image (max 2MB (1024X1024))</label>
-                                <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
-                                <span asp-validation-for="ImageFile" class="text-danger"></span>
-                            </div>
-
-
-
-                            <!-- Preview -->
-                            <div class="dropzone-previews mt-3" id="file-previews"></div>
-                        </div>
+                       
                     </div> <!-- end col-->
+
+                    
 
 
                 </div> <!-- end col-->
             </div>
             <!-- end row -->
-            @if (Model?.AvailableIngredients != null)
-            {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Choose</th>
-                            <th>Name</th>
-                            <th>Stock</th>
-                            <th>Quantity</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < Model.AvailableIngredients.Count; i++)
-                        {
-                            var ingredient = Model.AvailableIngredients[i];
-                            <tr>
-                                <td>
-                                    <input type="checkbox"
-                                           name="SelectedIngredientIds"
-                                           value="@ingredient.Id"
-                                    @(Model.SelectedIngredientIds.Contains(ingredient.Id) ? "checked" : "") />
-                                </td>
-                                <td>@ingredient.Name</td>
-                                <td>@ingredient.FormattedStock</td>
-                                <td>
-                                    <input type="number"
-                                           name="IngredientQuantities[@ingredient.Id]"
-                                           step="0.01"
-                                           min="0"
-                                           class="form-control"
-                                           value="@(Model.IngredientQuantities.ContainsKey(ingredient.Id) ? Model.IngredientQuantities[ingredient.Id] : 0)" />
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            }
+            <div id="ingredient-table-container">
+                @await Html.PartialAsync("_IngredientTable", Model)
+            </div>
+
 
 
 
@@ -201,6 +179,11 @@
 </div> <!-- content -->
 
 <script>
+    // Global state
+    let selectedIngredientIds = new Set();
+    let ingredientQuantities = {};
+
+    // Image preview logic (unchanged)
     document.querySelector('input[type="file"]').addEventListener('change', function (e) {
         const file = e.target.files[0];
         const preview = document.getElementById('file-previews');
@@ -213,20 +196,95 @@
         }
     });
 
-
-     document.addEventListener("DOMContentLoaded", function () {
-        // Attach input event listeners to all quantity inputs
-        const quantityInputs = document.querySelectorAll("input[name^='IngredientQuantities']");
-
-        quantityInputs.forEach(input => {
-            input.addEventListener("input", function () {
-                const ingredientId = input.name.match(/\d+/)[0]; // Extract ID from name
-                const checkbox = document.querySelector(`input[type='checkbox'][value='${ingredientId}']`);
-
-                if (checkbox) {
-                    checkbox.checked = parseFloat(input.value) > 0;
+    function bindIngredientSelectionHandlers() {
+        document.querySelectorAll("input[type='checkbox'][name='SelectedIngredientIds']").forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                const id = checkbox.value;
+                if (checkbox.checked) {
+                    selectedIngredientIds.add(id);
+                } else {
+                    selectedIngredientIds.delete(id);
+                    delete ingredientQuantities[id];
                 }
             });
         });
+
+        document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
+            input.addEventListener("input", () => {
+                const id = input.name.match(/\d+/)[0];
+                const value = parseFloat(input.value) || 0;
+                ingredientQuantities[id] = value;
+
+                if (value > 0) {
+                    selectedIngredientIds.add(id);
+                    const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
+                    if (checkbox) checkbox.checked = true;
+                }
+            });
+        });
+    }
+
+    function restoreSelections() {
+        selectedIngredientIds.forEach(id => {
+            const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
+            if (checkbox) checkbox.checked = true;
+        });
+
+        Object.entries(ingredientQuantities).forEach(([id, value]) => {
+            const input = document.querySelector(`input[name='IngredientQuantities[${id}]']`);
+            if (input) input.value = value;
+        });
+    }
+
+    // Rebind on page load and after AJAX pagination
+    document.addEventListener("DOMContentLoaded", function () {
+        bindIngredientSelectionHandlers();
+        restoreSelections();
+         bindPaginationButtons();
+        // Inject selected ingredients before form submission
+        document.querySelector("form").addEventListener("submit", function (e) {
+            // Clear old injected inputs
+              // Remove ALL matching fields — checkbox or hidden
+    document.querySelectorAll("input[name='SelectedIngredientIds'], input[name^='IngredientQuantities']").forEach(el => {
+        if (el.closest('form')) el.remove(); // only from inside the form
     });
+
+
+            // Add hidden inputs for selected ingredients
+            selectedIngredientIds.forEach(id => {
+                const hidden = document.createElement("input");
+                hidden.type = "hidden";
+                hidden.name = "SelectedIngredientIds";
+                hidden.value = id;
+                hidden.classList.add("persisted-ingredient");
+                this.appendChild(hidden);
+            });
+
+            Object.entries(ingredientQuantities).forEach(([id, value]) => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = `IngredientQuantities[${id}]`;
+                input.value = value;
+                input.classList.add("persisted-ingredient");
+                this.appendChild(input);
+            });
+        });
+    });
+        function bindPaginationButtons() {
+        document.querySelectorAll(".page-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const page = this.dataset.page;
+    fetch(`/Manager/LoadIngredientsPartial?pageNumber=${page}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById("ingredient-table-container").innerHTML = html;
+            bindPaginationButtons();
+            bindIngredientSelectionHandlers();
+            restoreSelections();
+        });
+
+            });
+        });
+    }
+
 </script>

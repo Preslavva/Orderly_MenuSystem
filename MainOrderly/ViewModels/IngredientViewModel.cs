@@ -10,7 +10,9 @@ namespace MainOrderly.WebApp.ViewModels
         public int QuantityInStock { get; set; }
         public int MinimumStockLevel { get; set; }
         public string FormattedStock => $"{QuantityInStock} {Unit}";
-
+        public int PageNumber { get; set; } = 1;
+        public int PageSize { get; set; } = 10;
+        public int TotalItems { get; set; }
 
         public static IngredientViewModel ConvertToViewModel(Ingredient ingredient)
         {
