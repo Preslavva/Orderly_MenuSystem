@@ -1,4 +1,4 @@
-﻿@model List<IngredientViewModel>     
+﻿@model IngredientListViewModel
 @{
     ViewData["Title"] = "Menu Management";
     Layout = "_ManagerLayout";
@@ -32,6 +32,10 @@
                         <li><a class="dropdown-item" href="#" data-category="pcs">Pieces</a></li>
                     </ul>
                 </div>
+                <!-- Low Stock Filter -->
+                <button id="lowStockFilterBtn" class="btn btn-outline-danger">
+                    <i class="bi bi-exclamation-triangle me-1"></i> Low Stock Only
+                </button>
 
                 <!-- Create button -->
                 <a class="btn btn-primary" href="#" data-bs-toggle="modal" data-bs-target="#ingredient-modal">
@@ -39,7 +43,7 @@
                 </a>
             </div>
         </div>
-        </div>
+    </div>
 
        
         <div class="modal fade" id="ingredient-modal" tabindex="-1" aria-hidden="true">
@@ -127,278 +131,261 @@
 
     <div class="row justify-content-center">
         <div class="col-11">
-            <div class="table-responsive">
-                <table class="table table-centered table-nowrap mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Quantity in Stock</th>
-                            <th>Unit</th>
-                            <th>Minimum Stock</th>
-                            <th>Status</th>
-                            <th style="width: 125px;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @foreach (var i in Model)
-                    {
-                        var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
-                        var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
 
-                        <tr data-unit="@i.Unit.ToLower()">
-                            <td>@i.Id</td>
-                            <td>@i.Name</td>
-                            <td>@i.QuantityInStock</td>
-                            <td>@i.Unit</td>
-                            <td>@i.MinimumStockLevel</td>
-                            <td><h5><span class="badge @badgeClass">@status</span></h5></td>
-                            <td>
-                                <a href="javascript:void(0);" class="action-icon edit-btn"
-                                   data-id="@i.Id" data-bs-toggle="modal" data-bs-target="#editIngredientModal">✏️</a>
-                                <a href="javascript:void(0);" class="action-icon delete-btn" data-id="@i.Id">🗑️</a>
-                            </td>
-                        </tr>
-                    }
-
-                       @*  @foreach (var i in Model)
-                        {
-                            var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
-                            var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
-                            <tr>
-                                
-                                <td>@i.Id</td>
-                                <td>@i.Name</td>
-                                <td>@i.QuantityInStock</td>
-                                <td>@i.Unit</td>
-                                <td>@i.MinimumStockLevel</td>
-                                <td><h5><span class="badge @badgeClass">@status</span></h5></td>
-                                <td>
-                                    <a href="javascript:void(0);"
-                                       class="action-icon edit-btn"
-                                       data-id="@i.Id"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#editIngredientModal">✏️</a>
-
-                                    <a href="javascript:void(0);"
-                                       class="action-icon delete-btn"
-                                       data-id="@i.Id">🗑️</a>
-
-                                </td>
-                            </tr>
-                        } *@
-                    </tbody>
-
-                </table>
-            </div>
+        <div id="ingredient-table-container">
+            @await Html.PartialAsync("_IngredientTableManagePartial", Model)
         </div>
+
+       
     </div>
 
-          
+   @*  custom page num *@
+@* <form method="get" class="d-inline ms-3">
+    <input type="number" name="pageNumber" min="1" max="@(Math.Ceiling((double)Model.TotalItems / Model.PageSize))" class="form-control d-inline" style="width: 80px;" />
+    <button type="submit" class="btn btn-sm btn-outline-secondary">Go</button>
+</form> *@
 
-        </div> <!-- end col -->
-    </div>
     <!-- end row -->
+    <p></p>
 </div>
 
-
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    // Global state
+    const ingredientManager = {
+        currentSearch: "",
+        currentCategory: "all",
+        selectedIngredientIds: [],
+        ingredientQuantities: {},
+        lowStockFilterActive: false // Added this state
+    };
+
+    // DOM Ready
+     document.addEventListener("DOMContentLoaded", () => {
+        console.log("✅ DOM fully loaded");
+
+        // Initialize all functionality
+        initSearchAndFilter();
+        initPagination();
+        initIngredientForm();
+        initEditForm();
+        initDeleteHandlers();
+        initLowStockFilter(); // Added this initialization
+    });
+
+       function initLowStockFilter() {
+        const lowStockBtn = document.getElementById("lowStockFilterBtn");
+        if (!lowStockBtn) return;
+
+        lowStockBtn.addEventListener("click", function () {
+            ingredientManager.lowStockFilterActive = !ingredientManager.lowStockFilterActive;
+            reloadIngredientTable();
+
+            this.classList.toggle("btn-danger", ingredientManager.lowStockFilterActive);
+            this.classList.toggle("btn-outline-danger", !ingredientManager.lowStockFilterActive);
+            this.innerHTML = ingredientManager.lowStockFilterActive
+                ? '<i class="bi bi-exclamation-triangle me-1"></i> Showing Low Stock'
+                : '<i class="bi bi-exclamation-triangle me-1"></i> Low Stock Only';
+        });
+    }
+
+    // Search and Filter functionality
+    function initSearchAndFilter() {
         const searchInput = document.getElementById("searchInput");
         const categoryLinks = document.querySelectorAll(".dropdown-menu a[data-category]");
-        const tableRows = document.querySelectorAll("tbody tr");
 
-        let currentSearch = "";
-        let currentCategory = "all";
-
-        function applyFilters() {
-            tableRows.forEach(row => {
-                const name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-                const unit = row.dataset.unit;
-
-                const matchesName = name.includes(currentSearch);
-                const matchesUnit = currentCategory === "all" || unit === currentCategory;
-
-                row.style.display = matchesName && matchesUnit ? "" : "none";
+        if (searchInput) {
+            searchInput.addEventListener("input", function () {
+                ingredientManager.currentSearch = this.value.toLowerCase().trim();
+                reloadIngredientTable();
             });
         }
 
-        // Handle search input
-        searchInput.addEventListener("input", function () {
-            currentSearch = this.value.toLowerCase().trim();
-            applyFilters();
-        });
-
-        // Handle category dropdown
         categoryLinks.forEach(link => {
             link.addEventListener("click", function (e) {
                 e.preventDefault();
-                currentCategory = this.dataset.category;
-                applyFilters();
-
-                // Optionally: update dropdown button text
-                document.getElementById("categoryFilterDropdown").textContent =
-                    this.textContent.trim();
+                ingredientManager.currentCategory = this.dataset.category;
+                document.getElementById("categoryFilterDropdown").textContent = this.textContent.trim();
+                reloadIngredientTable();
             });
         });
-    });
-</script>
+    }
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const searchInput = document.getElementById("searchInput");
-        const tableRows = document.querySelectorAll("tbody tr");
+    // Pagination handling
+    function initPagination() {
+        bindPaginationButtons();
+    }
 
-        searchInput.addEventListener("input", function () {
-            const query = this.value.toLowerCase().trim();
-
-            tableRows.forEach(row => {
-                const nameCell = row.querySelector("td:nth-child(2)"); // assuming Name is in 2nd column
-                const name = nameCell.textContent.toLowerCase();
-
-                row.style.display = name.includes(query) ? "" : "none";
+    function bindPaginationButtons() {
+        document.querySelectorAll(".page-btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                const page = this.dataset.page;
+                reloadIngredientTable(page);
             });
         });
-    });
-</script>
+    }
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        console.log("✅ DOM FULLY LOADED");
+    // Table reload helper
+    function reloadIngredientTable(page = 1) {
+         const params = new URLSearchParams({
+             pageNumber: page,
+             search: ingredientManager.currentSearch,
+             category: ingredientManager.currentCategory,
+             lowStockOnly: ingredientManager.lowStockFilterActive // Added this parameter
+         });
 
+         fetch(`/Manager/LoadIngredientTablePartial?${params}`)
+             .then(res => res.text())
+             .then(html => {
+                 const container = document.getElementById("ingredient-table-container");
+                 if (container) {
+                     container.innerHTML = html;
+                     bindPaginationButtons();
+                     bindEditHandlers();
+                     bindDeleteHandlers();
+                     applyLowStockFilter();
+                 }
+             })
+             .catch(err => console.error("❌ Table reload failed:", err));
+     }
+
+    // Add Ingredient Form
+    function initIngredientForm() {
         const form = document.getElementById("ingredientForm");
-
-        if (!form) {
-            console.error("❌ ingredientForm NOT FOUND in DOM!");
-            return;
-        }
-
-        console.log("✅ ingredientForm found!");
+        if (!form) return;
 
         form.addEventListener("submit", function (e) {
             e.preventDefault();
-            console.log("✅ FORM SUBMIT TRIGGERED");
-
-            const data = {
-                name: document.getElementById("ingredientName").value,
-                unit: document.getElementById("unit").value,
-                quantityInStock: parseInt(document.getElementById("quantity").value),
-                minimumStockLevel: parseInt(document.getElementById("minimumStockLevel").value)
-            };
-
-            fetch("/Manager/AddIngredient", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(resp => {
-                console.log("Response:", resp);
-                if (!resp.ok) throw new Error("Server error");
-                return resp.json();
-            })
-            .then(result => {
-                alert("✅ Ingredient added!");
-                location.reload();
-            })
-            .catch(err => {
-                console.error("❌ FETCH ERROR:", err);
-                alert("❌ Error: " + err.message);
-            });
+            submitIngredientForm(this);
         });
-    });
-</script>
+    }
 
+    function submitIngredientForm(form) {
+        const data = {
+            name: form.querySelector("#ingredientName").value,
+            unit: form.querySelector("#unit").value,
+            quantityInStock: parseInt(form.querySelector("#quantity").value),
+            minimumStockLevel: parseInt(form.querySelector("#minimumStockLevel").value)
+        };
 
+        fetch("/Manager/AddIngredient", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(handleResponse)
+        .then(() => {
+            alert("✅ Ingredient added!");
+            location.reload();
+        })
+        .catch(handleError);
+    }
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        console.log("✅ Edit Ingredient Script Loaded");
+    // Edit Ingredient functionality
+    function initEditForm() {
+        bindEditHandlers();
 
+        const editForm = document.getElementById("editIngredientForm");
+        if (editForm) {
+            editForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+                submitEditForm(this);
+            });
+        }
+    }
+
+    function bindEditHandlers() {
         document.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function () {
                 const id = this.dataset.id;
-                 console.log("✏️ Trying to load ingredient with ID:", id); 
-                fetch(`/Manager/GetIngredientById/${id}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        document.getElementById('editId').value = data.id;
-                        document.getElementById('editName').value = data.name;
-                        document.getElementById('editQuantity').value = data.quantityInStock;
-                            document.getElementById('editMinimumStockLevel').value = data.minimumStockLevel;
-    document.getElementById('editUnit').value = data.unit;
-                    })
-                    .catch(err => {
-                        alert("❌ Failed to load ingredient details.");
-                        console.error(err);
-                    });
+                loadIngredientForEdit(id);
             });
         });
+    }
 
-        document.getElementById("editIngredientForm").addEventListener("submit", function (e) {
-            e.preventDefault();
-
-            const data = {
-                id: parseInt(document.getElementById("editId").value),
-                name: document.getElementById("editName").value,
-                unit: document.getElementById("editUnit").value,
-                quantityInStock: parseInt(document.getElementById("editQuantity").value),
-     minimumStockLevel: parseInt(document.getElementById("editMinimumStockLevel").value)
-            };
-
-            console.log("🔄 Updating ingredient:", data);
-
-            fetch("/Manager/UpdateIngredient", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/json"
-                },
-                body: JSON.stringify(data)
-            })
-            .then(resp => {
-                if (!resp.ok) {
-                    return resp.text().then(text => { throw new Error(text); });
-                }
-                return resp.json();
-            })
-            .then(result => {
-                alert("✅ Ingredient updated successfully!");
-                location.reload();
+    function loadIngredientForEdit(id) {
+        fetch(`/Manager/GetIngredientById/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('editId').value = data.id;
+                document.getElementById('editName').value = data.name;
+                document.getElementById('editQuantity').value = data.quantityInStock;
+                document.getElementById('editMinimumStockLevel').value = data.minimumStockLevel;
+                document.getElementById('editUnit').value = data.unit;
             })
             .catch(err => {
-                alert("❌ Update error: " + err.message);
-                console.error("UPDATE ERROR:", err);
+                alert("❌ Failed to load ingredient details.");
+                console.error(err);
             });
-        });
-    });
-</script>
+    }
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+    function submitEditForm(form) {
+        const data = {
+            id: parseInt(form.querySelector("#editId").value),
+            name: form.querySelector("#editName").value,
+            unit: form.querySelector("#editUnit").value,
+            quantityInStock: parseInt(form.querySelector("#editQuantity").value),
+            minimumStockLevel: parseInt(form.querySelector("#editMinimumStockLevel").value)
+        };
+
+        fetch("/Manager/UpdateIngredient", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(handleResponse)
+        .then(() => {
+            alert("✅ Ingredient updated successfully!");
+            location.reload();
+        })
+        .catch(handleError);
+    }
+
+    // Delete functionality
+    function initDeleteHandlers() {
+        bindDeleteHandlers();
+    }
+
+    function bindDeleteHandlers() {
         document.querySelectorAll(".delete-btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const id = this.dataset.id;
-                if (!confirm("❗ Are you sure you want to delete this ingredient?")) return;
-
-                fetch(`/Manager/DeleteIngredient/${id}`, {
-                    method: "DELETE"
-                })
-                .then(resp => {
-                    if (!resp.ok) throw new Error("Failed to delete ingredient.");
-                    return resp.json();
-                })
-                .then(result => {
-                    alert("✅ Ingredient deleted!");
-                    location.reload(); // або видалити рядок з DOM
-                })
-                .catch(err => {
-                    alert("❌ Error: " + err.message);
-                });
-            });
+            btn.addEventListener("click", handleDelete);
         });
-    });
+    }
+
+    function handleDelete() {
+        const id = this.dataset.id;
+        if (!confirm("❗ Are you sure you want to delete this ingredient?")) return;
+
+        fetch(`/Manager/DeleteIngredient/${id}`, {
+            method: "DELETE"
+        })
+        .then(handleResponse)
+        .then(() => {
+            alert("✅ Ingredient deleted!");
+            location.reload();
+        })
+        .catch(handleError);
+    }
+
+    // Helper functions
+    function handleResponse(resp) {
+        if (!resp.ok) {
+            return resp.text().then(text => { throw new Error(text); });
+        }
+        return resp.json();
+    }
+
+             
+
+
+    function handleError(err) {
+        console.error("❌ Error:", err);
+        alert("❌ Error: " + (err.message || "Something went wrong"));
+    }
+
 </script>

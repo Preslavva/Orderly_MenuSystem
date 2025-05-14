@@ -1,0 +1,60 @@
+﻿@model CreateMenuItemViewModel
+@{
+    var buttonClass = ViewData["ButtonClass"]?.ToString() ?? "page-btn";
+}
+
+@if (Model?.AvailableIngredients != null && Model.AvailableIngredients.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Choose</th>
+                <th>Name</th>
+                <th>Stock</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.AvailableIngredients.Count; i++)
+            {
+                var ingredient = Model.AvailableIngredients[i];
+                <tr>
+                    <td>
+                        <input type="checkbox"
+                               name="SelectedIngredientIds"
+                               value="@ingredient.Id"
+                        @(Model.SelectedIngredientIds?.Contains(ingredient.Id) == true ? "checked" : "") />
+                    </td>
+                    <td>@ingredient.Name</td>
+                    <td>@(ingredient?.FormattedStock ?? "N/A")</td>
+                    <td>
+                        <input type="number"
+                               name="IngredientQuantities[@ingredient.Id]"
+                               step="0.01"
+                               min="0"
+                               class="form-control"
+                               value="@(Model.IngredientQuantities?.ContainsKey(ingredient.Id) == true ? Model.IngredientQuantities[ingredient.Id] : 0)" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+        @if (Model.PageNumber > 1)
+        {
+            <button type="button" class="btn btn-outline-secondary @buttonClass" data-page="@(Model.PageNumber - 1)">Previous</button>
+        }
+
+        <span>Page @Model.PageNumber</span>
+
+        @if (Model.PageNumber * Model.PageSize < Model.TotalItems)
+        {
+            <button type="button" class="btn btn-outline-secondary @buttonClass" data-page="@(Model.PageNumber + 1)">Next</button>
+        }
+    </div>
+}
+else
+{
+    <p>No ingredients available.</p>
+}

@@ -16,9 +16,10 @@
         <div class="col-md-6 offset-md-3">
             <div class="input-group">
                 <input type="text" id="searchInput2" class="form-control" placeholder="Search table number...">
-                <button class="btn btn-outline-secondary" type="button" id="searchButton">
+                <button type="button" class="btn btn-outline-secondary" id="searchButton">
                     <i class="bi bi-search"></i>
                 </button>
+
             </div>
         </div>
     </div>
@@ -26,7 +27,7 @@
     <div class="row" id="tableContainer">
         @foreach (var table in Model)
         {
-            <div class="col-md-4 mb-4 d-flex justify-content-center table-card" data-tablenumber="@table.TableNumber">
+            <div class="col-md-4 mb-4 d-flex justify-content-center table-card" data-tablenumber="@table.TableNumber.ToString()">
                 <div class="card" style="width: 18rem;">
                     <div class="card-body text-center">
                         <form asp-controller="Manager" asp-action="TableQR" method="post">
@@ -66,43 +67,42 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const searchInput = document.getElementById("searchInput2");
-        const tableCards = document.querySelectorAll(".table-card");
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput2");
+            const searchButton = document.getElementById("searchButton");
+            const tableCards = document.querySelectorAll(".table-card");
 
-        searchInput.addEventListener("input", function () {
-            const query = this.value.trim();
+            if (!searchInput || !searchButton || tableCards.length === 0) {
+                console.warn("❗ Some DOM elements are missing:");
+                if (!searchInput) console.warn("🔍 searchInput2 not found");
+                if (!searchButton) console.warn("🔍 searchButton not found");
+                if (tableCards.length === 0) console.warn("🔍 No .table-card elements found");
+                return;
+            }
 
-            tableCards.forEach(card => {
-                const tableNumber = card.dataset.tablenumber;
-                card.style.display = tableNumber.includes(query) ? "flex" : "none";
+            function filterTables() {
+                const query = searchInput.value.trim();
+
+                tableCards.forEach(card => {
+                    const tableNumber = card.getAttribute("data-tablenumber") + ""; 
+                    const isVisible = tableNumber.includes(query);
+                   card.style.setProperty("display", isVisible ? "flex" : "none", "important");
+                    console.log(`🔎 Table #${tableNumber} → ${isVisible ? '✅ Show' : '❌ Hide'}`);
+                });
+            }
+
+            searchInput.addEventListener("input", () => {
+                console.log("⌨️ Input changed");
+                filterTables();
+            });
+
+            searchButton.addEventListener("click", function (e) {
+                e.preventDefault();
+                console.log("🖱️ Search button clicked");
+                filterTables();
             });
         });
-    });
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const qrModal = document.getElementById("qrModal");
-        const qrModalBody = document.getElementById("qrModalBody");
-
-        document.querySelectorAll(".show-qr-btn").forEach(button => {
-            button.addEventListener("click", function () {
-                const tableId = this.getAttribute("data-table-id");
-
-                qrModalBody.innerHTML = "<p class='text-muted'>Loading...</p>";
-
-                fetch(`/Manager/TableQR?tableId=${tableId}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error("Network error");
-                        return response.text();
-                    })
-                    .then(html => {
-                        qrModalBody.innerHTML = html;
-                    })
-                    .catch(err => {
-                        qrModalBody.innerHTML = "<p class='text-danger'>Failed to load QR code.</p>";
-                    });
-            });
-        });
-    });
-</script>
+    </script>
+}

@@ -369,10 +369,10 @@ namespace MSSQL
                 {
                     conn.Open();
                     string query = @"
-                                    select [Name] from Ingredient as i
-                                    inner join MenuItem_Ingredient as mi
-                                    on i.Id = mi.IngredientId
-                                    where mi.MenuItemId = @menuId
+                                   SELECT i.Id, i.Name, i.Unit, i.QuantityInStock, i.MinimumStockLevel, i.RestaurantId
+FROM Ingredient AS i
+INNER JOIN MenuItem_Ingredient AS mi ON i.Id = mi.IngredientId
+WHERE mi.MenuItemId = @menuId
                                     ";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))

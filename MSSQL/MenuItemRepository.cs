@@ -53,7 +53,7 @@ namespace MSSQL
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
-        public int AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId)
+        public int AddMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId, int prepTime)
         {
             try
             {
@@ -61,9 +61,9 @@ namespace MSSQL
                 {
                     conn.Open();
                     string query = @"
-               INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId)
+               INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId, PrepTime)
 OUTPUT INSERTED.Id
-VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId);";
+VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId, @PrepTime);";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -74,6 +74,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                         cmd.Parameters.AddWithValue("@Picture", picture);
                         cmd.Parameters.AddWithValue("@Category", category.ToString());
                         cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                        cmd.Parameters.AddWithValue("@PrepTime", prepTime);
 
                         object result = cmd.ExecuteScalar();
                         Console.WriteLine("ExecuteScalar raw result: " + (result ?? "null"));
@@ -290,8 +291,8 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                         cmd.Parameters.AddWithValue("@Category", menuItem.Category.ToString());
                         cmd.Parameters.AddWithValue("@RestaurantId", menuItem.RestaurantId);
                         cmd.Parameters.AddWithValue("@Id", menuItem.Id);
-
-                        cmd.ExecuteNonQuery();
+                        cmd.Parameters.AddWithValue("@PrepTime", menuItem.PrepTime);
+                        cmd.ExecuteNonQuery(); 
                     }
                 }
             }
