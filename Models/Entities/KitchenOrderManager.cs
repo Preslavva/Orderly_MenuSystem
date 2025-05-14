@@ -3,14 +3,14 @@
     public class KitchenOrderManager
     {
         public List<Order> NewOrders { get; private set; }
-        public List<Order> PendingOrders { get; private set; }
-        public List<Order> CompletedOrders { get; private set; }
+        public List<OrderItem> PendingOrders { get; private set; }
+        public List<OrderItem> CompletedOrders { get; private set; }
 
         public KitchenOrderManager()
         {
             NewOrders = new List<Order>();
-            PendingOrders = new List<Order>();
-            CompletedOrders = new List<Order>();
+            PendingOrders = new List<OrderItem>();
+            CompletedOrders = new List<OrderItem>();
         }
 
         public void SetNewOrders(List<Order> newOrders)
@@ -18,12 +18,12 @@
             NewOrders = newOrders;
         }
 
-        public void SetPendingOrders(List<Order> pendingOrders)
+        public void SetPendingOrders(List<OrderItem> pendingOrders)
         {
             PendingOrders = pendingOrders;
         }
 
-        public void SetCompletedOrders(List<Order> completedOrders)
+        public void SetCompletedOrders(List<OrderItem> completedOrders)
         {
             CompletedOrders = completedOrders;
         }

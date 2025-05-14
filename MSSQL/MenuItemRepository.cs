@@ -291,7 +291,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                         cmd.Parameters.AddWithValue("@RestaurantId", menuItem.RestaurantId);
                         cmd.Parameters.AddWithValue("@Id", menuItem.Id);
 
-                        cmd.ExecuteNonQuery(); 
+                        cmd.ExecuteNonQuery();
                     }
                 }
             }
@@ -395,7 +395,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
         public List<MenuItem> LoadMenuItemsByCategory(Category category)
         {
             var menuItems = new List<MenuItem>();
-          
+
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -448,6 +448,5 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
             }
         }
 
-   
     }
 }

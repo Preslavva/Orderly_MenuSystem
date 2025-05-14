@@ -1,61 +1,89 @@
-﻿@model KitchenViewModelWithTimer
+﻿@using Models.Enums
+@inject MainOrderly.WebApp.Helpers.TimerHelpers Timer
+@model KitchenViewModelWithTimer
 
 <h3 class="column-header processing-orders-header">Processing Orders</h3>
-@if (Model.CompositeKitchenViewModel.PendingOrders != null && Model.CompositeKitchenViewModel.PendingOrders.Any())
+
+@if (Model.CompositeKitchenViewModel.PendingOrders?.Any() == true)
 {
-    var ordersByTable = Model.CompositeKitchenViewModel.PendingOrders.GroupBy(o => o.Table);
-    @foreach (var tableGroup in ordersByTable)
+    var tables = Model.CompositeKitchenViewModel.PendingOrders.GroupBy(i => i.Table);
+
+    foreach (var tableGroup in tables)
     {
         <div class="table-card">
             <div class="table-header">
                 <span class="table-name">Table @tableGroup.Key</span>
-                <span class="order-count">@tableGroup.Count() order(s)</span>
+                <span class="order-count">
+                    @tableGroup.Select(i => i.OrderId).Distinct().Count() order(s)
+                </span>
             </div>
-            @foreach (var orderViewModel in tableGroup)
+
+            @foreach (var orderGroup in tableGroup.GroupBy(i => i.OrderId))
             {
-	              var orderExceeded = orderViewModel.IsExceeded || orderViewModel.Items.Any(i => i.IsExceeded);
+                /* one countdown per order */
+                
+                    int    secRemain;
+                    string clock   = Timer.GetRemainingTime(orderGroup.Key, out secRemain);
+                    bool   overdue = secRemain == 0;
+
+                    var items         = orderGroup.OrderByDescending(i => i.PrepTime).ToList();
+                    int longestItemId = items.First().MenuItemId;
+               
 
                 <div class="order-row">
                     <div class="order-header">
-                        <span class="order-id">Order #@orderViewModel.Id</span>
-                        <span class="order-time">@orderViewModel.OrderTimestamp.ToString("HH:mm")</span>
+                        <span class="order-id">Order #@orderGroup.Key</span>
+                        <span class="order-time">@orderGroup.First().OrderTimestamp</span>
                     </div>
-                    @if (orderViewModel.Items != null && orderViewModel.Items.Count > 0)
-                    {
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div class="order-items" style="flex: 1;">
-                                @foreach (var item in orderViewModel.Items)
-                                {
-                                    <div class="menu-item-row">
-                                        <div class="item-details">
-                                            <span class="item-quantity">@item.Quantity×</span>
-                                            <span class="item-name">@item.Name</span>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                            
-                    
-                            <!-- Updated timer display -->
-                            <div style="display: flex; flex-direction: column; align-items: center; padding-left: 15px;">
-	                            <div class="item-timer @(orderViewModel.IsExceeded ? "timer-exceeded" : "")" style="margin-bottom: 10px;">
-		                            @orderViewModel.ElapsedTime
-	                            </div>
 
-                                <form method="post"
-                                      asp-action="UpdateOrderStatus"
-                                      hx-post="@Url.Action("UpdateOrderStatus", "Kitchen")"
-                                      hx-target="#completed-orders-column"
+                    @foreach (var item in items)
+                    {
+                            bool cookFirst   = item.MenuItemId == longestItemId;
+                            bool shouldStart = secRemain <= item.PrepTime * 60 &&
+                                               item.Status == OrderStatus.PROCESSING;
+
+
+                            int itemDelayStart = (item.PrepTime * 60); // seconds
+                            bool cookFirstWindow = secRemain >= itemDelayStart - 4 && cookFirst; // fade after 4s
+                            bool startNowWindow = secRemain <= itemDelayStart && secRemain >= itemDelayStart - 3 && shouldStart; // fade after 3s
+
+                        <div class="menu-item-row">
+                            <div class="item-details">
+                                <span class="item-quantity">@item.Quantity×</span>
+                                <span class="item-name">@item.Name</span>
+                            </div>
+
+                            <div class="item-actions">
+                                @if (cookFirstWindow)
+                                {
+                                    <span class="badge badge-cookfirst me-2">Cook first</span>
+                                }
+                                else if (startNowWindow)
+                                {
+                                    <span class="badge badge-startnow me-2">Start now</span>
+                                }
+
+                                <form asp-action="UpdateOrderItemStatus"
+                                      method="post"
+                                      hx-post='@Url.Action("UpdateOrderItemStatus","Kitchen")'
+                                      hx-target="#processing-orders-column"
                                       hx-swap="innerHTML">
-                                    <input type="hidden" name="id" value="@orderViewModel.Id" />
-                                    <input type="hidden" name="newStatus" value="@OrderStatus.COMPLETED" />
-                                    <button type="submit" class="btn btn-primary">Mark Ready</button>
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="orderId"    value="@item.OrderId" />
+                                    <input type="hidden" name="menuItemId" value="@item.MenuItemId" />
+                                    <input type="hidden" name="newStatus"  value="@OrderStatus.COMPLETED" />
+                                    <button class="btn-arrow" title="Mark ready">
+                                        <i class="bi bi-arrow-right-circle fs-5"></i>
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     }
+
+                    <div class="item-timer @(overdue ? "timer-exceeded" : "")">@clock</div>
                 </div>
-                @if (tableGroup.Last() != orderViewModel)
+
+                @if (orderGroup != tableGroup.GroupBy(i => i.OrderId).Last())
                 {
                     <hr class="separator" />
                 }
@@ -67,3 +95,51 @@ else
 {
     <div class="empty-message">No orders in process</div>
 }
+
+<style>
+  
+    .menu-item-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: .5rem;
+        background: #f8f9fa;
+        border-radius: 4px;
+        padding: .5rem .75rem;
+    }
+
+    .item-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-arrow {
+        background: none;
+        border: none;
+        padding: 0;
+        color: #2564ff; /* blue arrow */
+    }
+
+        .btn-arrow:hover {
+            opacity: .7;
+        }
+
+    .item-timer {
+        font-family: monospace;
+        font-size: 1.6rem;
+        font-weight: 700;
+        padding: .3rem .8rem;
+        background: #f1f1f1;
+        border-radius: 6px;
+        width: max-content;
+        margin-top: .5rem;
+    }
+
+    .timer-exceeded {
+        background: #dc3545;
+        color: #fff;
+        animation: alarm-pulse 1s infinite;
+    }
+
+</style>

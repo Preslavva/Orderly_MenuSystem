@@ -5,5 +5,5 @@
         NEW_ORDER,
         PROCESSING,
         COMPLETED
-    }
+    }   
 }

@@ -1565,3 +1565,59 @@ input[type="submit"][disabled] {
     letter-spacing: .03em;
     pointer-events: none; /* badge itself isn’t clickable */
 }
+
+/* ??? 1. BADGE ? Cook first ??? */
+.badge-cookfirst {
+    background: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: .25rem .6rem;
+    border-radius: 12px;
+    /* run two animations in a row: 3 pulses, then vanish */
+    animation: pulseBlue .6s ease-out 0s 3, fadeAway .6s ease-out 4s forwards;
+}
+
+/* ??? 2. BADGE ? Start now ??? */
+.badge-startnow {
+    background: #ffc107;
+    color: #212529;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: .25rem .6rem;
+    border-radius: 12px;
+    /* 3 pulses, then vanish a little earlier (3 s from start) */
+    animation: pulseYellow .6s ease-out 0s 3, fadeAway .6s ease-out 3s forwards;
+}
+
+/* ??????? Pulse keyframes ??????? */
+@keyframes pulseBlue {
+    0%,100% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 8px rgba(13,110,253,.6)
+    }
+}
+
+@keyframes pulseYellow {
+    0%,100% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 8px rgba(255,193,7,.6)
+    }
+}
+
+/* ??????? Fade-out keyframes ??????? */
+@keyframes fadeAway {
+    to {
+        opacity: 0;
+        transform: translateY(-6px);
+        visibility: hidden
+    }
+}

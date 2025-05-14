@@ -56,26 +56,6 @@ namespace Services
             return _menuItemRepository.GetMenuItemById(id, restaurantId)!;
         }
 
-        public int CalculateAvgPrepTime(int menuItemId, int restaurantId) // this may not be needed at all
-        {
-            var menuItem = _menuItemRepository.GetMenuItemById(menuItemId, restaurantId);
-            return  menuItem.PrepTime/* * quantity*/; // of the menuItem
-        }
-
-        public int CalculateOrderPrepTime(int orderId)
-        {
-            var order = _kitchenOrderService.GetOrderById(orderId);
-            int maxPrepTime = 0;
-
-            int totalPrepTime = 0;
-            foreach (var item in order.Items)
-            {
-                totalPrepTime += item.MenuItem.PrepTime * item.Quantity;
-            }
-
-            return totalPrepTime;
-
-        }
 
         public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
         {
@@ -127,6 +107,8 @@ namespace Services
         {
             return _menuItemRepository.LoadMenuItemsByCategory(category);
         }
+
+     
 
 
 

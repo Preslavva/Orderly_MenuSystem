@@ -18,37 +18,32 @@ namespace MainOrderly.WebApp.Controllers
             _timerHelpers = timerHelpers;
         }
 
-        public IActionResult Dashboard()
+        public IActionResult Dashboard(int id)
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
             kitchenOrderManager.SetNewOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.NEW_ORDER));
-            kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING));
-            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED));
+            kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.PROCESSING));
+            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
 
-            if (kitchenOrderManager.PendingOrders.Count != 0)
-            {
-                foreach (var order in kitchenOrderManager.PendingOrders)
-                {
-                    _timerHelpers.GetElapsedTime(order.Id);
-                }
-            }
+            var viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager,(orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
+                orderId => _timerHelpers.GetRemainingTime(orderId,out _));
 
-            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
-            KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
+            var vmWithTimer = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,
                 TimerViewModel = new TimerViewModel()
             };
-
-            return View(kitchenViewModelWithTimer);
-        }
+         
+            return View(vmWithTimer);
+        }   
 
         public IActionResult GetNewOrders()
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
             kitchenOrderManager.SetNewOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.NEW_ORDER));
 
-            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
+                orderId => _timerHelpers.GetRemainingTime(orderId, out _));
             KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,
@@ -58,36 +53,55 @@ namespace MainOrderly.WebApp.Controllers
             return PartialView("_NewOrdersPartial", kitchenViewModelWithTimer);
         }
 
+        //public IActionResult GetProcessingOrders()
+        //{
+        //    KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
+        //    kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING));
+
+        //    CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+        //    if (viewModel.PendingOrders.Count != 0)
+        //    {
+        //        foreach (var order in viewModel.PendingOrders)
+        //        {
+        //            order.ElapsedTime = _timerHelpers.GetElapsedTime(order.Id);
+        //            order.IsExceeded = _timerHelpers.HasExceededPrepTime(order.Id);
+        //        }
+        //    }
+
+        //    KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
+        //    {
+        //        CompositeKitchenViewModel = viewModel,
+        //        TimerViewModel = new TimerViewModel()
+        //    };
+
+        //    return PartialView("_ProcessingOrdersPartial", kitchenViewModelWithTimer);
+        //}
+
         public IActionResult GetProcessingOrders()
         {
-            KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
-            kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING));
+            var km = new KitchenOrderManager();
+            km.SetPendingOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.PROCESSING));
 
-            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
-            if (viewModel.PendingOrders.Count != 0)
-            {
-                foreach (var order in viewModel.PendingOrders)
-                {
-                    order.ElapsedTime = _timerHelpers.GetElapsedTime(order.Id);
-                    order.IsExceeded = _timerHelpers.HasExceededPrepTime(order.Id);
-                }
-            }
+            var viewModel = CompositeKitchenViewModel.ConvertToViewModel(
+                km,
+                (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
+                orderId => _timerHelpers.GetRemainingTime(orderId, out _));
 
-            KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
+            var wrapper = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,
                 TimerViewModel = new TimerViewModel()
             };
-
-            return PartialView("_ProcessingOrdersPartial", kitchenViewModelWithTimer);
+            return PartialView("_ProcessingOrdersPartial", wrapper);
         }
+
 
         public IActionResult GetCompletedOrders()
         {
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
-            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED));
+            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
 
-            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId), orderId => _timerHelpers.GetRemainingTime(orderId, out _));
             KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,
@@ -96,6 +110,23 @@ namespace MainOrderly.WebApp.Controllers
 
             return PartialView("_CompletedOrdersPartial", kitchenViewModelWithTimer);
         }
+
+
+        [HttpPost]
+        public IActionResult UpdateOrderItemStatus(int orderId, int menuItemId, OrderStatus newStatus)
+        {
+            _kitchenOrderService.UpdateOrderItemStatus(orderId, menuItemId, newStatus);
+
+            var manager = new KitchenOrderManager();
+            manager.SetPendingOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.PROCESSING));
+            manager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
+
+            var vm = CompositeKitchenViewModel.ConvertToViewModel(manager,(orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
+                orderId => _timerHelpers.GetRemainingTime(orderId, out _));
+            return PartialView("_ProcessingOrdersPartial", new KitchenViewModelWithTimer { CompositeKitchenViewModel = vm, TimerViewModel = new() });
+        }
+
+
 
         [HttpPost]
         public IActionResult UpdateOrderStatus(int id, OrderStatus newStatus)
@@ -111,13 +142,19 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             _kitchenOrderService.UpdateOrderStatus(id, newStatus);
+            
 
             if (newStatus == OrderStatus.PROCESSING)
             {
-                KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
-                kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.PROCESSING));
+                var orders = _kitchenOrderService.GetMenuItemsOrder(OrderStatus.PROCESSING,id);
+                foreach (var menu in orders) 
+                    _kitchenOrderService.UpdateOrderItemStatus(id, menu.MenuItemId, OrderStatus.PROCESSING);
 
-                CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+                KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
+                kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetMenuItemsOrder(OrderStatus.PROCESSING, id));
+
+                CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
+                    orderId => _timerHelpers.GetRemainingTime(orderId, out _));
                 KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
                 {
                     CompositeKitchenViewModel = viewModel,
@@ -129,9 +166,9 @@ namespace MainOrderly.WebApp.Controllers
             if (newStatus == OrderStatus.COMPLETED)
             {
                 KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
-                kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED));
+                kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
 
-                CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+                CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId), orderId => _timerHelpers.GetRemainingTime(orderId, out _));
                 KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
                 {
                     CompositeKitchenViewModel = viewModel,
@@ -156,8 +193,8 @@ namespace MainOrderly.WebApp.Controllers
             _kitchenOrderService.RemoveOrderFromDashboard(id);
 
             KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
-            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetOrderByStatus(OrderStatus.COMPLETED));
-            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager);
+            kitchenOrderManager.SetCompletedOrders(_kitchenOrderService.GetMenuItemsByStatus(OrderStatus.COMPLETED));
+            CompositeKitchenViewModel viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager, (orderId, _) => _timerHelpers.HasExceededPrepTime(orderId), orderId => _timerHelpers.GetRemainingTime(orderId, out _));
             KitchenViewModelWithTimer kitchenViewModelWithTimer = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,

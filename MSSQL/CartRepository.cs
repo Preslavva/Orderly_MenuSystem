@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
+using Models.Enums;
 
 namespace MSSQL
 {
@@ -8,11 +9,11 @@ namespace MSSQL
     {
         public CartRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void AddMenuItemToOrder(int orderId, int menuItemId, int quantity)
+        public void AddMenuItemToOrder(int orderId, int menuItemId, int quantity,OrderStatus status)
         {
             string sql = @"
-                INSERT INTO [Order_MenuItem] (OrderId, MenuItemId, Quantity)
-                VALUES (@OrderId, @MenuItemId, @Quantity);";
+                INSERT INTO [Order_MenuItem] (OrderId, MenuItemId, Quantity,OrderStatus, IsArchived)
+                VALUES (@OrderId, @MenuItemId, @Quantity, @OrderStatus,@IsArchived);";
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand(sql, conn))
@@ -20,6 +21,9 @@ namespace MSSQL
                 cmd.Parameters.AddWithValue("@OrderId", orderId);
                 cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
                 cmd.Parameters.AddWithValue("@Quantity", quantity);
+                cmd.Parameters.AddWithValue("@OrderStatus", status.ToString()); // maybe this wont work.
+                cmd.Parameters.AddWithValue("IsArchived", 0);
+
 
                 conn.Open();
                 cmd.ExecuteNonQuery();

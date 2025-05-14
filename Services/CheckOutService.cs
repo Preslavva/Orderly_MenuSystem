@@ -29,7 +29,7 @@ public class CheckoutService
 
         foreach (var kvp in cartItems)
         {
-           _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value);
+           _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value,OrderStatus.NEW_ORDER);
         }
             
         return newOrderId;

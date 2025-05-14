@@ -76,7 +76,7 @@ namespace MSSQL
             List<OrderItem> orderItems = new List<OrderItem>();
 
             string query = @"
-            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Category, m.RestaurantId, om.Quantity, m.PrepTime
+            SELECT m.Id, m.Name, m.Description, m.Price, m.IsAvailable, m.Picture, m.Category, m.RestaurantId, om.Quantity, om.OrderStatus,m.PrepTime
             FROM [Order_MenuItem] om
             INNER JOIN MenuItem m ON om.MenuItemId = m.Id
             WHERE om.OrderId = @OrderId";
@@ -101,12 +101,11 @@ namespace MSSQL
                         int quantity = reader.GetInt32(8);
                         Category category = (Category)Enum.Parse(typeof(Category), categoryString);
                         int restaurantId = Convert.ToInt32(reader.GetInt32(7));
-                        int prepTime = reader["PrepTime"] != DBNull.Value
-    ? Convert.ToInt32(reader["PrepTime"])
-    : 0;
+                        int prepTime = reader["PrepTime"] != DBNull.Value ? Convert.ToInt32(reader["PrepTime"]) : 0;
+                        var status = Enum.Parse<OrderStatus>(Convert.ToString(reader["OrderStatus"])!);
 
                         MenuItem menuItem = new MenuItem(menuItemId, name, description, price, isAvailable, picture, category,restaurantId,prepTime);
-                        OrderItem orderItem = new OrderItem(orderId, menuItemId, menuItem, quantity);
+                        OrderItem orderItem = new OrderItem(orderId, menuItemId, menuItem, quantity,status);
                         orderItems.Add(orderItem);
                     }
                 }
@@ -114,6 +113,7 @@ namespace MSSQL
             return orderItems;
         }
 
+            
 
         public void UpdateOrderStatus(int id, OrderStatus newStatus)
         {
@@ -154,7 +154,7 @@ namespace MSSQL
 
         public void RemoveOrder(List<int> orderId)
         {
-            string sql = @"UPDATE [Order] SET isArchived=@isArchived WHERE Id = @Id";
+            string sql = @"UPDATE [Order_MenuItem] SET isArchived=@isArchived WHERE OrderId = @OrderId";
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             using (SqlCommand cmd = new SqlCommand(sql, conn))
@@ -163,16 +163,132 @@ namespace MSSQL
                 foreach (var order in orderId)
                 {
                     cmd.Parameters.Clear();
-                    cmd.Parameters.AddWithValue("@Id", order);
+                    cmd.Parameters.AddWithValue("@OrderId", order);
                     cmd.Parameters.AddWithValue("@isArchived", 1);
                     cmd.ExecuteNonQuery();
                 }
-
-              
-               
             }
         }
 
-    
+
+        //testing
+        // 
+
+        public List<OrderItem> GetOrderItemsByStatus(OrderStatus status)
+        {
+            const string sql = @"
+        SELECT  om.OrderId,
+                m.Id, m.Name, m.Description, m.Price, m.IsAvailable,
+                m.Picture, m.Category, m.RestaurantId,
+                om.Quantity,
+                om.OrderStatus,
+                m.PrepTime,
+                o.OrderTimestamp
+        FROM    Order_MenuItem om
+        JOIN    MenuItem m ON m.Id = om.MenuItemId
+        JOIN    [Order] o ON o.Id = om.OrderId
+        WHERE   om.OrderStatus = @Status AND om.IsArchived = 0";
+
+            var items = new List<OrderItem>();
+
+            using (var conn = new SqlConnection(_connectionString))
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@Status", status.ToString());
+                conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        int orderId = reader.GetInt32(0);
+                        int menuItemId = reader.GetInt32(1);
+                        string name = reader.GetString(2);
+                        string description = reader.GetString(3);
+                        decimal price = reader.GetDecimal(4);
+                        bool isAvailable = reader.GetBoolean(5);
+                        string picture = reader.GetString(6);
+                        string categoryStr = reader.GetString(7);
+                        int restaurantId = reader.GetInt32(8);
+                        int quantity = reader.GetInt32(9);
+                        var itemStatus = Enum.Parse<OrderStatus>(reader.GetString(10));
+                        int prepTime = reader["PrepTime"] != DBNull.Value
+                                               ? Convert.ToInt32(reader["PrepTime"])
+                                               : 0;
+                        DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
+                        var category = Enum.Parse<Category>(categoryStr);
+                        var menuItem = new MenuItem(menuItemId, name, description, price,
+                                                    isAvailable, picture, category,
+                                                    restaurantId, prepTime);
+
+                        items.Add(new OrderItem(orderId, menuItemId, menuItem, quantity, itemStatus,orderTimestamp));
+                    }
+                }
+            }
+            return items;
+        }
+
+        public List<OrderItem> GetOrderItems(int orderId)
+        {
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                conn.Open();
+                string query = @"SELECT om.[OrderId]
+              ,om.[MenuItemId]
+              ,om.[Quantity]
+              ,om.[OrderStatus]
+              ,om.[IsArchived]
+	          ,menu.PrepTime
+               FROM [dbi547761].[dbo].[Order_MenuItem] as om
+               INNER JOIN MenuItem as menu on menu.Id = om.MenuItemId
+                WHERE om.OrderId = @OrderId";
+
+                using(SqlCommand cmd = new SqlCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@OrderId", orderId);
+                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        List<OrderItem> orderItems = new List<OrderItem>();
+                        while (reader.Read())
+                        {
+                            int menuItemId = reader.GetInt32(1);
+                            int quantity = reader.GetInt32(2);
+                            var status = Enum.Parse<OrderStatus>(reader.GetString(3));
+                            int prepTime = reader["PrepTime"] != DBNull.Value
+                                               ? Convert.ToInt32(reader["PrepTime"])
+                                               : 0;
+                            var orderItem = new OrderItem(orderId, menuItemId,new MenuItem(prepTime), quantity, status);
+                            orderItems.Add(orderItem);
+                        }
+                        return orderItems;
+                    }
+                }
+
+
+            }
+        }
+
+        /* ──────────────────────────────────────────────────────────────
+         * 2. Update a single line-item’s status
+         * ──────────────────────────────────────────────────────────────*/
+        public void UpdateOrderItemStatus(int orderId, int menuItemId, OrderStatus newStatus)
+        {
+            const string sql = @"
+        UPDATE Order_MenuItem
+        SET    OrderStatus = @Status
+        WHERE  OrderId     = @OrderId
+          AND  MenuItemId  = @MenuItemId";
+
+            using var conn = new SqlConnection(_connectionString);
+            using var cmd = new SqlCommand(sql, conn);
+
+            cmd.Parameters.AddWithValue("@Status", newStatus.ToString());
+            cmd.Parameters.AddWithValue("@OrderId", orderId);
+            cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+
+            conn.Open();
+            cmd.ExecuteNonQuery();
+        }
+
+
     }
 }

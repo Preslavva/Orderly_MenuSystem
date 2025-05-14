@@ -18,6 +18,7 @@ namespace Models.Entities
         public List<Nutrition> Nutritions { get;}
         public List<MenuItemIngredient> Ingredients { get; private set; }
 
+
         public MenuItem(int id, string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId, int prepTime)
         {
             Id = id;
@@ -30,6 +31,12 @@ namespace Models.Entities
             Nutritions = new List<Nutrition>();
             RestaurantId = restaurantId;
             PrepTime = prepTime;
+        }
+
+        public MenuItem(int prepTime)
+        {
+            PrepTime = prepTime;
+
         }
 
         public void SetIngredient(List<MenuItemIngredient> ingredients)
