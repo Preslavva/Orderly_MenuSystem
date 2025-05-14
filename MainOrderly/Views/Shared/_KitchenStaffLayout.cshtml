@@ -12,32 +12,32 @@
 
 </head>
 <body class="kitchen-theme">
-    <header class="kitchen-header">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center py-3">
-                <h1 class="  text-white  kitchen-title m-0 ">Kitchen Dashboard</h1>
-                <div>
-                    <a class="btn btn-outline-light" asp-area="" asp-controller="Account" asp-action="Logout">Logout</a>
-                </div>
+<header class="kitchen-header">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center py-3">
+            <h1 class="text-white kitchen-title m-0">Kitchen Dashboard</h1>
+            <div>
+                <a class="btn btn-outline-light" asp-controller="BusinessAccount" asp-action="Logout">Logout</a>
             </div>
         </div>
-    </header>
-
-    <div class="container kitchen-container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
     </div>
+</header>
 
-    <footer class="border-top footer text-muted">
-        <div class="container text-center">
-            &copy; @DateTime.Now.Year - Restaurant Kitchen Management System
-        </div>
-    </footer>
+<div class="container kitchen-container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<footer class="border-top footer text-muted">
+    <div class="container text-center">
+        &copy; @DateTime.Now.Year - Restaurant Kitchen Management System
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

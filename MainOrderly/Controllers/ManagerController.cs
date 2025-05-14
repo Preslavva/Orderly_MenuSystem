@@ -1,4 +1,5 @@
-﻿using MainOrderly.WebApp.ViewModels;
+﻿using MainOrderly.WebApp.Attributes;
+using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Models.Enums;
@@ -7,6 +8,7 @@ using Services;
 namespace MainOrderly.WebApp.Controllers
 {
     //https://localhost:7196/Manager/Create
+    [RequireRole("Owner", "Manager" , "Chef" , "Waiter")]
     public class ManagerController : Controller
     {
         private readonly MenuService _menuService;
@@ -330,6 +332,11 @@ namespace MainOrderly.WebApp.Controllers
                 minimumStockLevel = ingredient.MinimumStockLevel,
                 unit = ingredient.Unit
             });
+        }
+        
+        public IActionResult Logout()
+        {
+            return RedirectToAction("Logout", "BusinessAccount");
         }
 
         [HttpPut]

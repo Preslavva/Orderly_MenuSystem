@@ -4,9 +4,12 @@ using Models.Entities;
 using Models.Enums;
 using Services;
 using MainOrderly.WebApp.Helpers;
+using System.Collections.Generic;
+using MainOrderly.WebApp.Attributes;
 
 namespace MainOrderly.WebApp.Controllers
 {
+    [RequireRole("Owner", "Manager", "Chef")]
     public class KitchenController : Controller
     {
         private KitchenOrderService _kitchenOrderService;
@@ -211,6 +214,11 @@ namespace MainOrderly.WebApp.Controllers
             };
 
             return PartialView("_CompletedOrdersPartial", kitchenViewModelWithTimer);
+        }
+        
+        public IActionResult Logout()
+        {
+            return RedirectToAction("Logout", "BusinessAccount");
         }
     }
 }
