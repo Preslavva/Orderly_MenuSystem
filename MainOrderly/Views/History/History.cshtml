@@ -24,17 +24,16 @@
                                 <strong>@item.Quantity</strong> x @item.Name
                             </p>
 
-                            <p>
-                                <strong>Price:</strong>  @item.Price.ToString("0.00")
-                            </p>
-
-                            <p>
-                                <strong>Subtotal:</strong> @item.SubTotal.ToString("0.00")
-                            </p>
-                            <p>
-                                <strong>Time of Order:</strong> @item.OrderTimeStamp.ToShortTimeString()
-                            </p>
+                      
                         }
+
+                        <p>
+                            <strong>Subtotal:</strong> @group.First().SubTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("fr-FR"))
+
+                        </p>
+                        <p>
+                            <strong>Time of Order:</strong> @group.First().OrderTimeStamp.ToShortTimeString()
+                        </p>
                     </div>
 
                     <div class="order-status">
