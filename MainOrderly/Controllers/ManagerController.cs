@@ -140,7 +140,7 @@ namespace MainOrderly.WebApp.Controllers
             }
             else
             {
-                menuItems = _menuService.LoadMenuItems(_restaurantId);
+                menuItems = _menuService.LoadMenuItemsForManager(_restaurantId);
             }
 
             var viewModels = menuItems.Select(MenuItemViewModel.ConvertToViewModel).ToList();

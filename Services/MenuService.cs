@@ -10,13 +10,15 @@ namespace Services
         private readonly IngredientRepository _ingredientRepository;
         private readonly KitchenOrderService _kitchenOrderService;
         private readonly NutritionRepository _nutritionRepository;
+        private readonly IngredientService _ingredientService;
 
-        public MenuService(MenuItemRepository menuItemRepository, IngredientRepository ingredientRepository, KitchenOrderService kitchenOrderService, NutritionRepository nutritionRepository)
+        public MenuService(MenuItemRepository menuItemRepository, IngredientRepository ingredientRepository, KitchenOrderService kitchenOrderService, NutritionRepository nutritionRepository, IngredientService ingredientService)
         {
             _menuItemRepository = menuItemRepository;
             _ingredientRepository = ingredientRepository;
             _kitchenOrderService = kitchenOrderService;
             _nutritionRepository = nutritionRepository;
+            _ingredientService = ingredientService;
         }
 
         public int CreateMenuItem(string name,string description, decimal price,bool isAvailable, string picture,Category category, int restaurantId,
@@ -46,9 +48,55 @@ namespace Services
             return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities);
         }
 
-        public List<MenuItem> LoadMenuItems(int restaurantId)
+        public List<MenuItem> LoadMenuItems(int restaurantId)// for the user side
         {
-            return _menuItemRepository.LoadMenuItems(restaurantId)!;
+
+            var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
+            foreach (var item in menuItems)
+                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id));
+
+
+            var available = new List<MenuItem>();
+
+            foreach (var item in menuItems)
+            {
+                bool inStock = item.Ingredients.All(ing =>
+                {
+                    var inv = _ingredientService.GetIngredientById(ing.IngredientId);
+                    return inv.QuantityInStock >= ing.Quantity;
+                });
+
+                item.SetMenuItemAvailability(inStock);
+
+                if (inStock)
+                    available.Add(item);           
+            }
+
+            return available;
+        }
+
+        public List<MenuItem> LoadMenuItemsForManager(int restaurantId)// for the manager side
+        {
+
+            var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
+            foreach (var item in menuItems)
+                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id));
+
+
+
+            foreach (var item in menuItems)
+            {
+                bool inStock = item.Ingredients.All(ing =>
+                {
+                    var inv = _ingredientService.GetIngredientById(ing.IngredientId);
+                    return inv.QuantityInStock >= ing.Quantity;
+                });
+
+                item.SetMenuItemAvailability(inStock);
+
+            }
+
+            return menuItems;
         }
 
         public MenuItem GetMenuItem(int id, int restaurantId)

@@ -104,24 +104,20 @@ namespace MainOrderly.WebApp.Controllers
             var allMenuItems = _menuService.LoadMenuItems(restaurantId);
         
 
-            foreach (var item in allMenuItems)
-            {
-                var ingredients = _ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id);
-                item.SetIngredient(ingredients);
-            }
+     
     
 
-            foreach (var menuItem in allMenuItems)
-            {
-                menuItem.Ingredients.ForEach(ingredient =>
-                {
-                    var ingredientToUpdate = _ingredientService.GetIngredientById(ingredient.IngredientId);
-                    if (ingredientToUpdate.QuantityInStock < ingredient.Quantity)
-                    {
-                        menuItem.SetMenuItemAvailability(false);
-                    }
-                });
-            }
+            //foreach (var menuItem in allMenuItems)
+            //{
+            //    menuItem.Ingredients.ForEach(ingredient =>
+            //    {
+            //        var ingredientToUpdate = _ingredientService.GetIngredientById(ingredient.IngredientId);
+            //        if (ingredientToUpdate.QuantityInStock < ingredient.Quantity)
+            //        {
+            //            menuItem.SetMenuItemAvailability(false);
+            //        }
+            //    });
+            //}
 
 
 
