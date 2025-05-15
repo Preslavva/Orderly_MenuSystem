@@ -33,7 +33,7 @@ namespace Services
             {
                history.AddRange(_historyRepository.GetHistoryOrders(historyId));
             }
-            return history;
+            return history.OrderByDescending(h => h.OrderTimeStamp).ToList();
         }
 
         private List<int> DeserializeHistory()
