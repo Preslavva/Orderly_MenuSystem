@@ -6,7 +6,7 @@ using Models.Enums;
 
 namespace MSSQL
 {
-    internal class RestaurantRepository: Repository
+    public class RestaurantRepository: Repository
     {
         public RestaurantRepository(IConfiguration configuration) : base(configuration) { }
 
@@ -73,7 +73,7 @@ namespace MSSQL
         public Restaurant GetRestaurantById(int restaurantId)
         {
             string sql = @"
-        SELECT Id, [Name], Email, Phone, [Address], Description, isActive, 
+        SELECT Id, [Name], Email, Phone, [Address], Description, 
                Logo, Font, ColorButtons, ColorDefault, ColorBackground
         FROM Restaurant
         WHERE Id = @Id";
@@ -95,8 +95,7 @@ namespace MSSQL
                             phoneNumber: reader["Phone"].ToString(),
                             address: reader["Address"].ToString(),
                             description: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : null,
-                            isActive: (bool)reader["isActive"],
-                            logo: reader["Logo"] != DBNull.Value ? reader["Logo"].ToString() : null,
+                            logo: reader["Logo"] != DBNull.Value ? (byte[])reader["Logo"] : null,
                             font: reader["Font"] != DBNull.Value ? reader["Font"].ToString() : null,
                             colorButtons: reader["ColorButtons"] != DBNull.Value ? reader["ColorButtons"].ToString() : null,
                             colorDefault: reader["ColorDefault"] != DBNull.Value ? reader["ColorDefault"].ToString() : null,

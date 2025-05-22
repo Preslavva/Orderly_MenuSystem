@@ -70,8 +70,7 @@ namespace Models.Entities
        string phoneNumber,
        string address,
        string description,
-       bool isActive,
-       string logo,
+       byte[] logo,
        string font,
        string colorButtons,
        string colorDefault,
@@ -83,7 +82,6 @@ namespace Models.Entities
             PhoneNumber = phoneNumber;
             Address = address;
             Description = description;
-            IsActive = isActive;
             Logo = logo;
             Font = font;
             ColorButtons = colorButtons;
