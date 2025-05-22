@@ -1,4 +1,5 @@
-﻿using Models.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using Models.Entities;
 using MSSQL;
 
 namespace Services
@@ -36,5 +37,15 @@ namespace Services
         {
             _ownerRepository.AssignRestaurantToOwner(ownerId, restaurantId);
         }
-    }
+
+		public string ConvertToString(IFormFile image)
+		{
+			using (var ms = new MemoryStream())
+			{
+				image.CopyTo(ms);
+				byte[] imageBytes = ms.ToArray();
+				return Convert.ToBase64String(imageBytes);
+			}
+		}
+	}
 }

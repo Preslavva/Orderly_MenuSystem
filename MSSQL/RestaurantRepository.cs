@@ -1,8 +1,6 @@
-﻿using System.Security.Cryptography.Pkcs;
-using Microsoft.Data.SqlClient;
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
-using Models.Enums;
 
 namespace MSSQL
 {
@@ -14,8 +12,8 @@ namespace MSSQL
         {
 
             string sql = @"
-                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, isActive )
-                VALUES(@Name, @Email, @Phone, @Address, @Description, @isActive)";
+                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, KVK, isActive )
+                VALUES(@Name, @Email, @Phone, @Address, @Description, @KVK, @isActive)";
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand(sql, conn))
@@ -25,7 +23,8 @@ namespace MSSQL
                 cmd.Parameters.AddWithValue("@Phone", restaurant.PhoneNumber);
                 cmd.Parameters.AddWithValue("@Address", restaurant.Address);
                 cmd.Parameters.AddWithValue("@Description", restaurant.Description);
-                cmd.Parameters.AddWithValue("@isActive", 1);
+				cmd.Parameters.AddWithValue("@KVK", restaurant.KVK);
+				cmd.Parameters.AddWithValue("@isActive", 1);
 
 
                 conn.Open();
@@ -47,7 +46,8 @@ namespace MSSQL
             Font = @Font,
             ColorButtons = @ColorButtons,
             ColorDefault = @ColorDefault,
-            ColorBackground = @ColorBackground
+            ColorBackground = @ColorBackground,
+            KVK = @KVK
         WHERE Id = @Id";
 
             using (var conn = new SqlConnection(_connectionString))
@@ -63,7 +63,8 @@ namespace MSSQL
                 cmd.Parameters.AddWithValue("@ColorButtons", restaurant.ColorButtons ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ColorDefault", restaurant.ColorDefault ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ColorBackground", restaurant.ColorBackground ?? (object)DBNull.Value);
-                cmd.Parameters.AddWithValue("@Id", restaurant.Id);
+				cmd.Parameters.AddWithValue("@KVK", restaurant.KVK ?? (object)DBNull.Value);
+				cmd.Parameters.AddWithValue("@Id", restaurant.Id);
 
                 conn.Open();
                 cmd.ExecuteNonQuery();
@@ -99,7 +100,8 @@ namespace MSSQL
                             font: reader["Font"] != DBNull.Value ? reader["Font"].ToString() : null,
                             colorButtons: reader["ColorButtons"] != DBNull.Value ? reader["ColorButtons"].ToString() : null,
                             colorDefault: reader["ColorDefault"] != DBNull.Value ? reader["ColorDefault"].ToString() : null,
-                            colorBackground: reader["ColorBackground"] != DBNull.Value ? reader["ColorBackground"].ToString() : null
+                            colorBackground: reader["ColorBackground"] != DBNull.Value ? reader["ColorBackground"].ToString() : null,
+                            kvk: reader["KVK"] != DBNull.Value ? reader["KVK"].ToString():null
                         );
                     }
                 }

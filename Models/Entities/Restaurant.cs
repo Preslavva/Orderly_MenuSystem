@@ -22,6 +22,7 @@
              public string ColorButtons { get; }
              public string ColorDefault { get; }
              public string ColorBackground { get; }
+            public string KVK { get; }
 
             public List<MenuItem> MenuItems { get; }
             public List<Table> Tables { get; }
@@ -66,7 +67,8 @@
        string font,
        string colorButtons,
        string colorDefault,
-       string colorBackground)
+       string colorBackground,
+       string kvk)
         {
             Id = id;
             Name = name;
@@ -79,6 +81,7 @@
             ColorButtons = colorButtons;
             ColorDefault = colorDefault;
             ColorBackground = colorBackground;
+            KVK = kvk;
         }
 
     }

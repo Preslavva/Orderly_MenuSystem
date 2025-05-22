@@ -1,4 +1,5 @@
-﻿using MainOrderly.WebApp.ViewModels;
+﻿using MainOrderly.WebApp.Attributes;
+using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Services;
@@ -13,24 +14,29 @@ namespace MainOrderly.WebApp.Controllers
             _restaurantService = restaurantService; 
         }
 
-        [HttpGet]
-        public IActionResult Index(int id)
-        {
-            if(id != 0)
-            {
-                Restaurant restaurant = _restaurantService.GetRestaurantById(id);
-                RestaurantViewModel restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant);
-                return View(restaurant);    
-            }
-            return View();
-        }
+		[HttpGet]
+		public IActionResult Index(int id)
+		{
+			if (id != 0)
+			{
+				var restaurant = _restaurantService.GetRestaurantById(id);
+				var restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant);
+				return View(restaurantModel);
+			}
 
-        [HttpPost]
+			return View(new RestaurantViewModel()); 
+		}
+
+		[HttpPost]
         public IActionResult CreateRestaurant(RestaurantViewModel restaurantModel, int ownerId)
         {
+            if(restaurantModel.logoImage != null)
+            {
+                
+            }
             Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantModel);
             _restaurantService.CreateRestaurant(restaurant);
-            //_restaurantService.AssignRestaurantToOwner(ownerId,);
+            
             return RedirectToAction();
         }
 
