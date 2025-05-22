@@ -51,5 +51,7 @@ namespace MainOrderly.WebApp.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Login", "BusinessAccount");
         }
+
+
     }
 }
