@@ -44,6 +44,8 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<IngredientRepository>();
             builder.Services.AddScoped<TimerHelpers>();
             builder.Services.AddScoped<StaffService>();
+            builder.Services.AddScoped<RestaurantRepository>();
+            builder.Services.AddScoped<RestaurantService>();
 
             // New services for authentication
             builder.Services.AddScoped<OwnerRepository>();

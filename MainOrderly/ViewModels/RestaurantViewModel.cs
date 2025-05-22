@@ -1,26 +1,22 @@
-﻿using Models.Entities;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Models.Entities;
 
 namespace MainOrderly.WebApp.ViewModels
 {
     public class RestaurantViewModel
     {
         public int Id { get; set; }
-
         public string Name { get; set; }
-
         public string Description { get; set; }
-
         public string Logo { get; set; }
-
         public string Email { get; set; }
-
         public string PhoneNumber { get; set; }
-
         public string Address { get; set; }
         public string Font { get; set; }
         public string ColorButtons { get; set; }
         public string ColorDeafult { get; set; }
         public string ColorBackground { get; set; }
+        public List<SelectListItem> Fonts { get; set; } 
 
         public static RestaurantViewModel ConvertToViewModel(Restaurant restaurant)
         {
@@ -36,7 +32,8 @@ namespace MainOrderly.WebApp.ViewModels
                 Font = restaurant.Font,
                 ColorButtons = restaurant.ColorButtons,
                 ColorDeafult = restaurant.ColorDefault,
-                ColorBackground = restaurant.ColorBackground
+                ColorBackground = restaurant.ColorBackground,
+                Fonts = new List<SelectListItem>()
             };
             return viewModel;
         }

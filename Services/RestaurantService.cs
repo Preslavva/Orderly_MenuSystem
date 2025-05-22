@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Models.Entities;
+﻿using Models.Entities;
 using MSSQL;
 
 namespace Services
@@ -11,9 +6,11 @@ namespace Services
     public class RestaurantService
     {
         private readonly RestaurantRepository _restaurantRepository;
-        public RestaurantService(RestaurantRepository restaurantRepository)
+        private readonly OwnerRepository _ownerRepository;
+        public RestaurantService(RestaurantRepository restaurantRepository, OwnerRepository ownerRepository)
         {
             _restaurantRepository = restaurantRepository;
+            _ownerRepository = ownerRepository;
         }
         public void CreateRestaurant(Restaurant restaurant)
         {
@@ -33,6 +30,11 @@ namespace Services
         public Restaurant GetRestaurantById(int restaurantId)
         {
             return _restaurantRepository.GetRestaurantById(restaurantId);
+        }
+
+        public void AssignRestaurantToOwner(int ownerId, int restaurantId)
+        {
+            _ownerRepository.AssignRestaurantToOwner(ownerId, restaurantId);
         }
     }
 }
