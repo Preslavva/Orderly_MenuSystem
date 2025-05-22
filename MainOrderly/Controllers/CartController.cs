@@ -104,7 +104,6 @@ namespace MainOrderly.WebApp.Controllers
                 "Test Restaurant",
                 "This is a test restaurant for checkout",
                 emptyLogo,
-                "Blue",
                 "test@example.com",
                 "123-456-7890",
                 "123 Test Street"

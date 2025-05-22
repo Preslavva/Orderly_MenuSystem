@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Models.Entities
+﻿namespace Models.Entities
     {
         public class Restaurant
         {
@@ -33,13 +27,12 @@ namespace Models.Entities
             public List<Table> Tables { get; }
             public List<Order> Orders { get; }
 
-        public Restaurant(int id, string name, string description, Byte[] logo, string colorTheme, string email, string phoneNumber, string address)
+        public Restaurant(int id, string name, string description, Byte[] logo, string email, string phoneNumber, string address)
         {
             Id = id;
             Name = name;
             Description = description;
             Logo = logo;
-            ColorTheme = colorTheme;
             Email = email;
             PhoneNumber = phoneNumber;
             Address = address;
@@ -49,12 +42,11 @@ namespace Models.Entities
         }
 
 
-        public Restaurant(string name, string description, Byte[] logo, string colorTheme, string email, string phoneNumber, string address)
+        public Restaurant(string name, string description, Byte[] logo, string email, string phoneNumber, string address)
         {
             Name = name;
             Description = description;
             Logo = logo;
-            ColorTheme = colorTheme;
             Email = email;
             PhoneNumber = phoneNumber;
             Address = address;

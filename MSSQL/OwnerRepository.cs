@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
@@ -51,6 +47,28 @@ namespace MSSQL
             catch (SqlException sqlEx)
             {
                 throw new Exception($"Database error occurred while getting owner: {sqlEx.Message}", sqlEx);
+            }
+        }
+
+        public void AssignRestaurantToOwner(int ownerId, int restaurantId)
+        {
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);  
+                connection.Open();
+
+                string sql = @"UPDATE Owner 
+                                 SET RestaurantId = @RestaurantId 
+                                 WHERE Id = @OwnerId";
+                using SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                command.Parameters.AddWithValue("@OwnerId", ownerId);
+
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
             }
         }
     }
