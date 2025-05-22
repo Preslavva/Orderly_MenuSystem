@@ -696,9 +696,5 @@ namespace MainOrderly.WebApp.Controllers
 
             ViewData["ButtonClass"] = "edit-page-btn";
         }
-
-
-
-
     }
 }
