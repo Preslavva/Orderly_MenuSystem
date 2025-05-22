@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Models.Entities;
+using Models.Enums;
 using MSSQL;
 
 namespace Services
@@ -21,19 +22,34 @@ namespace Services
 
             orderIdsHistory.Add(newOrderId);
 
-           SerializeHistory(orderIdsHistory);
+            SerializeHistory(orderIdsHistory);
 
         }
 
         public List<OrderHistory> GetHistory()
         {
-            List<int>historyIds = DeserializeHistory();
+            List<int> historyIds = DeserializeHistory();
             List<OrderHistory> history = new List<OrderHistory>();
+            List<OrderHistory> orderedHistory = new List<OrderHistory>();
             foreach (var historyId in historyIds)
             {
-               history.AddRange(_historyRepository.GetHistoryOrders(historyId));
+                history.AddRange(_historyRepository.GetHistoryOrders(historyId));
             }
-            return history.OrderByDescending(h => h.OrderTimeStamp).ToList();
+            orderedHistory.AddRange(
+            history.Where(h => h.Status == OrderStatus.NEW_ORDER)
+            .OrderByDescending(h => h.OrderTimeStamp)
+             );
+
+            orderedHistory.AddRange(
+                history.Where(h => h.Status == OrderStatus.PROCESSING)
+                       .OrderByDescending(h => h.OrderTimeStamp)
+            );
+
+            orderedHistory.AddRange(
+                history.Where(h => h.Status == OrderStatus.COMPLETED)
+                       .OrderByDescending(h => h.OrderTimeStamp)
+            );
+            return orderedHistory;
         }
 
         private List<int> DeserializeHistory()
