@@ -16,9 +16,6 @@ namespace Models.Entities
 
             public byte[] Logo { get; }
 
-            public string ColorTheme { get; }
-
-            public string OwnerName { get; }
 
             public string Email { get; }
 
@@ -29,7 +26,7 @@ namespace Models.Entities
              public bool IsActive { get; }
              public string Font { get; }
              public string ColorButtons { get; }
-             public string ColorDeafult { get; }
+             public string ColorDefault { get; }
              public string ColorBackground { get; }
 
             public List<MenuItem> MenuItems { get; }
@@ -66,9 +63,36 @@ namespace Models.Entities
             Orders = new List<Order>();
         }
 
+        public Restaurant(
+       int id,
+       string name,
+       string email,
+       string phoneNumber,
+       string address,
+       string description,
+       bool isActive,
+       string logo,
+       string font,
+       string colorButtons,
+       string colorDefault,
+       string colorBackground)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            Description = description;
+            IsActive = isActive;
+            Logo = logo;
+            Font = font;
+            ColorButtons = colorButtons;
+            ColorDefault = colorDefault;
+            ColorBackground = colorBackground;
+        }
 
     }
-   
+
 
 }
 
