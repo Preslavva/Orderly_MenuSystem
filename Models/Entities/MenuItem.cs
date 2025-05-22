@@ -32,6 +32,13 @@ namespace Models.Entities
             RestaurantId = restaurantId;
             PrepTime = prepTime;
         }
+        public MenuItem(int id, string name, decimal price, int prepTime)
+        {
+            Id = id;
+            Name = name;
+            Price = price;
+            PrepTime = prepTime;
+        }
 
         public MenuItem(int prepTime)
         {

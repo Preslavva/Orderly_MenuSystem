@@ -40,5 +40,11 @@
             QrCode = qrCode;
         }
 
+        public Table(int id, int number)
+        {
+            Id = id;
+            Number = number;
+        }
+
     }
 }

@@ -21,6 +21,13 @@ namespace Models.Entities
             Status = status;
             OrderTimestamp = orderTimestamp;
         }
+        public OrderItem(int orderId, MenuItem menuItem, int quantity, DateTime orderTimestamp)
+        {
+            OrderId = orderId;
+            MenuItem = menuItem;
+            Quantity = quantity;
+            OrderTimestamp = orderTimestamp;
+        }
 
         public OrderItem(int orderId, int menuItemId, MenuItem menuItem, int quantity, OrderStatus status)
         {

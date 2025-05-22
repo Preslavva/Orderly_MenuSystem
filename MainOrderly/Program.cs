@@ -29,10 +29,12 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<CheckoutService>();
             builder.Services.AddScoped<KitchenOrderRepository>();
             builder.Services.AddScoped<TableRepository>();
+            builder.Services.AddScoped<WaiterRepository>();
             builder.Services.AddScoped<QRCodeService>();
             builder.Services.AddScoped<KitchenOrderService>();
             builder.Services.AddScoped<MenuService>();
             builder.Services.AddScoped<TableService>();
+            builder.Services.AddScoped<WaiterService>();
             builder.Services.AddScoped<NutritionService>();
             builder.Services.AddScoped<TableRepository>();
             builder.Services.AddScoped<AllergenRepository>();
