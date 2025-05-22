@@ -10,6 +10,7 @@ namespace MainOrderly.WebApp.ViewModels
         public string Email { get; set; }
         public string Phone { get; set; }
         public bool IsActive { get; set; }
+        public string PrimaryRole { get; set; } = "No Role";
         public string FullName => $"{FirstName} {LastName}";
     }
 

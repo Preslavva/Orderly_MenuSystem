@@ -28,15 +28,23 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult AllStaff()
         {
             var staff = _staffRepository.GetAllStaffIncludingInactive();
-            var viewModels = staff.Select(s => new StaffViewModel
+            var viewModels = staff.Select(s => 
             {
-                Id = s.Id,
-                FirstName = s.FirstName,
-                LastName = s.LastName,
-                Email = s.Email,
-                Phone = s.Phone,
-                IsActive = s.IsActive
+                var roles = _staffRepository.GetStaffRoles(s.Id);
+                var primaryRole = roles.FirstOrDefault()?.Type ?? "No Role";
+        
+                return new StaffViewModel
+                {
+                    Id = s.Id,
+                    FirstName = s.FirstName,
+                    LastName = s.LastName,
+                    Email = s.Email,
+                    Phone = s.Phone,
+                    IsActive = s.IsActive,
+                    PrimaryRole = primaryRole
+                };
             }).ToList();
+    
             return View("~/Views/Business/AllStaff.cshtml", viewModels);
         }
 
