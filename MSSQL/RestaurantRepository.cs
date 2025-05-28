@@ -197,6 +197,10 @@ namespace MSSQL
         //                        inner join Staff as s
         //                        on s.RestaurantId = r.Id
         //                        where r.isActive = @IsActive and s.Id = @OwnerId;";
+
+        //        using SqlCommand command = new SqlCommand(sql, connection);
+        //        command.Parameters.AddWithValue("@IsActive", 1);
+
         //    }
         //    catch (SqlException sqlEx)
         //    {
