@@ -1,15 +1,17 @@
 public class Staff
 {
-    public int Id { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string Email { get; }
-    public string Phone { get; }
-    public bool IsActive { get; }
-    public int RestaurantId { get; }
-    public string Password { get; }
-    public string Salt { get; }
-    public List<Role> Roles { get; private set; } = new List<Role>();
+    public int Id { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+    public string Email { get; set; }
+    public string Phone { get; set; }
+    public bool IsActive { get; set; }
+    public int RestaurantId { get; set; }
+    public string Password { get; set; }
+    public string Salt { get; set; }
+    public List<Role> Roles { get; set; } = new List<Role>();
+
+    public Staff() { }
 
     public Staff(int id, string firstName, string lastName, string email, string phone, bool isActive, int restaurantId, string password, string salt)
     {
@@ -38,7 +40,7 @@ public class Staff
 
     public void SetRoles(List<Role> roles)
     {
-        Roles = roles;
+        Roles = roles ?? new List<Role>();
     }
 
     public string FullName => $"{FirstName} {LastName}";

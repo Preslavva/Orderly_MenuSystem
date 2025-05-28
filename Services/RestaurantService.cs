@@ -8,11 +8,13 @@ namespace Services
     {
         private readonly RestaurantRepository _restaurantRepository;
         private readonly OwnerRepository _ownerRepository;
+        
         public RestaurantService(RestaurantRepository restaurantRepository, OwnerRepository ownerRepository)
         {
             _restaurantRepository = restaurantRepository;
             _ownerRepository = ownerRepository;
         }
+        
         public void CreateRestaurant(Restaurant restaurant)
         {
             _restaurantRepository.CreateRestaurant(restaurant);
@@ -27,25 +29,20 @@ namespace Services
         {
             _restaurantRepository.RemoveRestaurant(restaurantId);
         }
-
+        
         public Restaurant GetRestaurantById(int restaurantId)
         {
             return _restaurantRepository.GetRestaurantById(restaurantId);
         }
-
-        public void AssignRestaurantToOwner(int ownerId, int restaurantId)
+        
+        public string ConvertToString(IFormFile image)
         {
-            _ownerRepository.AssignRestaurantToOwner(ownerId, restaurantId);
+            using (var ms = new MemoryStream())
+            {
+                image.CopyTo(ms);
+                byte[] imageBytes = ms.ToArray();
+                return Convert.ToBase64String(imageBytes);
+            }
         }
-
-		public string ConvertToString(IFormFile image)
-		{
-			using (var ms = new MemoryStream())
-			{
-				image.CopyTo(ms);
-				byte[] imageBytes = ms.ToArray();
-				return Convert.ToBase64String(imageBytes);
-			}
-		}
-	}
+    }
 }

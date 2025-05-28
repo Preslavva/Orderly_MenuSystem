@@ -22,7 +22,7 @@
              public string ColorButtons { get; }
              public string ColorDefault { get; }
              public string ColorBackground { get; }
-            public string KVK { get; }
+            public string KVK { get; set; }
 
             public List<MenuItem> MenuItems { get; }
             public List<Table> Tables { get; }
@@ -68,6 +68,7 @@
        string colorButtons,
        string colorDefault,
        string colorBackground,
+       bool isActive,
        string kvk)
         {
             Id = id;
@@ -82,6 +83,7 @@
             ColorDefault = colorDefault;
             ColorBackground = colorBackground;
             KVK = kvk;
+            IsActive = isActive; 
         }
 
     }

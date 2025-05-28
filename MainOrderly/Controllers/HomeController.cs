@@ -7,7 +7,7 @@ using Models.Enums;
 using Services;
 
 namespace MainOrderly.WebApp.Controllers
-{//[Route("register")] for example in the url, something in the future
+{
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -19,9 +19,11 @@ namespace MainOrderly.WebApp.Controllers
         private readonly TableService _tableService;
 
         private static Dictionary<int, string> _tableGuidMap = new();
-        private int restaurantId = 1;
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService, TableService tableService)
+        public HomeController(ILogger<HomeController> logger, CartService cartService, 
+            MenuService menuService, NutritionService nutritionService, 
+            AllergenService allergenService, IngredientService ingredientService, 
+            TableService tableService)
         {
             _logger = logger;
             _cartService = cartService;
@@ -30,13 +32,12 @@ namespace MainOrderly.WebApp.Controllers
             _nutritionService = nutritionService;
             _allergenService = allergenService;
             _ingredientService = ingredientService;
-
         }
 
-        //this controller is the first thing that user you will see.
         public IActionResult LoadingPage(string token)
         {
-            Table table = _tableService.GetTableByToken(token);
+            int restaurantId = 1; // Default or get from configuration
+            Table table = _tableService.GetTableByToken(token, restaurantId);
 
             if (table == null)
             {
@@ -44,20 +45,23 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             HttpContext.Session.SetInt32("TableId", table.Id);
+            HttpContext.Session.SetInt32("RestaurantId", restaurantId);
   
             return View("~/Views/loading.cshtml");
         }
 
         [HttpGet]
-        public IActionResult Index(Category? category = null,string token="", string searchTerm = "", int restaurantId = 1)
+        public IActionResult Index(Category? category = null, string token = "", string searchTerm = "", int restaurantId = 1)
         {
             ViewData["Page"] = "Index";
+            
             if (!string.IsNullOrEmpty(token))
             {
-                var table = _tableService.GetTableByToken(token);
+                var table = _tableService.GetTableByToken(token, restaurantId);
                 if (table != null)
                 {
                     HttpContext.Session.SetInt32("TableId", table.Id);
+                    HttpContext.Session.SetInt32("RestaurantId", restaurantId);
                 }
             }
 
@@ -97,27 +101,7 @@ namespace MainOrderly.WebApp.Controllers
                     });
             }
 
-            List<MenuItem>? menu = _menuService.LoadMenuItems(restaurantId);
-
-            var allMenuItems = _menuService.LoadMenuItems(restaurantId);
-        
-
-     
-    
-
-            //foreach (var menuItem in allMenuItems)
-            //{
-            //    menuItem.Ingredients.ForEach(ingredient =>
-            //    {
-            //        var ingredientToUpdate = _ingredientService.GetIngredientById(ingredient.IngredientId);
-            //        if (ingredientToUpdate.QuantityInStock < ingredient.Quantity)
-            //        {
-            //            menuItem.SetMenuItemAvailability(false);
-            //        }
-            //    });
-            //}
-
-
+            List<MenuItem> allMenuItems = _menuService.LoadMenuItems(restaurantId);
 
             if (!category.HasValue)
             {
@@ -143,7 +127,6 @@ namespace MainOrderly.WebApp.Controllers
                     .ToList();
             }
 
-            
             var menuItemViewModel = MappingHelper.ConvertToViewModels(allMenuItems);
             TempData["CartCount"] = _cartService.GetCartCount();
 
@@ -155,34 +138,28 @@ namespace MainOrderly.WebApp.Controllers
             return View(menuItemViewModel);
         }
 
-
-
         [HttpGet]
         public IActionResult GetItemInfo(int id, Category category)
         {
+            int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 1;
+            
             var menuItem = _menuService.GetMenuItem(id, restaurantId);
             var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
 
-
-            MenuItemViewModel menItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem); // then we convert to entities to a viewmodel
-
-            var nutritions = _nutritionService.GetNutritionForMenuItem(id);
+            var nutritions = _nutritionService.GetNutritionForMenuItem(id, restaurantId);
             var nutritionViewModels = nutritions
                 .Select(NutritionViewModel.ConvertToViewModel)
                 .ToList();
 
-            var allergens = _allergenService.GetAllergenForMenuItem(id);
+            var allergens = _allergenService.GetAllergenForMenuItem(id, restaurantId);
             var allergenViewModel = allergens
                 .Select(AllergenViewModel.ConvertToViewModel)
                 .ToList();
 
-            var ingredients = _ingredientService.GetIngredientsForItemOnlyName(id);
-            
+            var ingredients = _ingredientService.GetIngredientsForItemOnlyName(id, restaurantId);
             var ingredientViewModel = ingredients
                 .Select(IngredientViewModel.ConvertToViewModel)
                 .ToList();
-
-
 
             var compositeViewModel = new CompositeViewModelMenuItemNutritionAllergen
             {
@@ -192,12 +169,9 @@ namespace MainOrderly.WebApp.Controllers
                 IngredientViewModel = ingredientViewModel
             };
 
-
             ViewBag.Category = category;
-
             return View("Info", compositeViewModel);
         }
-
 
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)

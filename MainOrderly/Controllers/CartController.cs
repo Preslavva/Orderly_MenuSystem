@@ -2,8 +2,8 @@
 using Services;
 using Models.Entities;
 using MainOrderly.WebApp.ViewModels;
-using System.Runtime.CompilerServices;
 using Models.Enums;
+using MainOrderly.WebApp.Extensions;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -12,23 +12,29 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly IngredientService _ingredientService;
         private readonly HistoryService _historyService;
+        private readonly RestaurantService _restaurantService;
 
-        private Dictionary<MenuItem, int> GetOrderList()
-        {
-            return _cartService.GetCart();
-        }
-
-        public CartController(CartService cartService, IngredientService ingredientService, HistoryService histortyService)
+        public CartController(CartService cartService, IngredientService ingredientService, 
+            HistoryService historyService, RestaurantService restaurantService)
         {
             _cartService = cartService;
             _ingredientService = ingredientService;
-            _historyService = histortyService;
+            _historyService = historyService;
+            _restaurantService = restaurantService;
         }
 
-        /// <summary>
-        /// Converts the Dictionary in Cart into View Model
-        /// </summary>
-        /// <returns>List with CatViewModels</returns>
+        private int GetRestaurantId()
+        {
+            var user = HttpContext.Session.GetAuthenticatedUser();
+            return user?.RestaurantId ?? 1;
+        }
+
+        private Dictionary<MenuItem, int> GetOrderList()
+        {
+            int restaurantId = GetRestaurantId();
+            return _cartService.GetCart(restaurantId); 
+        }
+
         private List<CartViewModel> GetCartViewModel()
         {
             List<CartViewModel> viewModel = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
@@ -41,7 +47,6 @@ namespace MainOrderly.WebApp.Controllers
             ViewData["Page"] = "Order overview";
             List<CartViewModel> model = GetCartViewModel();
 
-
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
@@ -50,6 +55,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult RemoveItemFromCart(int id)
         {
+            int restaurantId = GetRestaurantId();
             _cartService.RemoveFromCart(id);
             return RedirectToAction("OrderList", "Cart");
         }
@@ -57,6 +63,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult UpdateItemQuantity(int id, int quantity)
         {
+            int restaurantId = GetRestaurantId();
             _cartService.UpdateQuantity(id, quantity);
             return RedirectToAction("OrderList", "Cart");
         }
@@ -68,7 +75,7 @@ namespace MainOrderly.WebApp.Controllers
             List<CartViewModel> viewModel = GetCartViewModel();
 
             ViewBag.SelectedTip = tipAmount;
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(),tipAmount,customTip);
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(), tipAmount, customTip);
             ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
             
             return View(viewModel);
@@ -94,25 +101,19 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            // Create a hardcoded test restaurant
-            int restaurantId = 1; // Use a default ID
-            byte[] emptyLogo = new byte[0]; // Empty byte array for logo
+            int restaurantId = GetRestaurantId();
 
-            // Create a simple restaurant object
-            Restaurant testRestaurant = new Restaurant(
-                restaurantId,
-                "Test Restaurant",
-                "This is a test restaurant for checkout",
-                emptyLogo,
-                "test@example.com",
-                "123-456-7890",
-                "123 Test Street"
-            );
+            Restaurant restaurant = _restaurantService.GetRestaurantById(restaurantId);
+            if (restaurant == null)
+            {
+                TempData["ErrorMessage"] = "Restaurant not found.";
+                return RedirectToAction("OrderSummaryPage", "Cart");
+            }
 
             int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
             if (oldOrderId != null)
             {
-                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId);
+                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId, restaurantId);
                 if (!IsNotExpired)
                 {
                     TempData["ErrorMessage"] = "You cannot place another order because the time restriction has not expired.";
@@ -125,13 +126,14 @@ namespace MainOrderly.WebApp.Controllers
             {
                 return RedirectToAction("OrderList");
             }
-            int newOrderId = _cartService.FinalizeOrder(tableId, testRestaurant);
+            int newOrderId = _cartService.FinalizeOrder(tableId, restaurant, restaurantId);
+            
             _historyService.SaveOrderIds(newOrderId);
             HttpContext.Session.SetInt32("oldOrderId", newOrderId);
 
             _cartService.SaveCart(new Dictionary<int, int>());
-
             _cartService.ClearCart();
+            
             return RedirectToAction("PaymentConfirmationPage", new { orderId = newOrderId });
         }
 
@@ -150,7 +152,8 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult Timer(int orderId)
         {
-            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId);  
+            int restaurantId = GetRestaurantId();
+            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId, restaurantId);  
             TimeSpan remainingTime = endOfTimer - DateTime.Now;
 
             if (remainingTime.TotalSeconds <= 0)
@@ -159,7 +162,6 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             string formattedTime = $"{remainingTime.Minutes:D2}:{remainingTime.Seconds:D2}";
-
             return Content(formattedTime);
         }
     }

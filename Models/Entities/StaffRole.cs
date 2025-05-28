@@ -1,9 +1,11 @@
 public class StaffRole
 {
-    public int Id { get; }
-    public int StaffId { get; }
-    public int RoleId { get; }
-    public bool IsActive { get; }
+    public int Id { get; set; }
+    public int StaffId { get; set; }
+    public int RoleId { get; set; }
+    public bool IsActive { get; set; }
+
+    public StaffRole() { }
 
     public StaffRole(int id, int staffId, int roleId, bool isActive)
     {

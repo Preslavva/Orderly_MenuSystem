@@ -11,16 +11,16 @@ namespace Services
 {
     public class IngredientService
     {
-        private readonly IngredientRepository _ingredientRepository; // INTERFACES   
+        private readonly IngredientRepository _ingredientRepository;
 
         public IngredientService(IngredientRepository ingredientRepository)
         {
             _ingredientRepository = ingredientRepository;
         }
 
-        public Ingredient GetIngredientById(int Id)
+        public Ingredient GetIngredientById(int id, int restaurantId)
         {
-            return _ingredientRepository.GetIngredientById(Id);
+            return _ingredientRepository.GetIngredientById(id, restaurantId);
         }
 
         public List<Ingredient> GetIngredientsByRestaurantId(int restaurantId)
@@ -28,64 +28,60 @@ namespace Services
             return _ingredientRepository.GetIngredientsByRestaurantId(restaurantId);
         }
 
-        public List<Ingredient> GetIngredientsForItem(int menuItemId)
+        public List<Ingredient> GetIngredientsForItem(int menuItemId, int restaurantId)
         {
-            return _ingredientRepository.GetIngredientsForItem(menuItemId);
+            return _ingredientRepository.GetIngredientsForItem(menuItemId, restaurantId);
         }
 
-        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId) => _ingredientRepository.GetIngredientsForItemOnlyName(menuItemId);
-        
+        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId, int restaurantId) 
+        {
+            return _ingredientRepository.GetIngredientsForItemOnlyName(menuItemId, restaurantId);
+        }
 
         public int AddIngredient(Ingredient ingredient)
         {
             return _ingredientRepository.AddIngredient(ingredient);
         }
 
-        public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities)
+        public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities, int restaurantId)
         {
-            return _ingredientRepository.UpdateMenuItemIngredients(menuItemId, ingredientQuantities);
+            return _ingredientRepository.UpdateMenuItemIngredients(menuItemId, ingredientQuantities, restaurantId);
         }
 
         public void UpdateIngredient(Ingredient ingredient)
         {
             _ingredientRepository.UpdateIngredient(ingredient);
         }
-        public void DeleteIngredient(int id)
+        
+        public void DeleteIngredient(int id, int restaurantId)
         {
-            _ingredientRepository.Delete(id);
+            _ingredientRepository.Delete(id, restaurantId);
         }
 
-       
         public List<Ingredient> GetLowStockIngredients(int restaurantId)
         {
             var ingredients = _ingredientRepository.GetIngredientsByRestaurantId(restaurantId);
             return ingredients.Where(i => i.QuantityInStock < i.MinimumStockLevel).ToList();
         }
-        public void SubstractStock(MenuItem menuItem)
+        
+        public void SubstractStock(MenuItem menuItem, int restaurantId)
         {
-            
-            
             menuItem.Ingredients.ForEach(ingredient =>
             {
-                var ingredientToUpdate= _ingredientRepository.GetIngredientById(ingredient.IngredientId);
+                var ingredientToUpdate = _ingredientRepository.GetIngredientById(ingredient.IngredientId, restaurantId);
                 if(ingredientToUpdate.QuantityInStock < ingredient.Quantity)
                 {
                     menuItem.SetMenuItemAvailability(false);
                     throw new Exception($"Not enough stock for ingredient {ingredientToUpdate.Name}");
                 }
                 var quantityToSubstract = ingredient.Quantity;
-                _ingredientRepository.SubstractIngredientStock(ingredient.IngredientId, quantityToSubstract);
+                _ingredientRepository.SubstractIngredientStock(ingredient.IngredientId, quantityToSubstract, restaurantId);
             });
         }
 
-        
-        public List<MenuItemIngredient> GetIngredientForMenuItem_MenuItemIngredient(int id)
+        public List<MenuItemIngredient> GetIngredientForMenuItem_MenuItemIngredient(int id, int restaurantId)
         {
-              return  _ingredientRepository.GetIngredientsForMenuItem(id);
+            return _ingredientRepository.GetIngredientsForMenuItem(id, restaurantId);
         }
-
-
-
-
     }
 }

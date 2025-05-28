@@ -21,9 +21,9 @@ namespace Services
             _ingredientService = ingredientService;
         }
 
-        public int CreateMenuItem(string name,string description, decimal price,bool isAvailable, string picture,Category category, int restaurantId,
-     Dictionary<NutritionName, double> nutritionValues,
-     List<AllergenName> allergens, int prepTime)
+        public int CreateMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId,
+         Dictionary<NutritionName, double> nutritionValues,
+         List<AllergenName> allergens, int prepTime)
         {
             int menuItemId = _menuItemRepository.AddMenuItem(name, description, price, isAvailable, picture, category, restaurantId, prepTime);
 
@@ -35,26 +35,22 @@ namespace Services
 
             foreach (var allergen in allergens)
             {
-                _menuItemRepository.AddAllergenToMenuItem(menuItemId, allergen);
+                _menuItemRepository.AddAllergenToMenuItem(menuItemId, allergen, restaurantId);
             }
 
             return menuItemId;
         }
 
-
-
-        public bool AddIngridientsToMenuItem(int menuId, int[] ingredientIds, int[] quantities)
+        public bool AddIngridientsToMenuItem(int menuId, int[] ingredientIds, int[] quantities, int restaurantId)
         {
-            return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities);
+            return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities, restaurantId);
         }
 
-        public List<MenuItem> LoadMenuItems(int restaurantId)// for the user side
+        public List<MenuItem> LoadMenuItems(int restaurantId)
         {
-
             var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
             foreach (var item in menuItems)
-                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id));
-
+                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id, restaurantId));
 
             var available = new List<MenuItem>();
 
@@ -62,7 +58,7 @@ namespace Services
             {
                 bool inStock = item.Ingredients.All(ing =>
                 {
-                    var inv = _ingredientService.GetIngredientById(ing.IngredientId);
+                    var inv = _ingredientService.GetIngredientById(ing.IngredientId, restaurantId);
                     return inv.QuantityInStock >= ing.Quantity;
                 });
 
@@ -75,25 +71,21 @@ namespace Services
             return available;
         }
 
-        public List<MenuItem> LoadMenuItemsForManager(int restaurantId)// for the manager side
+        public List<MenuItem> LoadMenuItemsForManager(int restaurantId)
         {
-
             var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
             foreach (var item in menuItems)
-                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id));
-
-
+                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id, restaurantId));
 
             foreach (var item in menuItems)
             {
                 bool inStock = item.Ingredients.All(ing =>
                 {
-                    var inv = _ingredientService.GetIngredientById(ing.IngredientId);
+                    var inv = _ingredientService.GetIngredientById(ing.IngredientId, restaurantId);
                     return inv.QuantityInStock >= ing.Quantity;
                 });
 
                 item.SetMenuItemAvailability(inStock);
-
             }
 
             return menuItems;
@@ -104,7 +96,6 @@ namespace Services
             return _menuItemRepository.GetMenuItemById(id, restaurantId)!;
         }
 
-
         public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
         {
             var item = _menuItemRepository.GetMenuItemById(id, restaurantId);
@@ -114,51 +105,47 @@ namespace Services
                 return null; 
             }
 
-            var ingredients = _ingredientRepository.GetIngredientsForMenuItem(id) ?? new List<MenuItemIngredient>();
+            var ingredients = _ingredientRepository.GetIngredientsForMenuItem(id, restaurantId) ?? new List<MenuItemIngredient>();
             item.SetIngredient(ingredients);
 
             return item;
         }
 
-        public bool DeleteMenuItem(int menuItemId)
+        public bool DeleteMenuItem(int menuItemId, int restaurantId)
         {
-            return _menuItemRepository.DeleteMenuItem(menuItemId);
+            return _menuItemRepository.DeleteMenuItem(menuItemId, restaurantId);
         }
 
-        public MenuItem UpdateMenuItem(MenuItem updatedItem)
+        public MenuItem UpdateMenuItem(MenuItem updatedItem, int restaurantId)
         {
-            _menuItemRepository.UpdateMenuItem(updatedItem);
+            _menuItemRepository.UpdateMenuItem(updatedItem, restaurantId);
 
             int id = updatedItem.Id;
-            int restaurantId = 1;
             MenuItem menuItem = _menuItemRepository.GetMenuItemById(id, restaurantId);
-            List<MenuItemIngredient> ingredient = _ingredientRepository.GetIngredientsForMenuItem(id);
+            List<MenuItemIngredient> ingredient = _ingredientRepository.GetIngredientsForMenuItem(id, restaurantId);
             menuItem.SetIngredient(ingredient);
 
             return menuItem;
         }
 
-        public void UpdateMenuItemAllergens(int menuItemId, List<AllergenName> allergens)
+        public void UpdateMenuItemAllergens(int menuItemId, List<AllergenName> allergens, int restaurantId)
         {
-            _menuItemRepository.DeleteAllergensForMenuItem(menuItemId);
+            _menuItemRepository.DeleteAllergensForMenuItem(menuItemId, restaurantId);
 
             foreach (var allergen in allergens)
             {
-                _menuItemRepository.AddAllergenToMenuItem(menuItemId, allergen);
+                _menuItemRepository.AddAllergenToMenuItem(menuItemId, allergen, restaurantId);
             }
         }
-        public List<AllergenName> GetAllergensForMenuItem(int menuItemId)
+        
+        public List<AllergenName> GetAllergensForMenuItem(int menuItemId, int restaurantId)
         {
-            return _menuItemRepository.GetAllergensForMenuItem(menuItemId);
+            return _menuItemRepository.GetAllergensForMenuItem(menuItemId, restaurantId);
         }
-        public List<MenuItem> GetMenuItemsByCategory(Category category)
+        
+        public List<MenuItem> GetMenuItemsByCategory(Category category, int restaurantId)
         {
-            return _menuItemRepository.LoadMenuItemsByCategory(category);
+            return _menuItemRepository.LoadMenuItemsByCategory(category, restaurantId);
         }
-
-     
-
-
-
     }
 }

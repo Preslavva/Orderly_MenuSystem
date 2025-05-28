@@ -17,10 +17,9 @@ namespace Services
             _allergenRepository = allergenRepository;
         }
 
-
-        public List<Allergen> GetAllergenForMenuItem(int id)
+        public List<Allergen> GetAllergenForMenuItem(int id, int restaurantId)
         {
-            return _allergenRepository.GetAllergensForMenuItem(id)!;
+            return _allergenRepository.GetAllergensForMenuItem(id, restaurantId)!;
         }
     }
 }
