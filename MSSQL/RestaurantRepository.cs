@@ -114,14 +114,14 @@ namespace MSSQL
         public void RemoveRestaurant(int restaurantId)
         {
             string sql = @"
-        ALTER TABLE Restaurant
+        Update Restaurant
         SET isActive = @isActive
         WHERE Id = @Id";
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@isActive", false);
+                cmd.Parameters.AddWithValue("@isActive", 0);
                 cmd.Parameters.AddWithValue("@Id", restaurantId);
 
 

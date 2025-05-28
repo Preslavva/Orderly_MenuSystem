@@ -90,7 +90,7 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult ArchiveRestaurant(int id)
         {
             _restaurantService.RemoveRestaurant(id);
-            return RedirectToAction();
+            return RedirectToAction("CreateRestaurant", "Restaurant"); 
         }
 
         private async Task<List<SelectListItem>> LoadGoogleFontsAsync()
