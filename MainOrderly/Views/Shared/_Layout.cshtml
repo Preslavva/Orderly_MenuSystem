@@ -11,6 +11,18 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/OrderlyTest.styles.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --primary-color: @(ViewBag.ColorDefault ?? "#000000");
+            --button-color: @(ViewBag.ColorButtons ?? "#4CAF50");
+            --background-color: @(ViewBag.ColorBackground ?? "#ffffff");
+            --font-family: '@(ViewBag.Font ?? "Arial")', sans-serif;
+        }
+    </style>
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
 </head>
 <body>
     @* ✅ HEADER *@
@@ -22,7 +34,7 @@
                     @if (ViewData["Page"] == "Order overview" || ViewData["Page"] == "History")
                     {
                         <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="Home" asp-action="Index">
-                            <i class="bi bi-caret-left" style="font-size: 35px; color: #6B705C;"></i>
+                            <i class="bi bi-caret-left" style="font-size: 35px; color: var(--primary-color);"></i>
 
 
 
@@ -32,7 +44,7 @@
                     @if (ViewData["Page"] == "Order summary")
                     {
                         <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="Cart" asp-action="OrderList">
-                            <i class="bi bi-caret-left" style="font-size: 35px; color: #6B705C;"></i>
+                            <i class="bi bi-caret-left" style="font-size: 35px; color: var(--primary-color);"></i>
 
 
 
@@ -42,16 +54,17 @@
                     @if (ViewData["Page"] == "Index")
                     {
                         <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="History" asp-action="History">
-                           <img class = "history" src="/Images/history.png"/>
+                            <i class="bi bi-receipt-cutoff"
+                               style="font-size: 30px; color: var(--primary-color);"></i>
                         </a>
                     }
 
                     <a class="navbar-brand mx-auto" asp-area="" asp-controller="Home" asp-action="Index">
-                        <img src="~/images/logo.png" alt="Logo" class="logo">
+                        <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" style="height: 50px;" />
                     </a>
 
                     <a class="cart position-relative" asp-area="" asp-controller="Cart" asp-action="OrderList">
-                        <img src="~/images/cart.png" alt="Cart" class="cart-img" />
+                        <i class="bi bi-cart3" style="font-size: 30px; color: var(--primary-color);"></i>
                         @if (TempData["CartCount"] != null && int.TryParse(TempData["CartCount"].ToString(), out int cartCount) && cartCount > 0)
                         {
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill">
