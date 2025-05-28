@@ -3,7 +3,8 @@
 namespace Models.Entities
 {
     public class OrderItem
-    {
+    { 
+        public int TableNumber { get; set; }
         public int OrderId { get; set; }
         public int MenuItemId { get; set; }
         public MenuItem MenuItem { get; set; }
@@ -12,7 +13,7 @@ namespace Models.Entities
         public DateTime OrderTimestamp { get; set; }
 
 
-        public OrderItem(int orderId, int menuItemId, MenuItem menuItem, int quantity,OrderStatus status,DateTime orderTimestamp)
+        public OrderItem(int orderId, int menuItemId, MenuItem menuItem, int quantity,OrderStatus status,DateTime orderTimestamp,int tableNumber)
         {
             OrderId = orderId;
             MenuItemId = menuItemId;
@@ -20,6 +21,7 @@ namespace Models.Entities
             Quantity = quantity;
             Status = status;
             OrderTimestamp = orderTimestamp;
+            TableNumber = tableNumber;
         }
 
         public OrderItem(int orderId, int menuItemId, MenuItem menuItem, int quantity, OrderStatus status)

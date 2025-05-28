@@ -13,7 +13,7 @@ namespace MSSQL
         public List<Order> GetOrderHeadersByStatus(OrderStatus status)
         {
             List<Order> orders = new();
-            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE [Status] = @Status AND RestaurantId = @RestaurantId AND isArchived = 0";
+            string query = "SELECT o.Id,o.TableId ,t.TableNumber , o.OrderTimestamp, o.[Status], o.RestaurantId FROM [Order] as o INNER JOIN [Table] as t on o.TableId = t.Id WHERE  o.IsArchived = 0 AND o.RestaurantId = @RestaurantId AND o.Status = @Status";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -28,7 +28,8 @@ namespace MSSQL
                     {
 
                         int tableId = Convert.ToInt32(reader["TableId"]);
-                        Table table = new Table(tableId, new byte[0]);
+                        int tableNumber = Convert.ToInt32(reader["TableNumber"]);
+                        Table table = new Table(tableId, new byte[0],tableNumber);
                         int id = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!);
@@ -47,7 +48,7 @@ namespace MSSQL
         public Order GetOrderHeaderById(int id)
         {
             Order order = null!;
-            string query = "SELECT Id, TableId, OrderTimestamp, [Status], RestaurantId FROM [Order] WHERE Id = @Id AND isArchived = 0";
+            string query = "SELECT o.Id, o.TableId, t.TableNumber , o.OrderTimestamp, o.[Status], o.RestaurantId FROM [Order] as o INNER JOIN [Table] as t on o.TableId = t.Id WHERE o.Id = @Id AND o.IsArchived = 0";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand command = new SqlCommand(query, connection))
@@ -59,7 +60,8 @@ namespace MSSQL
                     if (reader.Read())
                     {
                         int tableId = Convert.ToInt32(reader["TableId"]);
-                        Table table = new Table(tableId, new byte[0]);
+                        int tableNumber = Convert.ToInt32(reader["TableNumber"]);
+                        Table table = new Table(tableId, new byte[0], tableNumber);
                         int orderId = Convert.ToInt32(reader["Id"]);
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
                         OrderStatus orderStatus = Enum.Parse<OrderStatus>(Convert.ToString(reader["Status"])!);
@@ -184,10 +186,12 @@ namespace MSSQL
                 om.Quantity,
                 om.OrderStatus,
                 m.PrepTime,
-                o.OrderTimestamp
+                o.OrderTimestamp,
+                t.TableNumber
         FROM    Order_MenuItem om
         JOIN    MenuItem m ON m.Id = om.MenuItemId
         JOIN    [Order] o ON o.Id = om.OrderId
+        JOIN    [Table] t ON t.Id = o.TableId
         WHERE   om.OrderStatus = @Status AND om.IsArchived = 0";
 
             var items = new List<OrderItem>();
@@ -216,12 +220,13 @@ namespace MSSQL
                                                ? Convert.ToInt32(reader["PrepTime"])
                                                : 0;
                         DateTime orderTimestamp = Convert.ToDateTime(reader["OrderTimestamp"]);
+                        int tableNumber = reader.GetInt32(13);
                         var category = Enum.Parse<Category>(categoryStr);
                         var menuItem = new MenuItem(menuItemId, name, description, price,
                                                     isAvailable, picture, category,
                                                     restaurantId, prepTime);
 
-                        items.Add(new OrderItem(orderId, menuItemId, menuItem, quantity, itemStatus,orderTimestamp));
+                        items.Add(new OrderItem(orderId, menuItemId, menuItem, quantity, itemStatus,orderTimestamp,tableNumber));
                     }
                 }
             }

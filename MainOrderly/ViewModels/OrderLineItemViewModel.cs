@@ -28,7 +28,8 @@ public class OrderLineItemViewModel
         {
             /* order-level */
             OrderId = orderItem.OrderId,
-            Table = tableNumber,
+            //Table = tableNumber,
+            Table = orderItem.TableNumber,
             ElapsedTime = elapsedTime,
             Status = orderItem.Status,
             IsExceeded = isExceeded,

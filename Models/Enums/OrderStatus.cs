@@ -4,6 +4,7 @@
     {
         NEW_ORDER,
         PROCESSING,
-        COMPLETED
+        COMPLETED,
+        DELIVERED
     }   
 }

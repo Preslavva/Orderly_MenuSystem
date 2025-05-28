@@ -24,15 +24,14 @@ namespace MainOrderly.WebApp.ViewModels
             return new OrderViewModel
             {
                 Id = order.Id,
-                Table = order.Table?.Id ?? 0, // adapt if you store table number differently
+                Table = order.Table.Number, // adapt if you store table number differently
                 OrderTimestamp = order.OrderTimestamp,
                 Status = order.Status,
                 Quantity = order.Items.Sum(i => i.Quantity),
                 SubTotal = order.Items.Sum(i => i.MenuItem.Price * i.Quantity),
-                Items = order.Items
-                    .Select(oi => OrderLineItemViewModel.FromOrderItem(
+                Items = order.Items.Select(oi => OrderLineItemViewModel.FromOrderItem(
                         oi,
-                        order.Table?.Id ?? 0,
+                        order.Table.Id,
                         "00:00", // timer not running yet for NEW orders
                         false))
                     .ToList()

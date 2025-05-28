@@ -32,6 +32,8 @@ namespace MainOrderly.WebApp.Controllers
             var viewModel = CompositeKitchenViewModel.ConvertToViewModel(kitchenOrderManager,(orderId, _) => _timerHelpers.HasExceededPrepTime(orderId),
                 orderId => _timerHelpers.GetRemainingTime(orderId,out _));
 
+            
+
             var vmWithTimer = new KitchenViewModelWithTimer
             {
                 CompositeKitchenViewModel = viewModel,
