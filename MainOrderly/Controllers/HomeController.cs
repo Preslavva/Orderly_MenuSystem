@@ -8,7 +8,7 @@ using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {//[Route("register")] for example in the url, something in the future
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly CartService _cartService;
@@ -21,7 +21,7 @@ namespace MainOrderly.WebApp.Controllers
         private static Dictionary<int, string> _tableGuidMap = new();
         private int restaurantId = 1;
 
-        public HomeController(ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService, TableService tableService)
+        public HomeController(RestaurantService restaurantService, ILogger<HomeController> logger, CartService cartService, MenuService menuService, NutritionService nutritionService, AllergenService allergenService, IngredientService ingredientService, TableService tableService):base(restaurantService)
         {
             _logger = logger;
             _cartService = cartService;

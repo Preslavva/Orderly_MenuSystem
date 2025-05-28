@@ -7,7 +7,7 @@ using Models.Enums;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    public class CartController : Controller
+    public class CartController : BaseController
     {
         private readonly CartService _cartService;
         private readonly IngredientService _ingredientService;
@@ -18,7 +18,7 @@ namespace MainOrderly.WebApp.Controllers
             return _cartService.GetCart();
         }
 
-        public CartController(CartService cartService, IngredientService ingredientService, HistoryService histortyService)
+        public CartController(RestaurantService restaurantService, CartService cartService, IngredientService ingredientService, HistoryService histortyService) : base(restaurantService)
         {
             _cartService = cartService;
             _ingredientService = ingredientService;

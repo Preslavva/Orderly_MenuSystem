@@ -18,6 +18,7 @@
             --button-color: @(ViewBag.ColorButtons ?? "#4CAF50");
             --background-color: @(ViewBag.ColorBackground ?? "#ffffff");
             --font-family: '@(ViewBag.Font ?? "Arial")', sans-serif;
+            --logo-url: url('@(ViewBag.LogoDataUrl ?? "/images/default-logo.png")');
         }
     </style>
 
@@ -60,7 +61,7 @@
                     }
 
                     <a class="navbar-brand mx-auto" asp-area="" asp-controller="Home" asp-action="Index">
-                        <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" style="height: 50px;" />
+                        <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" style="height:50px;">
                     </a>
 
                     <a class="cart position-relative" asp-area="" asp-controller="Cart" asp-action="OrderList">

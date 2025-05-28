@@ -5,10 +5,10 @@ using MainOrderly.WebApp.ViewModels;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    public class HistoryController : Controller
+    public class HistoryController : BaseController
     {
         private readonly HistoryService _historyService;
-        public HistoryController(HistoryService historyService)
+        public HistoryController(RestaurantService restaurantService, HistoryService historyService) :base(restaurantService)
         {
             _historyService = historyService;
         }

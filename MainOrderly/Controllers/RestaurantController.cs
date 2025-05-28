@@ -30,10 +30,10 @@ namespace MainOrderly.WebApp.Controllers
 		[HttpPost]
         public IActionResult CreateRestaurant(RestaurantViewModel restaurantModel, int ownerId)
         {
-            if(restaurantModel.logoImage != null)
-            {
+            //if(restaurantModel.logoImage != null)
+            //{
                 
-            }
+            //}
             Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantModel);
             _restaurantService.CreateRestaurant(restaurant);
             
