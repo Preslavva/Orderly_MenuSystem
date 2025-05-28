@@ -106,14 +106,29 @@
             <ul class="menu">
                 <li class="menu-title">Apps</li>
 
-                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager")))
+                @if (user != null && (user.Roles.Contains("Owner")))
                 {
-                    <li class="menu-item">
-                        <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
-                            <span class="menu-icon"><i data-feather="coffee"></i></span>
-                            <span class="menu-text">Restaurant</span>
-                        </a>
-                    </li>
+                        <li class="menu-item">
+                            <a href="#menuRestaurant" data-bs-toggle="collapse" class="menu-link">
+                                <span class="menu-icon"><i data-feather="coffee"></i></span>
+                                <span class="menu-text">Restaurant</span>
+                                <i data-feather="chevron-down" class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="menuRestaurant">
+                                <ul class="sub-menu">
+                                    <li class="menu-item">
+                                        <a href="@Url.Action("CreateRestaurant", "Restaurant")" class="menu-link">
+                                            <span class="menu-text">Create Restaurant</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
+                                            <span class="menu-text">Customize Restaurant</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                 }
 
                 @if (user != null && user.Roles.Contains("Owner"))

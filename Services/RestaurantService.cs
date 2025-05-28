@@ -7,15 +7,16 @@ namespace Services
     public class RestaurantService
     {
         private readonly RestaurantRepository _restaurantRepository;
-        private readonly OwnerRepository _ownerRepository;
-        public RestaurantService(RestaurantRepository restaurantRepository, OwnerRepository ownerRepository)
+        private readonly StaffRepository _staffRepository;
+        public RestaurantService(RestaurantRepository restaurantRepository, StaffRepository staffRepository)
         {
             _restaurantRepository = restaurantRepository;
-            _ownerRepository = ownerRepository;
+            _staffRepository = staffRepository;
         }
-        public void CreateRestaurant(Restaurant restaurant)
+        public void CreateRestaurant(Restaurant restaurant, int ownerId)
         {
-            _restaurantRepository.CreateRestaurant(restaurant);
+            int restaurantId = _restaurantRepository.CreateRestaurant(restaurant);
+            _restaurantRepository.AssignRestaurantToOwner(restaurantId, ownerId);   
         }
 
         public void UpdateRepository(Restaurant restaurant)
@@ -35,7 +36,7 @@ namespace Services
 
         public void AssignRestaurantToOwner(int ownerId, int restaurantId)
         {
-            _ownerRepository.AssignRestaurantToOwner(ownerId, restaurantId);
+            _restaurantRepository.AssignRestaurantToOwner(ownerId, restaurantId);
         }
 
 		public string ConvertToString(IFormFile image)
@@ -47,5 +48,10 @@ namespace Services
 				return Convert.ToBase64String(imageBytes);
 			}
 		}
-	}
+
+        public Restaurant GetRestaurantByKVK(string KVK)
+        {
+            return _restaurantRepository.GetRestaurantByKVK(KVK);
+        }
+    }
 }

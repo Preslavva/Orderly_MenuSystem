@@ -12,7 +12,7 @@ namespace MainOrderly.WebApp.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
 		public string Logo { get; set; }
-        public IFormFile logoImage { get; set; }    
+        public IFormFile LogoImage { get; set; }    
 
 		[Required]
 		public string Email { get; set; }
@@ -31,7 +31,7 @@ namespace MainOrderly.WebApp.ViewModels
 		public string KVK { get; set; }
         public List<SelectListItem> Fonts { get; set; } 
 
-        public static RestaurantViewModel ConvertToViewModel(Restaurant restaurant)
+        public static RestaurantViewModel ConvertToViewModel(Restaurant restaurant, List<SelectListItem> fonts)
         {
             RestaurantViewModel viewModel = new RestaurantViewModel()
             {
@@ -47,7 +47,7 @@ namespace MainOrderly.WebApp.ViewModels
                 ColorDeafult = restaurant.ColorDefault,
                 ColorBackground = restaurant.ColorBackground,
                 KVK = restaurant.KVK,
-                Fonts = new List<SelectListItem>()
+                Fonts = fonts
             };
             return viewModel;
         }

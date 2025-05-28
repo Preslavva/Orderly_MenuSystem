@@ -1,5 +1,6 @@
 ﻿@model RestaurantViewModel
 @{
+    Layout = "_ManagerLayout";
     ViewData["Title"] = "Index";
    // var user = Context.Session.GetAuthenticatedUser();
 }
@@ -10,6 +11,20 @@
             <div class="col-md-4">
                 <form asp-controller="Restaurant" asp-action="UpdateRestaurant">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="mb-3 text-center">
+                        <label class="form-label d-block">Current Picture:</label>
+                        @if (!string.IsNullOrEmpty(Model.Logo))
+                        {
+                            <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Logo" style="max-width: 150px;" />
+                            <input type="hidden" name="image" value="@Model.Logo" />
+                        }
+                        else
+                        {
+                            <p class="text-muted">No profile picture uploaded.</p>
+                        }
+                    </div>
+
                     <div class="form-group">
                         <label asp-for="Logo" class="control-label">Choose logo:</label>
                         <input asp-for="Logo" type="file" name="Logo" class="form-control" />
@@ -40,13 +55,33 @@
                         <input asp-for="Address" class="form-control" />
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Font" class="control-label">Font:</label>
-                        <select asp-for="Font" asp-items="@Model.Fonts" class="form-select">
-                            <option value="">Select a Font</option>
-                        </select>
-                        <span asp-validation-for="Font" class="text-danger"></span>
-                    </div>
+                     <div class="form-group">
+                         <label asp-for="KVK" class="control-label">KVK:</label>
+                         <input asp-for="KVK" class="form-control" />
+                         <span asp-validation-for="KVK" class="text-danger"></span>
+                     </div>
+                     <div class="form-group">
+                         <label asp-for="Font" class="control-label">Font:</label>
+                         <select asp-for="Font" asp-items="@Model.Fonts" class="form-select">
+                             <option value="">Select a Font</option>
+                         </select>
+                         <span asp-validation-for="Font" class="text-danger"></span>
+                     </div>
+                     <div class="form-group">
+                         <label asp-for="ColorBackground" class="control-label">Background:</label>
+                         <input asp-for="ColorBackground" type="color" class="form-control form-control-color" />
+                         <span asp-validation-for="ColorBackground" class="text-danger"></span>
+                     </div>
+                     <div class="form-group">
+                         <label asp-for="ColorButtons" class="control-label">Buttons:</label>
+                         <input asp-for="ColorButtons" type="color" class="form-control form-control-color" />
+                         <span asp-validation-for="ColorButtons" class="text-danger"></span>
+                     </div>
+                     <div class="form-group">
+                         <label asp-for="ColorDeafult" class="control-label">Default:</label>
+                         <input asp-for="ColorDeafult" type="color" class="form-control form-control-color" />
+                         <span asp-validation-for="ColorDeafult" class="text-danger"></span>
+                     </div>
                     <div class="form-group">
                         <input type="submit" value="Update" class="btn btn-primary" />
                     </div>

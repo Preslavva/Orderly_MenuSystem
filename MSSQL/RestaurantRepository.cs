@@ -8,12 +8,13 @@ namespace MSSQL
     {
         public RestaurantRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void CreateRestaurant(Restaurant restaurant)
+        public int CreateRestaurant(Restaurant restaurant)
         {
 
             string sql = @"
-                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, KVK, isActive )
-                VALUES(@Name, @Email, @Phone, @Address, @Description, @KVK, @isActive)";
+                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, KVK, isActive)
+                VALUES(@Name, @Email, @Phone, @Address, @Description, @KVK, @isActive);
+                SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand(sql, conn))
@@ -28,7 +29,8 @@ namespace MSSQL
 
 
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                int insertedId = (int)cmd.ExecuteScalar();
+                return insertedId;
             }
         }
 
@@ -125,6 +127,76 @@ namespace MSSQL
 
                 conn.Open();
                 cmd.ExecuteNonQuery();
+            }
+        }
+
+        public Restaurant GetRestaurantByKVK(string KVK)
+        {
+            using SqlConnection _connection = new SqlConnection(_connectionString);
+            _connection.Open();
+
+            string sql = @" SELECT Id, [Name], Email, Phone, [Address], Description, 
+                                 Logo, Font, ColorButtons, ColorDefault, ColorBackground, KVK
+                                 FROM Restaurant
+                                 WHERE KVK = @KVK";
+            using SqlCommand command = new SqlCommand(sql, _connection);
+            command.Parameters.AddWithValue("@KVK", KVK);
+
+            using SqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
+            {
+				return new Restaurant(
+						   id: (int)reader["Id"],
+						   name: reader["Name"].ToString(),
+						   email: reader["Email"].ToString(),
+						   phoneNumber: reader["Phone"].ToString(),
+						   address: reader["Address"].ToString(),
+						   description: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : null,
+						   logo: reader["Logo"] != DBNull.Value ? (byte[])reader["Logo"] : null,
+						   font: reader["Font"] != DBNull.Value ? reader["Font"].ToString() : null,
+						   colorButtons: reader["ColorButtons"] != DBNull.Value ? reader["ColorButtons"].ToString() : null,
+						   colorDefault: reader["ColorDefault"] != DBNull.Value ? reader["ColorDefault"].ToString() : null,
+						   colorBackground: reader["ColorBackground"] != DBNull.Value ? reader["ColorBackground"].ToString() : null,
+						   kvk: reader["KVK"] != DBNull.Value ? reader["KVK"].ToString() : null
+					   );
+			}
+            return null;
+        }
+
+        public void AssignRestaurantToOwner(int ownerId, int restaurantId)
+        {
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                string sql = @"UPDATE Staff 
+                                 SET RestaurantId = @RestaurantId 
+                                 WHERE Id = @OwnerId";
+                using SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                command.Parameters.AddWithValue("@OwnerId", ownerId);
+
+                command.ExecuteNonQuery();
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
+            }
+        }
+
+        public Restaurant GetOwnerRestaurant(int ownerId)
+        {
+            try
+            {
+                using SqlConnection connection = new SqlConnection( _connectionString);
+                connection.Open();
+
+                string sql = @"";
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
             }
         }
     }
