@@ -77,7 +77,7 @@ namespace MSSQL
         {
             string sql = @"
         SELECT Id, [Name], Email, Phone, [Address], Description, 
-               Logo, Font, ColorButtons, ColorDefault, ColorBackground
+               Logo, Font, ColorButtons, ColorDefault, ColorBackground, KVK
         FROM Restaurant
         WHERE Id = @Id";
 
@@ -185,19 +185,23 @@ namespace MSSQL
             }
         }
 
-        public Restaurant GetOwnerRestaurant(int ownerId)
-        {
-            try
-            {
-                using SqlConnection connection = new SqlConnection( _connectionString);
-                connection.Open();
+        //public Restaurant GetOwnerRestaurant(int ownerId)
+        //{
+        //    try
+        //    {
+        //        using SqlConnection connection = new SqlConnection( _connectionString);
+        //        connection.Open();
 
-                string sql = @"";
-            }
-            catch (SqlException sqlEx)
-            {
-                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
-            }
-        }
+        //        string sql = @"Select r.* 
+        //                        from Restaurant as r
+        //                        inner join Staff as s
+        //                        on s.RestaurantId = r.Id
+        //                        where r.isActive = @IsActive and s.Id = @OwnerId;";
+        //    }
+        //    catch (SqlException sqlEx)
+        //    {
+        //        throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
+        //    }
+        //}
     }
 }
