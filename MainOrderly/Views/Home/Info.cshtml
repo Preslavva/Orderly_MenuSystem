@@ -24,7 +24,7 @@
 
            @if (@Model.MenuItemViewModel.Category!=Category.Drinks)
             {
-                <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
+                <button class="toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
                     Show Ingredients
                 </button>
             }
@@ -35,7 +35,7 @@
 
 
 
-            <div class="nutritions d-flex flex-wrap justify-content-center">
+            <div class="nutritions d-flex flex-wrap justify-content-center mt-2">
                 @foreach (var nutrition in Model.NutritionViewModel)
                 {
                     <div class="nutrition-item text-center m-2">
