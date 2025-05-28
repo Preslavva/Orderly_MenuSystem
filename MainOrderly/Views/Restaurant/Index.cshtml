@@ -2,22 +2,38 @@
 @{
     Layout = "_ManagerLayout";
     ViewData["Title"] = "Index";
-   // var user = Context.Session.GetAuthenticatedUser();
+   var user = Context.Session.GetAuthenticatedUser();
 }
 
 <h1>Customize your restaurant</h1>
 <hr />
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
         <div class="row">
             <div class="col-md-4">
-                <form asp-controller="Restaurant" asp-action="UpdateRestaurant">
+        <form asp-controller="Restaurant" asp-action="UpdateRestaurant" enctype="multipart/form-data" novalidate>
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
+                    <input asp-for="Id" type="hidden" />
                     <div class="mb-3 text-center">
                         <label class="form-label d-block">Current Picture:</label>
                         @if (!string.IsNullOrEmpty(Model.Logo))
                         {
                             <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Logo" style="max-width: 150px;" />
-                            <input type="hidden" name="image" value="@Model.Logo" />
+                            <input type="hidden" name="Logo" value="@Model.Logo" />
                         }
                         else
                         {
@@ -26,9 +42,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label asp-for="Logo" class="control-label">Choose logo:</label>
-                        <input asp-for="Logo" type="file" name="Logo" class="form-control" />
-                        <span asp-validation-for="Logo" class="text-danger"></span>
+                        <label asp-for="LogoImage" class="control-label">Choose new logo:</label>
+                        <input asp-for="LogoImage" type="file" name="LogoImage" class="form-control" />
+                        <span asp-validation-for="LogoImage" class="text-danger"></span>
                     </div>
                     <div class="form-group">
                         <label asp-for="Name" class="control-label">Restaurant Name:</label>

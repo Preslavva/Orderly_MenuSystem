@@ -12,8 +12,8 @@ namespace MSSQL
         {
 
             string sql = @"
-                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, KVK, isActive)
-                VALUES(@Name, @Email, @Phone, @Address, @Description, @KVK, @isActive);
+                INSERT INTO Restaurant([Name], Email, Phone, [Address], Description, KVK, isActive, Logo)
+                VALUES(@Name, @Email, @Phone, @Address, @Description, @KVK, @isActive, @Logo);
                 SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (var conn = new SqlConnection(_connectionString))
@@ -26,7 +26,7 @@ namespace MSSQL
                 cmd.Parameters.AddWithValue("@Description", restaurant.Description);
 				cmd.Parameters.AddWithValue("@KVK", restaurant.KVK);
 				cmd.Parameters.AddWithValue("@isActive", 1);
-
+                cmd.Parameters.AddWithValue("@Logo", restaurant.Logo);
 
                 conn.Open();
                 int insertedId = (int)cmd.ExecuteScalar();
@@ -185,27 +185,76 @@ namespace MSSQL
             }
         }
 
-        //public Restaurant GetOwnerRestaurant(int ownerId)
-        //{
-        //    try
-        //    {
-        //        using SqlConnection connection = new SqlConnection(_connectionString);
-        //        connection.Open();
+        public Restaurant GetOwnerRestaurant(int? ownerId)
+        {
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
 
-        //        string sql = @"Select r.* 
-        //                        from Restaurant as r
-        //                        inner join Staff as s
-        //                        on s.RestaurantId = r.Id
-        //                        where r.isActive = @IsActive and s.Id = @OwnerId;";
+                string sql = @"Select r.* 
+                                from Restaurant as r
+                                inner join Staff as s
+                                on s.RestaurantId = r.Id
+                                where r.isActive = @IsActive and s.Id = @OwnerId;";
 
-        //        using SqlCommand command = new SqlCommand(sql, connection);
-        //        command.Parameters.AddWithValue("@IsActive", 1);
+                using SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@IsActive", 1);
+                command.Parameters.AddWithValue("@OwnerId", ownerId);
 
-        //    }
-        //    catch (SqlException sqlEx)
-        //    {
-        //        throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
-        //    }
-        //}
+                using SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    return new Restaurant(
+                           id: (int)reader["Id"],
+                           name: reader["Name"].ToString(),
+                           email: reader["Email"].ToString(),
+                           phoneNumber: reader["Phone"].ToString(),
+                           address: reader["Address"].ToString(),
+                           description: reader["Description"] != DBNull.Value ? reader["Description"].ToString() : null,
+                           logo: reader["Logo"] != DBNull.Value ? (byte[])reader["Logo"] : null,
+                           font: reader["Font"] != DBNull.Value ? reader["Font"].ToString() : null,
+                           colorButtons: reader["ColorButtons"] != DBNull.Value ? reader["ColorButtons"].ToString() : null,
+                           colorDefault: reader["ColorDefault"] != DBNull.Value ? reader["ColorDefault"].ToString() : null,
+                           colorBackground: reader["ColorBackground"] != DBNull.Value ? reader["ColorBackground"].ToString() : null,
+                           kvk: reader["KVK"] != DBNull.Value ? reader["KVK"].ToString() : null
+                       );
+                }
+                return null;
+
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
+            }
+        }
+
+        public bool DoesKvkExist(Restaurant restaurant)
+        {
+            try
+            {
+                using SqlConnection connection = new SqlConnection(_connectionString);
+                connection.Open();
+
+                string sql = @"Select Count(*) 
+                                from Restaurant
+                                where KVK = @Kvk";
+                if (restaurant.Id != null || restaurant.Id != 0)
+                    sql += " and Id <> @id";
+
+                using SqlCommand command = new SqlCommand(sql, connection);
+                command.Parameters.AddWithValue("@Kvk", restaurant.KVK);
+                if (restaurant.Id != null || restaurant.Id != 0)
+                    command.Parameters.AddWithValue("@id", restaurant.Id);
+
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
+
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error occurred assigning restaurant to owner: {sqlEx.Message}", sqlEx);
+            }
+        }
     }
 }

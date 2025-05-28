@@ -1,4 +1,5 @@
-﻿using MainOrderly.WebApp.ViewModels;
+﻿using MainOrderly.WebApp.Extensions;
+using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Entities;
@@ -17,58 +18,78 @@ namespace MainOrderly.WebApp.Controllers
         }
 
 		[HttpGet]
-		public async Task<IActionResult> Index(string? kvk)
+		public async Task<IActionResult> Index()
 		{
-
-            if (kvk != null)
+            var fonts = await LoadGoogleFontsAsync();
+            int ownerId = HttpContext.Session.GetAuthenticatedUser().Id;
+            Restaurant restaurant = _restaurantService.GetOwnerRestaurant(ownerId);
+            if (restaurant != null)
             {
-                var restaurant = _restaurantService.GetRestaurantByKVK(kvk);
-                var fonts = await LoadGoogleFontsAsync();
                 var restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant, fonts);
                 return View(restaurantModel);
             }
-			return View(new RestaurantViewModel()); 
+			return View(new RestaurantViewModel() { Fonts = fonts}); 
 		}
 
         [HttpGet]
         public async Task<IActionResult> CreateRestaurant()
         {
             var fonts = await LoadGoogleFontsAsync();
+            Restaurant restaurant = _restaurantService.GetOwnerRestaurant(1);
+            if (restaurant != null)
+            {
+                RestaurantViewModel restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant, fonts);
+                return View(restaurantModel);
+            }
             return View(new RestaurantViewModel() { Fonts = fonts });
         }
 
 		[HttpPost]
-        public IActionResult RegisterRestaurant(RestaurantViewModel restaurantModel, int ownerId)
+        public IActionResult RegisterRestaurant(RestaurantViewModel restaurantModel)
         {
-            ownerId = 1;
-            if(restaurantModel.LogoImage != null)
+            try
             {
-                restaurantModel.Logo = _restaurantService.ConvertToString(restaurantModel.LogoImage);
+                int ownerId = HttpContext.Session.GetAuthenticatedUser().Id;
+                if (restaurantModel.LogoImage != null)
+                {
+                    restaurantModel.Logo = _restaurantService.ConvertToString(restaurantModel.LogoImage);
+                }
+                Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantModel);
+                _restaurantService.CreateRestaurant(restaurant, ownerId);
+                HttpContext.Session.SetString("KVK", restaurant.KVK);
+                TempData["SuccessMessage"] = "Restaurant was successfully registered!";
             }
-            Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantModel);
-            _restaurantService.CreateRestaurant(restaurant, ownerId);
-			return RedirectToAction("Index", "Restaurant"); // ?
-		}
+            catch(ArgumentException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            return RedirectToAction("CreateRestaurant", "Restaurant");
+        }
 
         [HttpPost]
         public IActionResult UpdateRestaurant(RestaurantViewModel restaurantViewModel)
         {
-            Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantViewModel);
-            _restaurantService.UpdateRepository(restaurant);
-            return RedirectToAction();
+            try
+            {
+                if (restaurantViewModel.LogoImage != null)
+                {
+                    restaurantViewModel.Logo = _restaurantService.ConvertToString(restaurantViewModel.LogoImage);
+                }
+                Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantViewModel);
+                _restaurantService.UpdateRepository(restaurant);
+                TempData["SuccessMessage"] = "Restaurant was successfully updated!";
+            }
+            catch(ArgumentException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            return RedirectToAction("Index", "Restaurant");
         }
 
         [HttpPost]
         public IActionResult ArchiveRestaurant(int id)
         {
             _restaurantService.RemoveRestaurant(id);
-            return RedirectToAction();
-        }
-
-        [HttpPost]
-        public IActionResult LoadOwnerRestaurant(int id)
-        {
-            _restaurantService.GetRestaurantById(id);
             return RedirectToAction();
         }
 

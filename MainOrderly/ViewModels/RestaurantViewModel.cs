@@ -33,12 +33,15 @@ namespace MainOrderly.WebApp.ViewModels
 
         public static RestaurantViewModel ConvertToViewModel(Restaurant restaurant, List<SelectListItem> fonts)
         {
+            if (restaurant == null)
+                return new RestaurantViewModel { Fonts = fonts }; 
+
             RestaurantViewModel viewModel = new RestaurantViewModel()
             {
                 Id = restaurant.Id,
                 Name = restaurant.Name,
                 Description = restaurant.Description,
-                Logo = Convert.ToBase64String(restaurant.Logo),
+                Logo = restaurant.Logo == null ?  null : Convert.ToBase64String(restaurant.Logo),
                 Email = restaurant.Email,
                 PhoneNumber = restaurant.PhoneNumber,
                 Address = restaurant.Address,
