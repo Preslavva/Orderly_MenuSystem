@@ -189,7 +189,7 @@ namespace MSSQL
         //{
         //    try
         //    {
-        //        using SqlConnection connection = new SqlConnection( _connectionString);
+        //        using SqlConnection connection = new SqlConnection(_connectionString);
         //        connection.Open();
 
         //        string sql = @"Select r.* 

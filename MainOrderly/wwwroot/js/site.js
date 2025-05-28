@@ -152,21 +152,5 @@ function updateStatusHighlight(currentStatus) {
     });
 }
 
-document.getElementById('FontSelect').addEventListener('change', function () {
-    const font = this.value;
-    if (!font) return;
-
-    const existingLink = document.getElementById('google-font-link');
-    if (existingLink) existingLink.remove();
-
-    const link = document.createElement('link');
-    link.id = 'google-font-link';
-    link.rel = 'stylesheet';
-    link.href = `https://fonts.googleapis.com/css2?family=${font}&display=swap`;
-    document.head.appendChild(link);
-
-    document.body.style.fontFamily = `'${font.replace(/\+/g, ' ')}', sans-serif`;
-});
-
 
 
