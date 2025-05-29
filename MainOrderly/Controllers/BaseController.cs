@@ -16,7 +16,7 @@ namespace MainOrderly.WebApp.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            Restaurant restaurant = _restaurantService.GetRestaurantById(1);
+            Restaurant restaurant = _restaurantService.GetRestaurantById(11);
 
             ViewBag.ColorDefault = restaurant.ColorDefault ?? "#000000";
             ViewBag.ColorButtons = restaurant.ColorButtons ?? "#4CAF50";

@@ -898,7 +898,7 @@ footer {
     }
 
     .PaymentHome {
-        background: black;
+        background-color: var(--button-color);
         border-radius: 15px;
         padding: 10px 14px;
         border: none;
@@ -918,6 +918,7 @@ footer {
 
     .checkmark-container {
         height: 45vh;
+
     }
 
     .PaymentContainer {
@@ -1640,3 +1641,5 @@ input[type="submit"][disabled] {
     text-align: center;
     transition: all 0.3s ease-in-out;
 }
+
+
