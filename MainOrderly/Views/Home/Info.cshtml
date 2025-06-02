@@ -20,7 +20,9 @@
 
         <div class="card-body2">
             <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
-            <p class="card-text">@Model.MenuItemViewModel.Description</p>
+         <p class="card-text" style="color: dimgray;">
+             @Model.MenuItemViewModel.Description
+         </p>
 
            @if (@Model.MenuItemViewModel.Category!=Category.Drinks)
             {
@@ -29,9 +31,9 @@
                 </button>
             }
 
-                      <div class="collapse mt-2" id="ingredientsCollapse">
-                        @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
-                      </div>
+            <div class="collapse mt-2" id="ingredientsCollapse">
+              @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
+            </div>
 
 
 
