@@ -51,7 +51,7 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(Category? category = null, string token = "", string searchTerm = "", int restaurantId = 1)
+        public IActionResult Index(int restaurantId,Category? category = null, string token = "", string searchTerm = "")
         {
             ViewData["Page"] = "Index";
             

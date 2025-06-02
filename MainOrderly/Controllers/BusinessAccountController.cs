@@ -40,11 +40,10 @@ namespace MainOrderly.WebApp.Controllers
                 return RedirectBasedOnRole(user);
             }
 
-            if (authenticatedUser.UserType == "Waiter") TempData["IsWaiter"] = true;
+                //if (user.UserType == "Waiter") TempData["IsWaiter"] = true;
 
-
-            HttpContext.Session.SetAuthenticatedUser(authenticatedUser);
-            return RedirectToAction("MenuItems", "Manager");
+            HttpContext.Session.SetAuthenticatedUser(user);
+            //return RedirectToAction("MenuItems", "Manager");
 
             ModelState.AddModelError("", "Invalid email or password.");
             return View("~/Views/Business/LoginPage.cshtml", model);

@@ -40,11 +40,11 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult DeliverOrder(int orderId)
+        public IActionResult DeliverOrder(int orderId,int restaurantId)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(orderId,restaurantId);
             var tableId = order.Table.Id;
-            var tableNumber = _tableService.GetTableNumberById(tableId);
+            var tableNumber = _tableService.GetTableNumberById(tableId, restaurantId);
 
             _waiterService.UpdateOrderStatusDelivered(orderId);
             TempData["Message"] = $"Order {order.Id} to table {tableNumber} was successfully delivered";
