@@ -67,8 +67,8 @@ header .logo {
 }
 
 header {
-    /*background-color: #f8f5ed;*/
-    background-color: var(--background-color);
+    /background-color: #f8f5ed;
+    / background-color: var(--background-color);
     z-index: 100;
 }
 
@@ -274,7 +274,7 @@ hr {
 
     .btn-close:focus {
         outline: none;
-        box-shadow: 0 0 0 0.2rem var(--primary-color); 
+        box-shadow: 0 0 0 0.2rem var(--primary-color);
     }
 
 .container .food-card {
@@ -655,10 +655,7 @@ footer {
 
 
 
-    /*this section is for the loading animation*/
-
-
-
+    /this section is for the loading animation/
     /* Loader container styles */
     #loader {
         position: fixed;
@@ -706,7 +703,7 @@ footer {
         margin: 0 auto; /* auto left/right margins will center it */
     }
 
-    /*footer style section*/
+    /footer style section/
 
     .custom-footer {
         /* Make footer stick to the bottom */
@@ -922,7 +919,6 @@ footer {
 
     .checkmark-container {
         height: 45vh;
-
     }
 
     .PaymentContainer {
@@ -1096,7 +1092,6 @@ footer {
     color: var(--primary-color) !important; /* override #198754 */
     background: transparent; /* keep bg transparent */
     border: none;
-
 }
 
     .toggle-ingredients-btn:hover {
@@ -1131,7 +1126,7 @@ footer {
 
 
 
-/*Kitchen dashboard*/
+/Kitchen dashboard/
 .kitchen-theme {
     background-color: #f5f5f5;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -1371,7 +1366,7 @@ footer {
 
 
 
-/*alarm clock*/
+/alarm clock/
 
 .item-timer {
     font-family: var(--font-family);
@@ -1413,7 +1408,7 @@ footer {
 
 }
 
-/*payment confirmation page*/
+/payment confirmation page/
 
 .StatusButtons {
     display: flex;
@@ -1647,3 +1642,17 @@ input[type="submit"][disabled] {
 }
 
 
+
+
+.dropdown-menu-custom {
+    top: 0 !important;
+    left: 100% !important;
+    margin-left: 0.25rem;
+    right: auto !important;
+    transform: none !important;
+    box-shadow: 0 0 4px 2px var(--primary-color);
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--primary-color);
+}
