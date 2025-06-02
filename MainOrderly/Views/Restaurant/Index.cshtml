@@ -23,84 +23,107 @@
     </div>
 }
 
-        <div class="row">
-            <div class="col-md-4">
+<div class="row">
+    <div class="col-md-8 offset-md-2">
         <form asp-controller="Restaurant" asp-action="UpdateRestaurant" enctype="multipart/form-data" novalidate>
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input asp-for="Id" type="hidden" />
-                    <div class="mb-3 text-center">
-                        <label class="form-label d-block">Current Picture:</label>
-                        @if (!string.IsNullOrEmpty(Model.Logo))
-                        {
-                            <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Logo" style="max-width: 150px;" />
-                            <input type="hidden" name="Logo" value="@Model.Logo" />
-                        }
-                        else
-                        {
-                            <p class="text-muted">No profile picture uploaded.</p>
-                        }
-                    </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                    <div class="form-group">
-                        <label asp-for="LogoImage" class="control-label">Choose new logo:</label>
-                        <input asp-for="LogoImage" type="file" name="LogoImage" class="form-control" />
+            <input asp-for="Id" type="hidden" />
+
+            <div class="mb-4 text-center">
+                <label class="form-label d-block fw-bold">Current Picture:</label>
+                @if (!string.IsNullOrEmpty(Model.Logo))
+                {
+                    <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Restaurant Logo" style="max-width: 150px;" />
+                    <input type="hidden" name="Logo" value="@Model.Logo" />
+                }
+                else
+                {
+                    <p class="text-muted">No logo uploaded.</p>
+                }
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="LogoImage" class="form-label">Choose new logo:</label>
+                        <input asp-for="LogoImage" type="file" class="form-control" />
                         <span asp-validation-for="LogoImage" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Name" class="control-label">Restaurant Name:</label>
+
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label">Restaurant Name:</label>
                         <input asp-for="Name" class="form-control" />
                         <span asp-validation-for="Name" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Description" class="control-label">Description:</label>
+
+                    <div class="mb-3">
+                        <label asp-for="Description" class="form-label">Description:</label>
                         <input asp-for="Description" class="form-control" />
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Email" class="control-label">Restaurant Email:</label>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Restaurant Email:</label>
                         <input asp-for="Email" class="form-control" />
                         <span asp-validation-for="Email" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="PhoneNumber" class="control-label">Restaurant Phone Number:</label>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label">Restaurant Phone Number:</label>
                         <input asp-for="PhoneNumber" class="form-control" />
                         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                     </div>
-                    <div class="form-group">
-                        <label asp-for="Address" class="control-label">Address:</label>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Address" class="form-label">Address:</label>
                         <input asp-for="Address" class="form-control" />
                         <span asp-validation-for="Address" class="text-danger"></span>
                     </div>
-                     <div class="form-group">
-                         <label asp-for="KVK" class="control-label">KVK:</label>
-                         <input asp-for="KVK" class="form-control" />
-                         <span asp-validation-for="KVK" class="text-danger"></span>
-                     </div>
-                     <div class="form-group">
-                         <label asp-for="Font" class="control-label">Font:</label>
-                         <select asp-for="Font" asp-items="@Model.Fonts" class="form-select">
-                             <option value="">Select a Font</option>
-                         </select>
-                         <span asp-validation-for="Font" class="text-danger"></span>
-                     </div>
-                     <div class="form-group">
-                         <label asp-for="ColorBackground" class="control-label">Background:</label>
-                         <input asp-for="ColorBackground" type="color" class="form-control form-control-color" />
-                         <span asp-validation-for="ColorBackground" class="text-danger"></span>
-                     </div>
-                     <div class="form-group">
-                         <label asp-for="ColorButtons" class="control-label">Buttons:</label>
-                         <input asp-for="ColorButtons" type="color" class="form-control form-control-color" />
-                         <span asp-validation-for="ColorButtons" class="text-danger"></span>
-                     </div>
-                     <div class="form-group">
-                         <label asp-for="ColorDeafult" class="control-label">Default:</label>
-                         <input asp-for="ColorDeafult" type="color" class="form-control form-control-color" />
-                         <span asp-validation-for="ColorDeafult" class="text-danger"></span>
-                     </div>
-                    <div class="form-group">
-                        <input type="submit" value="Update" class="btn btn-primary" />
+
+                    <div class="mb-3">
+                        <label asp-for="KVK" class="form-label">KVK:</label>
+                        <input asp-for="KVK" class="form-control" />
+                        <span asp-validation-for="KVK" class="text-danger"></span>
                     </div>
-                </form>
+
+                    <div class="mb-3">
+                        <label asp-for="Font" class="form-label">Font:</label>
+                        <select asp-for="Font" asp-items="@Model.Fonts" class="form-select">
+                            <option value="">Select a Font</option>
+                        </select>
+                        <span asp-validation-for="Font" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column align-items-center me-3">
+                            <label asp-for="ColorBackground" class="form-label">Background Color:</label>
+                            <input asp-for="ColorBackground" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
+                            <span asp-validation-for="ColorBackground" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-center me-3">
+                            <label asp-for="ColorButtons" class="form-label">Buttons Color:</label>
+                            <input asp-for="ColorButtons" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
+                            <span asp-validation-for="ColorButtons" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex flex-column align-items-center">
+                            <label asp-for="ColorDeafult" class="form-label">Default Color:</label>
+                            <input asp-for="ColorDeafult" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
+                            <span asp-validation-for="ColorDeafult" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
+
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+        </form>
+    </div>
+</div>
+

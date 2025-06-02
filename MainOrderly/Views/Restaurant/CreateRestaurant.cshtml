@@ -93,8 +93,8 @@ else
         Register
     </button>
 
-    <div class="modal fade" id="createRestaurantModal" tabindex="-1" aria-labelledby="createRestaurantModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+    <div class="modal fade" id="createRestaurantModal" tabindex="-1" aria-labelledby="createRestaurantModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="createRestaurantModalLabel">Register Your Restaurant</h5>
@@ -102,52 +102,52 @@ else
                 </div>
                 <div class="modal-body">
                     <form asp-controller="Restaurant" asp-action="RegisterRestaurant" enctype="multipart/form-data" novalidate>
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="form-group">
-                            <label asp-for="LogoImage" class="control-label">Choose logo:</label>
+                        <div class="mb-3">
+                            <label asp-for="LogoImage" class="form-label">Choose logo:</label>
                             <input asp-for="LogoImage" type="file" name="LogoImage" class="form-control" />
                             <span asp-validation-for="LogoImage" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Name" class="control-label">Restaurant Name:</label>
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Restaurant Name:</label>
                             <input asp-for="Name" class="form-control" />
                             <span asp-validation-for="Name" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Description" class="control-label">Description:</label>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description:</label>
                             <input asp-for="Description" class="form-control" />
                             <span asp-validation-for="Description" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Email" class="control-label">Restaurant Email:</label>
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Restaurant Email:</label>
                             <input asp-for="Email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="PhoneNumber" class="control-label">Restaurant Phone Number:</label>
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Restaurant Phone Number:</label>
                             <input asp-for="PhoneNumber" class="form-control" />
                             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="Address" class="control-label">Address:</label>
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Address:</label>
                             <input asp-for="Address" class="form-control" />
                             <span asp-validation-for="Address" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group">
-                            <label asp-for="KVK" class="control-label">KVK:</label>
+                        <div class="mb-3">
+                            <label asp-for="KVK" class="form-label">KVK:</label>
                             <input asp-for="KVK" class="form-control" />
                             <span asp-validation-for="KVK" class="text-danger"></span>
                         </div>
 
-                        <div class="form-group mt-3">
-                            <input type="submit" value="Register" class="btn btn-primary" />
+                        <div class="d-flex justify-content-end mt-4">
+                            <input type="submit" value="Register" class="btn btn-primary me-2" />
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         </div>
                     </form>
