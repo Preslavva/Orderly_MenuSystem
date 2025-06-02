@@ -1656,3 +1656,7 @@ input[type="submit"][disabled] {
 .dropdown-menu .dropdown-item:hover {
     background-color: var(--primary-color);
 }
+
+.dropdown-menu-custom .dropdown-item {
+    color: #333; /* dark gray, or any hex/rgb/var */
+}
