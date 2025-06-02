@@ -110,25 +110,10 @@
                 @if (user != null && (user.Roles.Contains("Owner")))
                 {
                         <li class="menu-item">
-                            <a href="#menuRestaurant" data-bs-toggle="collapse" class="menu-link">
+                            <a href="@Url.Action("CustomizeRestaurant", "Restaurant")" class="menu-link">
                                 <span class="menu-icon"><i data-feather="coffee"></i></span>
-                                <span class="menu-text">Restaurant</span>
-                                <i data-feather="chevron-down" class="menu-arrow"></i>
+                                <span class="menu-text">Customize Restaurant</span>
                             </a>
-                            <div class="collapse" id="menuRestaurant">
-                                <ul class="sub-menu">
-                                    <li class="menu-item">
-                                        <a href="@Url.Action("CreateRestaurant", "Restaurant")" class="menu-link">
-                                            <span class="menu-text">Create Restaurant</span>
-                                        </a>
-                                    </li>
-                                    <li class="menu-item">
-                                        <a href="@Url.Action("CustomizeRestaurant", "Restaurant")" class="menu-link">
-                                            <span class="menu-text">Customize Restaurant</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
                         </li>
                 }
 

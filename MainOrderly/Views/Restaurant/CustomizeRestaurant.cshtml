@@ -23,70 +23,34 @@
     </div>
 }
 
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-        <form asp-controller="Restaurant" asp-action="UpdateRestaurantK" enctype="multipart/form-data" novalidate>
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <form asp-controller="Restaurant" asp-action="CustomizeRestaurant" enctype="multipart/form-data" novalidate>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center"></div>
 
             <input asp-for="Id" type="hidden" />
 
-            <div class="mb-4 text-center">
-                <label class="form-label d-block fw-bold">Current Picture:</label>
-                @if (!string.IsNullOrEmpty(Model.Logo))
-                {
-                    <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Restaurant Logo" style="max-width: 150px;" />
-                    <input type="hidden" name="Logo" value="@Model.Logo" />
-                }
-                else
-                {
-                    <p class="text-muted">No logo uploaded.</p>
-                }
-            </div>
-
             <div class="row">
-                <div class="col-md-6">
+                <!-- Left: Picture -->
+                <div class="col-md-4 text-center">
+                    <label class="form-label fw-bold d-block">Current Picture:</label>
+                    @if (!string.IsNullOrEmpty(Model.Logo))
+                    {
+                        <img src="data:image/jpg;base64,@Model.Logo" class="img-thumbnail mb-2" alt="Restaurant Logo" style="max-width: 100%; height: auto;" />
+                        <input type="hidden" name="Logo" value="@Model.Logo" />
+                    }
+                    else
+                    {
+                        <p class="text-muted">No logo uploaded.</p>
+                    }
+                </div>
+
+                <!-- Right: Form Fields -->
+                <div class="col-md-8">
                     <div class="mb-3">
                         <label asp-for="LogoImage" class="form-label">Choose new logo:</label>
                         <input asp-for="LogoImage" type="file" class="form-control" />
                         <span asp-validation-for="LogoImage" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Name" class="form-label">Restaurant Name:</label>
-                        <input asp-for="Name" class="form-control" />
-                        <span asp-validation-for="Name" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Description" class="form-label">Description:</label>
-                        <input asp-for="Description" class="form-control" />
-                        <span asp-validation-for="Description" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label">Restaurant Email:</label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label">Restaurant Phone Number:</label>
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label asp-for="Address" class="form-label">Address:</label>
-                        <input asp-for="Address" class="form-control" />
-                        <span asp-validation-for="Address" class="text-danger"></span>
-                    </div>
-
-                    <div class="mb-3">
-                        <label asp-for="KVK" class="form-label">KVK:</label>
-                        <input asp-for="KVK" class="form-control" />
-                        <span asp-validation-for="KVK" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">
@@ -97,14 +61,14 @@
                         <span asp-validation-for="Font" class="text-danger"></span>
                     </div>
 
-                    <div class="d-flex justify-content-between">
-                        <div class="d-flex flex-column align-items-center me-3">
+                    <div class="d-flex justify-content-start gap-4 mb-3">
+                        <div class="d-flex flex-column align-items-center">
                             <label asp-for="ColorBackground" class="form-label">Background Color:</label>
                             <input asp-for="ColorBackground" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
                             <span asp-validation-for="ColorBackground" class="text-danger"></span>
                         </div>
 
-                        <div class="d-flex flex-column align-items-center me-3">
+                        <div class="d-flex flex-column align-items-center">
                             <label asp-for="ColorButtons" class="form-label">Buttons Color:</label>
                             <input asp-for="ColorButtons" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
                             <span asp-validation-for="ColorButtons" class="text-danger"></span>
@@ -117,13 +81,14 @@
                         </div>
                     </div>
 
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
                 </div>
-            </div>
-
-            <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary">Update</button>
             </div>
         </form>
     </div>
 </div>
+
+
 
