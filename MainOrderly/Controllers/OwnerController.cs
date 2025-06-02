@@ -92,10 +92,10 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult EditRestaurant(RestaurantViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
 
             var user = HttpContext.Session.GetAuthenticatedUser();
             if (user == null) return RedirectToAction("Login", "BusinessAccount");

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Models.Entities;
 using Services;
-using MainOrderly.WebApp.Extensions;
+using MainOrderly.WebApp.Attributes;
 using MSSQL;
 
 namespace MainOrderly.WebApp.Controllers
@@ -13,11 +13,10 @@ namespace MainOrderly.WebApp.Controllers
     public class RestaurantController : Controller
     {
         private readonly RestaurantService _restaurantService;
-        private readonly string _googleFontsAPIkey;
-        public RestaurantController(RestaurantService restaurantService, IConfiguration configuration)
         private readonly OwnerRepository _ownerRepository;
+        private readonly string _googleFontsAPIkey;
 
-        public RestaurantController(RestaurantService restaurantService, OwnerRepository ownerRepository)
+        public RestaurantController(RestaurantService restaurantService, OwnerRepository ownerRepository, IConfiguration configuration)
         {
             _restaurantService = restaurantService;
             _googleFontsAPIkey = configuration["GoogleFonts:ApiKey"];
@@ -25,19 +24,20 @@ namespace MainOrderly.WebApp.Controllers
             _ownerRepository = ownerRepository;
         }
 
-		[HttpGet]
-		public async Task<IActionResult> Index()
-		{
+        [HttpGet]
+        public async Task<IActionResult> CustomizeRestaurant()
+        {
             var fonts = await LoadGoogleFontsAsync();
-            int ownerId = HttpContext.Session.GetAuthenticatedUser().Id;
+            int ownerId = HttpContext.Session.GetAuthenticatedUser().UserId;
             Restaurant restaurant = _restaurantService.GetOwnerRestaurant(ownerId);
             if (restaurant != null)
             {
                 var restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant, fonts);
                 return View(restaurantModel);
             }
-			return View(new RestaurantViewModel() { Fonts = fonts}); 
-		}
+            return View(new RestaurantViewModel() { Fonts = fonts });
+        }
+
         [HttpGet]
         public IActionResult Index(int id = 0)
         {
@@ -45,7 +45,7 @@ namespace MainOrderly.WebApp.Controllers
             if (user == null) return RedirectToAction("Login", "BusinessAccount");
 
             Restaurant restaurant = null;
-            
+
             if (id != 0)
             {
                 restaurant = _restaurantService.GetRestaurantById(id);
@@ -66,52 +66,21 @@ namespace MainOrderly.WebApp.Controllers
                     Address = restaurant.Address,
                     Description = restaurant.Description,
                     KVK = restaurant.KVK,
-                    IsActive=restaurant.IsActive
+                    IsActive = restaurant.IsActive
                 };
                 return View(restaurantModel);
             }
-
-        [HttpGet]
-        public async Task<IActionResult> CreateRestaurant()
-        {
-            var fonts = await LoadGoogleFontsAsync();
-            Restaurant restaurant = _restaurantService.GetOwnerRestaurant(1);
-            if (restaurant != null)
-            {
-                RestaurantViewModel restaurantModel = RestaurantViewModel.ConvertToViewModel(restaurant, fonts);
-                return View(restaurantModel);
-            }
-            return View(new RestaurantViewModel() { Fonts = fonts });
-        }
             return View(new RestaurantViewModel());
         }
 
-		[HttpPost]
-        public IActionResult RegisterRestaurant(RestaurantViewModel restaurantModel)
         [HttpPost]
         public IActionResult UpdateRestaurant(RestaurantViewModel restaurantViewModel)
         {
-            try
             var user = HttpContext.Session.GetAuthenticatedUser();
             if (user == null) return RedirectToAction("Login", "BusinessAccount");
 
             if (!ModelState.IsValid)
             {
-                int ownerId = HttpContext.Session.GetAuthenticatedUser().Id;
-                if (restaurantModel.LogoImage != null)
-                {
-                    restaurantModel.Logo = _restaurantService.ConvertToString(restaurantModel.LogoImage);
-                }
-                Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantModel);
-                _restaurantService.CreateRestaurant(restaurant, ownerId);
-                HttpContext.Session.SetString("KVK", restaurant.KVK);
-                TempData["SuccessMessage"] = "Restaurant was successfully registered!";
-            }
-            catch(ArgumentException ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-            }
-            return RedirectToAction("CreateRestaurant", "Restaurant");
                 return View("Index", restaurantViewModel);
             }
 
@@ -144,7 +113,7 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateRestaurant(RestaurantViewModel restaurantViewModel)
+        public IActionResult UpdateRestaurantK(RestaurantViewModel restaurantViewModel)
         {
             try
             {
@@ -156,19 +125,21 @@ namespace MainOrderly.WebApp.Controllers
                 _restaurantService.UpdateRepository(restaurant);
                 TempData["SuccessMessage"] = "Restaurant was successfully updated!";
             }
-            catch(ArgumentException ex)
+            catch (ArgumentException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
             }
-            return RedirectToAction("Index", "Restaurant");
+            return RedirectToAction("CustomizeRestaurant", "Restaurant");
         }
 
         [HttpPost]
-        public IActionResult ArchiveRestaurant(int id)
+        public IActionResult ArchiveRestaurantk(int id)
         {
             _restaurantService.RemoveRestaurant(id);
-            return RedirectToAction("CreateRestaurant", "Restaurant"); 
+            return RedirectToAction("CreateRestaurant", "Restaurant");
         }
+
+        [HttpPost]
         public IActionResult ArchiveRestaurant()
         {
             var user = HttpContext.Session.GetAuthenticatedUser();
@@ -192,6 +163,8 @@ namespace MainOrderly.WebApp.Controllers
             {
                 TempData["ErrorMessage"] = $"Error deactivating restaurant: {ex.Message}";
             }
+            return RedirectToAction("Index");
+        }
 
         private async Task<List<SelectListItem>> LoadGoogleFontsAsync()
         {
@@ -212,7 +185,6 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             return fonts;
-            return RedirectToAction("Index");
         }
     }
 }

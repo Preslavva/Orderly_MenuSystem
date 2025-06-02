@@ -15,7 +15,7 @@ namespace MainOrderly.WebApp.Controllers
         private readonly RestaurantService _restaurantService;
 
         public CartController(CartService cartService, IngredientService ingredientService, 
-            HistoryService historyService, RestaurantService restaurantService)
+            HistoryService historyService, RestaurantService restaurantService): base(restaurantService)
         {
             _cartService = cartService;
             _ingredientService = ingredientService;

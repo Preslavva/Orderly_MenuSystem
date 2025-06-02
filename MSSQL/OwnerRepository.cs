@@ -113,11 +113,9 @@ namespace MSSQL
                     try
                     {
                         var restaurantQuery = @"
-                            INSERT INTO Restaurant (Name, Email, Phone, Address, KVK, Description, isActive,
-                                                  ColorButtons, ColorDefault, ColorBackground, Font)
+                            INSERT INTO Restaurant (Name, Email, Phone, Address, KVK, Description, isActive)
                             OUTPUT INSERTED.Id
-                            VALUES (@Name, @Email, @Phone, @Address, @KVK, @Description, 1,
-                                    '#28a745', '#ffffff', '#f8f9fa', 'Inter')";
+                            VALUES (@Name, @Email, @Phone, @Address, @KVK, @Description, 1);";
 
                         int restaurantId;
                         using (SqlCommand restaurantCommand = new SqlCommand(restaurantQuery, connection, transaction))

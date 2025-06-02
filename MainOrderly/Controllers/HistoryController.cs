@@ -9,10 +9,12 @@ namespace MainOrderly.WebApp.Controllers
     public class HistoryController : BaseController
     {
         private readonly HistoryService _historyService;
+        private readonly RestaurantService _restaurantService;
 
-        public HistoryController(HistoryService historyService)
+        public HistoryController(HistoryService historyService, RestaurantService restaurantService) : base(restaurantService)
         {
             _historyService = historyService;
+            _restaurantService = restaurantService;
         }
 
         [HttpGet]

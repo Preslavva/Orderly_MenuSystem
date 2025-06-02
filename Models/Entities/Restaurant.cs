@@ -86,6 +86,34 @@
             IsActive = isActive; 
         }
 
+        public Restaurant(
+  int id,
+  string name,
+  string email,
+  string phoneNumber,
+  string address,
+  string description,
+  byte[] logo,
+  string font,
+  string colorButtons,
+  string colorDefault,
+  string colorBackground,
+  string kvk)
+        {
+            Id = id;
+            Name = name;
+            Email = email;
+            PhoneNumber = phoneNumber;
+            Address = address;
+            Description = description;
+            Logo = logo;
+            Font = font;
+            ColorButtons = colorButtons;
+            ColorDefault = colorDefault;
+            ColorBackground = colorBackground;
+            KVK = kvk;
+        }
+
     }
 
 

@@ -195,7 +195,7 @@ namespace MSSQL
 
                 string sql = @"Select r.* 
                                 from Restaurant as r
-                                inner join Staff as s
+                                inner join Owner as s
                                 on s.RestaurantId = r.Id
                                 where r.isActive = @IsActive and s.Id = @OwnerId;";
 
