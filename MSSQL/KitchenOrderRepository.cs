@@ -198,7 +198,7 @@ namespace MSSQL
         JOIN    MenuItem m ON m.Id = om.MenuItemId
         JOIN    [Order] o ON o.Id = om.OrderId
         JOIN    [Table] t ON t.Id = o.TableId
-        WHERE   om.OrderStatus = @Status AND om.IsArchived = 0";
+        WHERE   om.OrderStatus = @Status AND om.IsArchived = 0 AND m.RestaurantId = @RestaurantId ";
 
             var items = new List<OrderItem>();
 

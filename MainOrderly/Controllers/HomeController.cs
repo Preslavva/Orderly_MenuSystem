@@ -34,9 +34,9 @@ namespace MainOrderly.WebApp.Controllers
             _ingredientService = ingredientService;
         }
 
-        public IActionResult LoadingPage(string token)
+        public IActionResult LoadingPage(string token,int restaurantId)
         {
-            int restaurantId = 1; // Default or get from configuration
+          
             Table table = _tableService.GetTableByToken(token, restaurantId);
 
             if (table == null)
