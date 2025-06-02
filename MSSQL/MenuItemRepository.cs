@@ -12,7 +12,7 @@ namespace MSSQL
     {
         public MenuItemRepository(IConfiguration configuration) : base(configuration) { }
 
-        public bool AddMenuIngredients(int menuId, int[] ingredientIds, int[] quantities)
+        public bool AddMenuIngredients(int menuId, int[] ingredientIds, int[] quantities, int restaurantId)
         {
             try
             {
@@ -26,17 +26,21 @@ namespace MSSQL
                             cmd.Transaction = transaction;
                             cmd.CommandText = @"
                             INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
-                            VALUES (@MenuItemId, @IngredientId, @Quantity)";
+                            SELECT @MenuItemId, @IngredientId, @Quantity
+                            FROM MenuItem m
+                            WHERE m.Id = @MenuItemId AND m.RestaurantId = @RestaurantId";
 
                             cmd.Parameters.Add("@MenuItemId", SqlDbType.Int);
                             cmd.Parameters.Add("@IngredientId", SqlDbType.Int);
                             cmd.Parameters.Add("@Quantity", SqlDbType.Int);
+                            cmd.Parameters.Add("@RestaurantId", SqlDbType.Int);
 
                             for (int i = 0; i < ingredientIds.Length; i++)
                             {
                                 cmd.Parameters["@MenuItemId"].Value = menuId;
                                 cmd.Parameters["@IngredientId"].Value = ingredientIds[i];
                                 cmd.Parameters["@Quantity"].Value = quantities[i];
+                                cmd.Parameters["@RestaurantId"].Value = restaurantId;
 
                                 cmd.ExecuteNonQuery();
                             }
@@ -115,7 +119,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
 
                     using (SqlCommand getMenuItems = new SqlCommand(queryGetMenuItems, conn))
                     {
-                        getMenuItems.Parameters.AddWithValue("@RestaurantId", 1);
+                        getMenuItems.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = getMenuItems.ExecuteReader())
                         {
 
@@ -165,7 +169,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
-                        cmd.Parameters.AddWithValue("@RestaurantId", 1);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
@@ -201,19 +205,20 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Error while retrieving MenuItem by ID: {ex.Message}", ex);
             }
         }
-        public void ChangeMenuItemAvailability(MenuItem menuItem, bool isAvailable)
+        public void ChangeMenuItemAvailability(MenuItem menuItem, bool isAvailable, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "UPDATE MenuItem SET IsAvailable = @IsAvailable WHERE Id = @Id;";
+                    string query = "UPDATE MenuItem SET IsAvailable = @IsAvailable WHERE Id = @Id AND RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", menuItem.Id);
                         cmd.Parameters.AddWithValue("@IsAvailable", isAvailable);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -224,19 +229,20 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Error while updating MenuItem availability: {ex.Message}", ex);
             }
         }
-        public void UpdateMenuItemQuantity(MenuItem menuItem, int quantity)
+        public void UpdateMenuItemQuantity(MenuItem menuItem, int quantity, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "UPDATE MenuItem SET Quantity = @Quantity WHERE Id = @Id;";
+                    string query = "UPDATE MenuItem SET Quantity = @Quantity WHERE Id = @Id AND RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", menuItem.Id);
                         cmd.Parameters.AddWithValue("@Quantity", quantity);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -249,21 +255,22 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
         }
 
 
-        public bool DeleteMenuItem(int menuItemId)
+        public bool DeleteMenuItem(int menuItemId, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "DELETE FROM MenuItem WHERE Id = @Id";
+                string query = "DELETE FROM MenuItem WHERE Id = @Id AND RestaurantId = @RestaurantId";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", menuItemId);
+                    cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     int rowsAffected = cmd.ExecuteNonQuery();
                     return rowsAffected > 0;
                 }
             }
         }
-        public void UpdateMenuItem(MenuItem menuItem)
+        public void UpdateMenuItem(MenuItem menuItem, int restaurantId)
         {
             try
             {
@@ -278,8 +285,8 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                     IsAvailable = @IsAvailable,
                     Picture = @Picture,
                     Category = @Category,
-                    RestaurantId = @RestaurantId
-                WHERE Id = @Id";
+                    PrepTime = @PrepTime
+                WHERE Id = @Id AND RestaurantId = @RestaurantId";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
@@ -289,9 +296,9 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                         cmd.Parameters.AddWithValue("@IsAvailable", menuItem.IsAvailable);
                         cmd.Parameters.AddWithValue("@Picture", menuItem.Picture);
                         cmd.Parameters.AddWithValue("@Category", menuItem.Category.ToString());
-                        cmd.Parameters.AddWithValue("@RestaurantId", menuItem.RestaurantId);
                         cmd.Parameters.AddWithValue("@Id", menuItem.Id);
                         cmd.Parameters.AddWithValue("@PrepTime", menuItem.PrepTime);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         cmd.ExecuteNonQuery(); 
                     }
                 }
@@ -301,7 +308,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Database error occurred while updating menu item: {sqlEx.Message}", sqlEx);
             }
         }
-        public void AddAllergenToMenuItem(int menuItemId, AllergenName allergen)
+        public void AddAllergenToMenuItem(int menuItemId, AllergenName allergen, int restaurantId)
         {
             try
             {
@@ -324,12 +331,15 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                         throw new Exception($"Allergen '{allergen}' not found in table 'Allergen'.");
 
                     string insertQuery = @"INSERT INTO MenuItem_Allergen (MenuItemId, AllergenId)
-                                   VALUES (@MenuItemId, @AllergenId);";
+                                   SELECT @MenuItemId, @AllergenId
+                                   FROM MenuItem m
+                                   WHERE m.Id = @MenuItemId AND m.RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(insertQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
                         cmd.Parameters.AddWithValue("@AllergenId", allergenId);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -339,7 +349,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 throw new Exception($"Error adding allergen to menu item: {ex.Message}", ex);
             }
         }
-        public List<AllergenName> GetAllergensForMenuItem(int menuItemId)
+        public List<AllergenName> GetAllergensForMenuItem(int menuItemId, int restaurantId)
         {
             var allergens = new List<AllergenName>();
 
@@ -351,11 +361,13 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
             SELECT a.Name
             FROM Allergen a
             INNER JOIN MenuItem_Allergen ma ON a.Id = ma.AllergenId
-            WHERE ma.MenuItemId = @MenuItemId;";
+            INNER JOIN MenuItem m ON ma.MenuItemId = m.Id
+            WHERE ma.MenuItemId = @MenuItemId AND m.RestaurantId = @RestaurantId;";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                    cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -370,7 +382,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
 
             return allergens;
         }
-        public void DeleteAllergensForMenuItem(int menuItemId)
+        public void DeleteAllergensForMenuItem(int menuItemId, int restaurantId)
         {
             try
             {
@@ -378,10 +390,13 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
                 {
                     conn.Open();
 
-                    string deleteQuery = "DELETE FROM MenuItem_Allergen WHERE MenuItemId = @MenuItemId";
+                    string deleteQuery = @"DELETE FROM MenuItem_Allergen 
+                                         WHERE MenuItemId = @MenuItemId 
+                                         AND MenuItemId IN (SELECT Id FROM MenuItem WHERE Id = @MenuItemId AND RestaurantId = @RestaurantId)";
                     using (SqlCommand cmd = new SqlCommand(deleteQuery, conn))
                     {
                         cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -393,7 +408,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
         }
 
 
-        public List<MenuItem> LoadMenuItemsByCategory(Category category)
+        public List<MenuItem> LoadMenuItemsByCategory(Category category, int restaurantId)
         {
             var menuItems = new List<MenuItem>();
 
@@ -409,7 +424,7 @@ VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @Restaur
 
                     using (SqlCommand command = new SqlCommand(query, conn))
                     {
-                        command.Parameters.AddWithValue("@RestaurantId", 1);
+                        command.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         command.Parameters.AddWithValue("@Category", category.ToString());
 
                         using (SqlDataReader reader = command.ExecuteReader())

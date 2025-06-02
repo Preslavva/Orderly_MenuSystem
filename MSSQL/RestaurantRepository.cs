@@ -73,11 +73,11 @@ namespace MSSQL
             }
         }
 
-        public Restaurant GetRestaurantById(int restaurantId)
+       public Restaurant GetRestaurantById(int restaurantId)
         {
             string sql = @"
         SELECT Id, [Name], Email, Phone, [Address], Description, 
-               Logo, Font, ColorButtons, ColorDefault, ColorBackground, KVK
+               Logo, Font, ColorButtons, ColorDefault, ColorBackground, KVK, IsActive
         FROM Restaurant
         WHERE Id = @Id";
 
@@ -103,7 +103,8 @@ namespace MSSQL
                             colorButtons: reader["ColorButtons"] != DBNull.Value ? reader["ColorButtons"].ToString() : null,
                             colorDefault: reader["ColorDefault"] != DBNull.Value ? reader["ColorDefault"].ToString() : null,
                             colorBackground: reader["ColorBackground"] != DBNull.Value ? reader["ColorBackground"].ToString() : null,
-                            kvk: reader["KVK"] != DBNull.Value ? reader["KVK"].ToString():null
+                            isActive: reader["IsActive"] != DBNull.Value ? (bool)reader["IsActive"] : false,
+                            kvk: reader["KVK"] != DBNull.Value ? reader["KVK"].ToString() : null
                         );
                     }
                 }
@@ -114,7 +115,7 @@ namespace MSSQL
         public void RemoveRestaurant(int restaurantId)
         {
             string sql = @"
-        Update Restaurant
+        UPDATE Restaurant
         SET isActive = @isActive
         WHERE Id = @Id";
 

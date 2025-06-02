@@ -2,36 +2,37 @@
 using MSSQL;
 using Models.Entities;
 
-public class CheckoutService
+namespace Services
 {
-    private readonly CartRepository _cartRepository;
-    private readonly KitchenOrderRepository _kitchenOrderRepository;
-
-    public CheckoutService(CartRepository cartRepository, KitchenOrderRepository kitchenOrderRepository)
+    public class CheckoutService
     {
-        _cartRepository = cartRepository;
-        _kitchenOrderRepository = kitchenOrderRepository;   
-    }
+        private readonly CartRepository _cartRepository;
+        private readonly KitchenOrderRepository _kitchenOrderRepository;
 
-    public int FinalizeOrder(int tableId, Dictionary<MenuItem, int> cartItems, Restaurant restaurant)
-    {
-        
-        
-        int totalQuantity = 0;
-        decimal totalPrice = 0;
-        foreach (var kvp in cartItems)
+        public CheckoutService(CartRepository cartRepository, KitchenOrderRepository kitchenOrderRepository)
         {
-            totalQuantity += kvp.Value;
-            totalPrice += kvp.Key.Price * kvp.Value;
+            _cartRepository = cartRepository;
+            _kitchenOrderRepository = kitchenOrderRepository;   
         }
 
-        int newOrderId = _kitchenOrderRepository.CreateOrder(tableId, OrderStatus.NEW_ORDER, totalQuantity, totalPrice, restaurant.Id);
-
-        foreach (var kvp in cartItems)
+        public int FinalizeOrder(int tableId, Dictionary<MenuItem, int> cartItems, Restaurant restaurant)
         {
-           _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value,OrderStatus.NEW_ORDER);
+            int totalQuantity = 0;
+            decimal totalPrice = 0;
+            foreach (var kvp in cartItems)
+            {
+                totalQuantity += kvp.Value;
+                totalPrice += kvp.Key.Price * kvp.Value;
+            }
+
+            int newOrderId = _kitchenOrderRepository.CreateOrder(tableId, OrderStatus.NEW_ORDER, totalQuantity, totalPrice, restaurant.Id);
+
+            foreach (var kvp in cartItems)
+            {
+                _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value, OrderStatus.NEW_ORDER, restaurant.Id);
+            }
+                    
+            return newOrderId;
         }
-            
-        return newOrderId;
     }
 }

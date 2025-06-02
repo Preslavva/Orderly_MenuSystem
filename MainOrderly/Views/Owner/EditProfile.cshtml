@@ -1,0 +1,90 @@
+@model MainOrderly.WebApp.ViewModels.OwnerViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Owner")">Company Details</a></li>
+                        <li class="breadcrumb-item active">Edit Profile</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Edit Your Profile</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">
+                        <i class="dripicons-user me-2"></i>Personal Information
+                    </h4>
+
+                    <form asp-action="EditProfile" method="post">
+                        <input type="hidden" asp-for="Id" />
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label">First Name <span class="text-danger">*</span></label>
+                                    <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">Last Name <span class="text-danger">*</span></label>
+                                    <input asp-for="LastName" class="form-control" placeholder="Enter your last name" />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="your.email@example.com" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Phone" class="form-label">Phone Number <span class="text-danger">*</span></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+31 6 12345678" />
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-end">
+                            <a href="@Url.Action("Dashboard", "Owner")" class="btn btn-secondary me-2">
+                                <i class="dripicons-cross"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="dripicons-checkmark"></i> Update Profile
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // Format phone number input
+        document.querySelector('input[name="Phone"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9\s\(\)\-\+]/g, '');
+        });
+    </script>
+}

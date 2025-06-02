@@ -2,15 +2,13 @@
 using Microsoft.Extensions.Configuration;
 using Models.Entities;
 
-
 namespace MSSQL
 {
     public class TableRepository : Repository
     {
-
         public TableRepository(IConfiguration configuration) : base(configuration) { }
 
-        public void CreateAddTableDB(Table table)
+        public void CreateAddTableDB(Table table, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -18,12 +16,13 @@ namespace MSSQL
 
                 string queryAddTable = """
                             INSERT INTO [Table] (QrCode, RestaurantId, GuidToken) 
-                            VALUES (@QrCode, 1, @GuidToken)
+                            VALUES (@QrCode, @RestaurantId, @GuidToken)
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
                     cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode);
+                    cmdAddTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     cmdAddTable.Parameters.AddWithValue("@GuidToken", table.GuidToken);
 
                     cmdAddTable.ExecuteNonQuery();
@@ -31,7 +30,7 @@ namespace MSSQL
             }
         }
 
-        public void CreateTableWithNumber(Table table)
+        public void CreateTableWithNumber(Table table, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -39,12 +38,13 @@ namespace MSSQL
 
                 string queryAddTable = """
                             INSERT INTO [Table] (QrCode, RestaurantId, GuidToken, TableNumber) 
-                            VALUES (@QrCode, 1, @GuidToken, @TableNumber)
+                            VALUES (@QrCode, @RestaurantId, @GuidToken, @TableNumber)
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
                     cmdAddTable.Parameters.AddWithValue("@QrCode", table.QrCode);
+                    cmdAddTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     cmdAddTable.Parameters.AddWithValue("@GuidToken", table.GuidToken);
                     cmdAddTable.Parameters.AddWithValue("@TableNumber", table.Number);
 
@@ -53,7 +53,7 @@ namespace MSSQL
             }
         }
 
-        public byte[] GetTableQRById(int tableId)
+        public byte[] GetTableQRById(int tableId, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -61,12 +61,13 @@ namespace MSSQL
 
                 string queryAddTable = """
                             SELECT QrCode FROM [Table]
-                            WHERE Id = @TableId
+                            WHERE Id = @TableId AND RestaurantId = @RestaurantId
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
                     cmdAddTable.Parameters.AddWithValue("@TableId", tableId);
+                    cmdAddTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                     var result = cmdAddTable.ExecuteScalar();
 
@@ -77,7 +78,7 @@ namespace MSSQL
             }
         }
 
-        public int GetTableNumberById(int tableId)
+        public int GetTableNumberById(int tableId, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -85,12 +86,13 @@ namespace MSSQL
 
                 string queryAddTable = """
                             SELECT TableNumber FROM [Table]
-                            WHERE Id = @TableId
+                            WHERE Id = @TableId AND RestaurantId = @RestaurantId
                         """;
 
                 using (SqlCommand cmdAddTable = new SqlCommand(queryAddTable, conn))
                 {
                     cmdAddTable.Parameters.AddWithValue("@TableId", tableId);
+                    cmdAddTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                     var result = Convert.ToInt32(cmdAddTable.ExecuteScalar());
                     return result;
@@ -98,7 +100,7 @@ namespace MSSQL
             }
         }
 
-        public List<Table> GetAllTables()
+        public List<Table> GetAllTables(int restaurantId)
         {
             var tables = new List<Table>();
 
@@ -107,11 +109,12 @@ namespace MSSQL
                 conn.Open();
 
                 string queryGetTables = """
-                            SELECT * FROM [Table]
+                            SELECT * FROM [Table] WHERE RestaurantId = @RestaurantId
                         """;
 
                 using (SqlCommand cmdGetTables = new SqlCommand(queryGetTables, conn))
                 {
+                    cmdGetTables.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     SqlDataReader dr = cmdGetTables.ExecuteReader();
 
                     while (dr.Read())
@@ -124,7 +127,7 @@ namespace MSSQL
             return tables;
         }
 
-        public Table? GetTableByToken(string token)
+        public Table? GetTableByToken(string token, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -132,12 +135,13 @@ namespace MSSQL
 
                 string queryGetTable = """
                             SELECT * FROM [Table]
-                            WHERE GuidToken = @GuidToken
+                            WHERE GuidToken = @GuidToken AND RestaurantId = @RestaurantId
                         """;
 
                 using (SqlCommand cmdGetTable = new SqlCommand(queryGetTable, conn))
                 {
                     cmdGetTable.Parameters.AddWithValue("@GuidToken", token);
+                    cmdGetTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                     SqlDataReader dr = cmdGetTable.ExecuteReader();
 

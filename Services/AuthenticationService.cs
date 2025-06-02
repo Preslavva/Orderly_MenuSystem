@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Models.Entities;
@@ -8,95 +5,189 @@ using MSSQL;
 
 namespace Services
 {
+    public class AuthenticatedUser
+    {
+        public int UserId { get; set; }
+        public string FullName { get; set; }
+        public string Email { get; set; }
+        public string UserType { get; set; } // "Owner" or "Staff"
+        public int RestaurantId { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
+    }
+
     public class AuthenticationService
     {
         private readonly OwnerRepository _ownerRepository;
         private readonly StaffRepository _staffRepository;
-        private readonly RoleRepository _roleRepository;
 
-        public AuthenticationService(OwnerRepository ownerRepository, StaffRepository staffRepository, RoleRepository roleRepository)
+        public AuthenticationService(OwnerRepository ownerRepository, StaffRepository staffRepository)
         {
             _ownerRepository = ownerRepository;
             _staffRepository = staffRepository;
-            _roleRepository = roleRepository;
         }
 
-        public AuthenticatedUser AuthenticateUser(string email, string password)
+        public AuthenticatedUser Login(string email, string password)
         {
-            Owner owner = _ownerRepository.GetOwnerByEmail(email);
-            if (owner != null)
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                return null;
+            var owner = _ownerRepository.GetByEmail(email);
+            if (owner != null && VerifyPassword(password, owner.Password, owner.Salt))
             {
-                string hashedPassword = HashPassword(password, owner.Salt);
-                if (hashedPassword == owner.Password)
+                return new AuthenticatedUser
                 {
-                    return new AuthenticatedUser
-                    {
-                        Id = owner.Id,
-                        Email = owner.Email,
-                        FullName = owner.FullName,
-                        UserType = "Owner", 
-                        RestaurantId = owner.RestaurantId,
-                        Roles = new List<string> { "Owner" }
-                    };
-                }
+                    UserId = owner.Id,
+                    FullName = owner.FullName,
+                    Email = owner.Email,
+                    UserType = "Owner",
+                    RestaurantId = owner.RestaurantId,
+                    Roles = new List<string> { "Owner" }
+                };
             }
-            Staff staff = _staffRepository.GetStaffByEmail(email);
-            if (staff != null && staff.IsActive)
+            var staff = _staffRepository.GetStaffByEmailGlobal(email);
+            if (staff != null && staff.IsActive && VerifyPassword(password, staff.Password, staff.Salt))
             {
-                string hashedPassword = HashPassword(password, staff.Salt);
-                if (hashedPassword == staff.Password)
+                var roles = _staffRepository.GetStaffRoles(staff.Id, staff.RestaurantId);
+                return new AuthenticatedUser
                 {
-                    List<Role> staffRoles = _staffRepository.GetStaffRoles(staff.Id);
-                    staff.SetRoles(staffRoles);
-
-                    string primaryRole = staffRoles.Count > 0 ? staffRoles[0].Type : "Staff";
-
-                    return new AuthenticatedUser
-                    {
-                        Id = staff.Id,
-                        Email = staff.Email,
-                        FullName = staff.FullName,
-                        UserType = primaryRole, 
-                        RestaurantId = staff.RestaurantId,
-                        Roles = staffRoles.ConvertAll(r => r.Type)
-                    };
-                }
+                    UserId = staff.Id,
+                    FullName = staff.FullName,
+                    Email = staff.Email,
+                    UserType = "Staff",
+                    RestaurantId = staff.RestaurantId,
+                    Roles = roles.Select(r => r.Type).ToList()
+                };
             }
 
-            return null; 
+            return null;
+        }
+
+        public bool RegisterOwner(string firstName, string lastName, string email, string phone, 
+            string password, string restaurantName, string restaurantEmail, string restaurantPhone, 
+            string restaurantAddress, string kvk, string description = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) ||
+                    string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) ||
+                    string.IsNullOrWhiteSpace(restaurantName) || string.IsNullOrWhiteSpace(kvk))
+                {
+                    return false;
+                }
+                if (_ownerRepository.GetByEmail(email) != null || _staffRepository.GetStaffByEmailGlobal(email) != null)
+                {
+                    return false;
+                }
+
+                if (_ownerRepository.IsKvkExists(kvk))
+                {
+                    return false;
+                }
+
+                var salt = GenerateSalt();
+                var hashedPassword = HashPassword(password, salt);
+
+                return _ownerRepository.RegisterOwnerWithRestaurant(
+                    firstName, lastName, email, phone, hashedPassword, salt,
+                    restaurantName, restaurantEmail, restaurantPhone, restaurantAddress, kvk, description);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool CreateStaff(string firstName, string lastName, string email, string phone, 
+            string password, int restaurantId, List<int> roleIds = null)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(firstName) || string.IsNullOrWhiteSpace(lastName) ||
+                    string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    return false;
+                }
+
+                if (_ownerRepository.GetByEmail(email) != null || _staffRepository.GetStaffByEmailGlobal(email) != null)
+                {
+                    return false;
+                }
+
+                var salt = GenerateSalt();
+                var hashedPassword = HashPassword(password, salt);
+
+                var staff = new Staff(firstName, lastName, email, phone, true, restaurantId, hashedPassword, salt);
+                var staffId = _staffRepository.CreateStaff(staff);
+
+                if (roleIds != null && roleIds.Any())
+                {
+                    foreach (var roleId in roleIds)
+                    {
+                        _staffRepository.AssignRoleToStaff(staffId, roleId, restaurantId);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool VerifyPassword(string password, string hashedPassword, string salt)
+        {
+            if (string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(hashedPassword) || string.IsNullOrWhiteSpace(salt))
+                return false;
+
+            var hash = HashPassword(password, salt);
+            return hash == hashedPassword;
         }
 
         public string HashPassword(string password, string salt)
         {
-            using (SHA256 sha256Hash = SHA256.Create())
+            using (var sha256 = SHA256.Create())
             {
-                string combinedString = password + salt;
-                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(combinedString));
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < bytes.Length; i++)
-                {
-                    builder.Append(bytes[i].ToString("x2"));
-                }
-                return builder.ToString();
+                var saltedPassword = password + salt;
+                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(saltedPassword));
+                return Convert.ToBase64String(bytes);
             }
         }
 
-        public string GenerateSalt(int size = 24)
+        public string GenerateSalt()
         {
-            var rng = new RNGCryptoServiceProvider();
-            var buffer = new byte[size];
-            rng.GetBytes(buffer);
-            return Convert.ToBase64String(buffer);
+            var bytes = new byte[16];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
+            return Convert.ToBase64String(bytes);
         }
-    }
 
-    public class AuthenticatedUser
-    {
-        public int Id { get; set; }
-        public string Email { get; set; }
-        public string FullName { get; set; }
-        public string UserType { get; set; } 
-        public int RestaurantId { get; set; }
-        public List<string> Roles { get; set; } = new List<string>();
+        public bool ChangePassword(int userId, string userType, string currentPassword, string newPassword)
+        {
+            try
+            {
+                if (userType == "Owner")
+                {
+                    var owner = _ownerRepository.GetById(userId);
+                    if (owner != null && VerifyPassword(currentPassword, owner.Password, owner.Salt))
+                    {
+                        var newSalt = GenerateSalt();
+                        var newHash = HashPassword(newPassword, newSalt);
+                        return true; 
+                    }
+                }
+                else if (userType == "Staff")
+                {
+                    return true; 
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

@@ -30,7 +30,7 @@ namespace Services
         {
             _restaurantRepository.RemoveRestaurant(restaurantId);
         }
-
+        
         public Restaurant GetRestaurantById(int restaurantId)
         {
             return _restaurantRepository.GetRestaurantById(restaurantId);

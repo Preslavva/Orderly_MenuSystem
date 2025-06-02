@@ -1,0 +1,122 @@
+@model MainOrderly.WebApp.ViewModels.RestaurantViewModel
+@{
+    ViewData["Title"] = "Edit Restaurant Information";
+    Layout = "~/Views/Shared/_ManagerLayout.cshtml";
+}
+
+<div class="container-fluid">
+    <!-- Page Title -->
+    <div class="row">
+        <div class="col-12">
+            <div class="page-title-box">
+                <div class="page-title-right">
+                    <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Dashboard", "Owner")">Company Details</a></li>
+                        <li class="breadcrumb-item active">Edit Restaurant</li>
+                    </ol>
+                </div>
+                <h4 class="page-title">Edit Restaurant Information</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="header-title mb-3">
+                        <i class="dripicons-shop me-2"></i>Restaurant Details
+                    </h4>
+
+                    <form asp-controller="Owner" asp-action="EditRestaurant" method="post">
+                        <!-- All hidden fields including Logo and Fonts -->
+                        <input type="hidden" asp-for="Id" />
+                        <input type="hidden" asp-for="KVK" />
+                        <input type="hidden" asp-for="IsActive" />
+                        <input type="hidden" asp-for="Logo" />
+                        <input type="hidden" asp-for="Font" />
+                        <input type="hidden" asp-for="ColorButtons" />
+                        <input type="hidden" asp-for="ColorDeafult" />
+                        <input type="hidden" asp-for="ColorBackground" />
+
+                        <!-- Initialize Fonts list as empty to avoid validation error -->
+                        @for (int i = 0; i < (Model.Fonts?.Count ?? 0); i++)
+                        {
+                            <input type="hidden" name="Fonts[@i].Text" value="@Model.Fonts[i].Text" />
+                            <input type="hidden" name="Fonts[@i].Value" value="@Model.Fonts[i].Value" />
+                            <input type="hidden" name="Fonts[@i].Selected" value="@Model.Fonts[i].Selected" />
+                        }
+
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Name" class="form-label">Restaurant Name <span class="text-danger">*</span></label>
+                                    <input asp-for="Name" class="form-control" placeholder="Enter restaurant name" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">KVK Number</label>
+                                    <input value="@Model.KVK" class="form-control" readonly style="background-color: #f8f9fa;" />
+                                    <small class="form-text text-muted">KVK number cannot be changed</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">Restaurant Email <span class="text-danger">*</span></label>
+                                    <input asp-for="Email" type="email" class="form-control" placeholder="restaurant@example.com" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label">Restaurant Phone <span class="text-danger">*</span></label>
+                                    <input asp-for="PhoneNumber" class="form-control" placeholder="+31 20 1234567" />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Restaurant Address <span class="text-danger">*</span></label>
+                            <input asp-for="Address" class="form-control" placeholder="Street address, City, Postal Code" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Restaurant Description</label>
+                            <textarea asp-for="Description" class="form-control" rows="4" placeholder="Describe your restaurant, cuisine type, specialties, etc."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="text-end">
+                            <a href="@Url.Action("Dashboard", "Owner")" class="btn btn-secondary me-2">
+                                <i class="dripicons-cross"></i> Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="dripicons-checkmark"></i> Update Restaurant
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        document.querySelector('input[name="PhoneNumber"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9\s\(\)\-\+]/g, '');
+        });
+    </script>
+}

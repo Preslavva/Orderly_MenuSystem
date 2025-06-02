@@ -15,18 +15,19 @@ namespace MSSQL
     {
         public IngredientRepository(IConfiguration configuration) : base(configuration) { }
 
-        public Ingredient GetIngredientById(int id)
+        public Ingredient GetIngredientById(int id, int restaurantId)
         {
             try
             {
                 using(SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = @"SELECT Id, Name, Unit, QuantityInStock, MinimumStockLevel, RestaurantId FROM Ingredient WHERE Id = @Id;";
+                    string query = @"SELECT Id, Name, Unit, QuantityInStock, MinimumStockLevel, RestaurantId FROM Ingredient WHERE Id = @Id AND RestaurantId = @RestaurantId;";
 
                     using(SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("Id", id);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using(SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -123,19 +124,20 @@ namespace MSSQL
             }
         }
 
-        public void UpdateIngredientStock(int id, decimal quantityInStock)
+        public void UpdateIngredientStock(int id, decimal quantityInStock, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "UPDATE Ingredient SET QuantityInStock = @QuantityInStock WHERE Id = @Id;";
+                    string query = "UPDATE Ingredient SET QuantityInStock = @QuantityInStock WHERE Id = @Id AND RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
                         cmd.Parameters.AddWithValue("@QuantityInStock", quantityInStock);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -149,7 +151,7 @@ namespace MSSQL
 
       
 
-        public List<MenuItemIngredient> GetIngredientsForMenuItem(int menuItemId)
+        public List<MenuItemIngredient> GetIngredientsForMenuItem(int menuItemId, int restaurantId)
         {
             List<MenuItemIngredient> menuItemIngredients = new List<MenuItemIngredient>();
 
@@ -163,11 +165,12 @@ namespace MSSQL
                         i.Name, i.Unit, i.QuantityInStock, i.MinimumStockLevel, i.RestaurantId
                         FROM MenuItem_Ingredient mi
                         INNER JOIN Ingredient i ON mi.IngredientId = i.Id
-                        WHERE mi.MenuItemId = @MenuItemId;";
+                        WHERE mi.MenuItemId = @MenuItemId AND i.RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -279,7 +282,7 @@ namespace MSSQL
                 throw new Exception($"Error while updating Ingredient for MenuItem: {ex.Message}", ex);
             }
         }
-        public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities)
+       public bool UpdateMenuItemIngredients(int menuItemId, Dictionary<int, decimal> ingredientQuantities, int restaurantId)
         {
             if (menuItemId <= 0)
                 throw new ArgumentException("Invalid MenuItem ID.");
@@ -293,6 +296,17 @@ namespace MSSQL
                     {
                         try
                         {
+                            var verifyCmd = new SqlCommand(
+                                "SELECT COUNT(*) FROM MenuItem WHERE Id = @MenuItemId AND RestaurantId = @RestaurantId", 
+                                conn, transaction);
+                            verifyCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
+                            verifyCmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                            
+                            if ((int)verifyCmd.ExecuteScalar() == 0)
+                            {
+                                throw new Exception("MenuItem does not belong to this restaurant.");
+                            }
+
                             var deleteCmd = new SqlCommand(
                                 "DELETE FROM MenuItem_Ingredient WHERE MenuItemId = @MenuItemId", conn, transaction);
                             deleteCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
@@ -302,9 +316,20 @@ namespace MSSQL
                             {
                                 foreach (var kvp in ingredientQuantities)
                                 {
+                                    var ingredientCheckCmd = new SqlCommand(
+                                        "SELECT COUNT(*) FROM Ingredient WHERE Id = @IngredientId AND RestaurantId = @RestaurantId", 
+                                        conn, transaction);
+                                    ingredientCheckCmd.Parameters.AddWithValue("@IngredientId", kvp.Key);
+                                    ingredientCheckCmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+                                    
+                                    if ((int)ingredientCheckCmd.ExecuteScalar() == 0)
+                                    {
+                                        throw new Exception($"Ingredient {kvp.Key} does not belong to this restaurant.");
+                                    }
+
                                     var insertCmd = new SqlCommand(@"
-                                INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
-                                VALUES (@MenuItemId, @IngredientId, @Quantity)", conn, transaction);
+                                        INSERT INTO MenuItem_Ingredient (MenuItemId, IngredientId, Quantity)
+                                        VALUES (@MenuItemId, @IngredientId, @Quantity)", conn, transaction);
 
                                     insertCmd.Parameters.AddWithValue("@MenuItemId", menuItemId);
                                     insertCmd.Parameters.AddWithValue("@IngredientId", kvp.Key);
@@ -331,7 +356,7 @@ namespace MSSQL
             }
         }
 
-        public void SubstractIngredientStock(int id, decimal quantityToSubtract)
+        public void SubstractIngredientStock(int id, decimal quantityToSubtract, int restaurantId)
         {
             try
             {
@@ -341,12 +366,13 @@ namespace MSSQL
                     string query = @"
                 UPDATE Ingredient 
                 SET QuantityInStock = QuantityInStock - @QuantityToSubtract 
-                WHERE Id = @Id;";
+                WHERE Id = @Id AND RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Id", id);
                         cmd.Parameters.AddWithValue("@QuantityToSubtract", quantityToSubtract);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -359,7 +385,7 @@ namespace MSSQL
         }
 
 
-        public List<Ingredient> GetIngredientsForItem(int menuItemId)
+        public List<Ingredient> GetIngredientsForItem(int menuItemId, int restaurantId)
         {
             List<Ingredient> Ingredients = new List<Ingredient>();
 
@@ -370,14 +396,15 @@ namespace MSSQL
                     conn.Open();
                     string query = @"
                                    SELECT i.Id, i.Name, i.Unit, i.QuantityInStock, i.MinimumStockLevel, i.RestaurantId
-FROM Ingredient AS i
-INNER JOIN MenuItem_Ingredient AS mi ON i.Id = mi.IngredientId
-WHERE mi.MenuItemId = @menuId
+                                    FROM Ingredient AS i
+                                    INNER JOIN MenuItem_Ingredient AS mi ON i.Id = mi.IngredientId
+                                   WHERE mi.MenuItemId = @menuId AND i.RestaurantId = @RestaurantId
                                     ";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@menuId", menuItemId);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -403,7 +430,7 @@ WHERE mi.MenuItemId = @menuId
             }
         }
 
-        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId) // redundant!!!!
+        public List<Ingredient> GetIngredientsForItemOnlyName(int menuItemId, int restaurantId) // redundant!!!!
         {
 
             List<Ingredient> Ingredients = new List<Ingredient>();
@@ -415,11 +442,12 @@ WHERE mi.MenuItemId = @menuId
                                     select [Name] from Ingredient as i
                                     inner join MenuItem_Ingredient as mi
                                     on i.Id = mi.IngredientId
-                                    where mi.MenuItemId = @menuId
+                                    where mi.MenuItemId = @menuId AND i.RestaurantId = @RestaurantId
                                     ";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@menuId", menuItemId);
+                    cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     using (SqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -444,8 +472,8 @@ WHERE mi.MenuItemId = @menuId
             {
                 conn.Open();
                 string query = @"UPDATE Ingredient 
-                         SET Name = @Name, Unit = @Unit, QuantityInStock = @QuantityInStock, MinimumStockLevel = @MinimumStockLevel
-                         WHERE Id = @Id";
+                 SET Name = @Name, Unit = @Unit, QuantityInStock = @QuantityInStock, MinimumStockLevel = @MinimumStockLevel
+                 WHERE Id = @Id AND RestaurantId = @RestaurantId";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -454,20 +482,22 @@ WHERE mi.MenuItemId = @menuId
                     cmd.Parameters.AddWithValue("@Unit", ingredient.Unit);
                     cmd.Parameters.AddWithValue("@QuantityInStock", ingredient.QuantityInStock);
                     cmd.Parameters.AddWithValue("@MinimumStockLevel", ingredient.MinimumStockLevel);
+                    cmd.Parameters.AddWithValue("@RestaurantId", ingredient.RestaurantId);
                     cmd.ExecuteNonQuery();
                 }
             }
         }
-        public void Delete(int id)
+        public void Delete(int id, int restaurantId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
                 conn.Open();
-                string query = "DELETE FROM Ingredient WHERE Id = @Id";
+                string query = "DELETE FROM Ingredient WHERE Id = @Id AND RestaurantId = @RestaurantId";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@Id", id);
+                    cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     cmd.ExecuteNonQuery();
                 }
             }
