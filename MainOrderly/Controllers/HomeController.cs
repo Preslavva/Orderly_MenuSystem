@@ -8,7 +8,7 @@ using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
         private readonly ILogger<HomeController> _logger;
         private readonly CartService _cartService;
@@ -17,13 +17,14 @@ namespace MainOrderly.WebApp.Controllers
         private readonly AllergenService _allergenService;
         private readonly IngredientService _ingredientService;
         private readonly TableService _tableService;
+        private readonly RestaurantService _restaurantService;
 
         private static Dictionary<int, string> _tableGuidMap = new();
 
         public HomeController(ILogger<HomeController> logger, CartService cartService, 
             MenuService menuService, NutritionService nutritionService, 
             AllergenService allergenService, IngredientService ingredientService, 
-            TableService tableService)
+            TableService tableService, RestaurantService restaurantService): base(restaurantService)
         {
             _logger = logger;
             _cartService = cartService;
