@@ -144,6 +144,12 @@ namespace MainOrderly.WebApp.Controllers
             }
 
             var viewModels = menuItems.Select(MenuItemViewModel.ConvertToViewModel).ToList();
+
+
+
+            bool isWaiter = TempData["IsWaiter"] != null && (bool)TempData["IsWaiter"];
+            ViewBag.IsWaiter = isWaiter;
+
             ViewBag.SelectedCategory = category;
             return View(viewModels);
         }

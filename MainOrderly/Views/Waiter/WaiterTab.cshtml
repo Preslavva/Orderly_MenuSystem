@@ -1,21 +1,38 @@
 ﻿@model List<OrderViewModel>
 @{
     ViewData["Title"] = "Waiter Tab";
+    Layout = "_ManagerLayout";
 }
 
-@foreach (var order in Model)
-{
-    <div class="order-box">
-        <h4>Order @order.Id (Table @order.Table)</h4>
-        <ul>
-            @foreach (var item in order.Items)
-            {
-                <li>@item.Name x @item.Quantity</li>
-            }
-        </ul>
-        <form asp-action="DeliverOrder" method="post">
-            <input type="hidden" name="orderId" value="@order.Id" />
-            <button type="submit" class="btn btn-success">Delivered</button>
-        </form>
-    </div>
-}
+<style>
+    .card-custom {
+        border: 1px solid #d1d5db;
+        border-radius: 20px;
+        background-color: white;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+
+    .delivered-btn {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 25px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+        .delivered-btn:hover {
+            background-color: #dc2626;
+        }
+</style>
+
+<div id="waiter-orders-container"
+     hx-get="@Url.Action("Orders", "Waiter")"
+     hx-trigger="every 3s"
+     hx-swap="innerHTML">
+    @await Html.PartialAsync("_WaiterOrdersPartial", Model)
+</div>
