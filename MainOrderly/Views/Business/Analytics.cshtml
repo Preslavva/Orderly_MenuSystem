@@ -1,0 +1,222 @@
+﻿@{
+    Layout = "_ManagerLayout";
+}
+
+@* @model RestaurantAnalyticsViewModel *@
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Restaurant Analytics Dashboard</h1>
+
+            <!-- Date Range Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-4">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" name="startDate" value="@ViewBag.StartDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate" value="@ViewBag.EndDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary">Filter Data</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-white bg-success">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Total Revenue</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-text">3333</h2>
+                            <small>For selected period</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-info">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Total Orders</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-text">22</h2>
+                            <small>Orders completed</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-white bg-warning">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Average Order Value</h5>
+                        </div>
+                        <div class="card-body">
+                            <h2 class="card-text">2</h2>
+                            <small>Per order</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="row">
+                <!-- Revenue Trend Chart -->
+                <div class="col-lg-8 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Revenue Trend</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueTrendChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Orders by Hour Chart -->
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Orders by Hour</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="ordersByHourChart" width="300" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Best Selling Items Chart -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Best Selling Menu Items</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="bestSellingItemsChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue by Category Chart -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Revenue by Category</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="revenueByCategoryChart" width="400" height="300"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Best Selling Items Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">Top Menu Items Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead class="table-dark">
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Item Name</th>
+                                            <th>Category</th>
+                                            <th>Quantity Sold</th>
+                                            <th>Revenue</th>
+                                            <th>Avg Price</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @* @if (Model.BestSellingItems != null && Model.BestSellingItems.Any()) *@
+                                        @* { *@
+                                        @*     @for (int i = 0; i < Model.BestSellingItems.Count(); i++) *@
+                                        @*     { *@
+                                        @*         var item = Model.BestSellingItems.ElementAt(i); *@
+                                        @*         <tr> *@
+                                        @*             <td><span class="badge bg-primary">@(i + 1)</span></td> *@
+                                        @*             <td><strong>@item.ItemName</strong></td> *@
+                                        @*             <td>@item.Category</td> *@
+                                        @*             <td>@item.QuantitySold</td> *@
+                                        @*             <td>@item.Revenue.ToString("C")</td> *@
+                                        @*             <td>@item.AveragePrice.ToString("C")</td> *@
+                                        @*         </tr> *@
+                                        @*     } *@
+                                        @* } *@
+                                        @* else *@
+                                        @* { *@
+                                        @*     <tr> *@
+                                        @*         <td colspan="6" class="text-center text-muted">No data available for selected period</td> *@
+                                        @*     </tr> *@
+                                        @* } *@
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('bestSellingItemsChart');
+
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+            datasets: [{
+              label: '# of Votes',
+              data: [12, 19, 3, 5, 2, 3],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        });
+        // Data from server (you'll need to pass this from your controller)
+        // var revenueData = Html.Raw(Json.Serialize(Model.RevenueData ?? new object()));
+        // var ordersByHourData = Html.Raw(Json.Serialize(Model.OrdersByHourData ?? new object()));
+        // var bestSellingItemsData = Html.Raw(Json.Serialize(Model.BestSellingItemsData ?? new object()));
+        // var revenueByCategoryData = Html.Raw(Json.Serialize(Model.RevenueByCategoryData ?? new object()));
+
+        // Chart.js implementation goes here
+        // Placeholder comments for each chart:
+
+        // 1. Revenue Trend Chart (Line Chart)
+        // const revenueTrendCtx = document.getElementById('revenueTrendChart').getContext('2d');
+        // new Chart(revenueTrendCtx, { ... });
+
+        // 2. Orders by Hour Chart (Bar Chart)
+        // const ordersByHourCtx = document.getElementById('ordersByHourChart').getContext('2d');
+        // new Chart(ordersByHourCtx, { ... });
+
+        // 3. Best Selling Items Chart (Horizontal Bar Chart)
+        // const bestSellingItemsCtx = document.getElementById('bestSellingItemsChart').getContext('2d');
+        // new Chart(bestSellingItemsCtx, { ... });
+
+        // 4. Revenue by Category Chart (Doughnut Chart)
+        // const revenueByCategoryCtx = document.getElementById('revenueByCategoryChart').getContext('2d');
+        // new Chart(revenueByCategoryCtx, { ... });
+    </script>
+}

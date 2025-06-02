@@ -14,5 +14,10 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View();
         }
+
+        public IActionResult Analytics()
+        {
+            return View();
+        }
     }
 }
