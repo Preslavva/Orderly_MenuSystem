@@ -24,6 +24,8 @@ namespace Services
             return order!;
         }
 
+
+
         public List<Order> GetOrderByStatus(OrderStatus status) // For new order
         {
             List<Order> orders = _kitchenOrderRepository.GetOrderHeadersByStatus(status);
@@ -33,6 +35,7 @@ namespace Services
             }
             return orders;
         }
+
 
         public List<OrderItem> GetMenuItemsOrder(OrderStatus status,int id)
         {
