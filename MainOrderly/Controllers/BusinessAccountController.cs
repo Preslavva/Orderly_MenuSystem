@@ -40,6 +40,10 @@ namespace MainOrderly.WebApp.Controllers
                 ModelState.AddModelError("", "Invalid email or password");
                 return View("~/Views/Business/LoginPage.cshtml");
             }
+
+            if (authenticatedUser.UserType == "Waiter") TempData["IsWaiter"] = true;
+
+
             HttpContext.Session.SetAuthenticatedUser(authenticatedUser);
             return RedirectToAction("MenuItems", "Manager");
         }

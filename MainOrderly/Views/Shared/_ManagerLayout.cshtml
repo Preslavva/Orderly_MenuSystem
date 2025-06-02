@@ -1,8 +1,9 @@
 ﻿@using MainOrderly.WebApp.Extensions
 @{
     var user = Context.Session.GetAuthenticatedUser();
+    bool IsWaiter = ViewBag.IsWaiter != null && (bool)ViewBag.IsWaiter;
 }
-
+<script src="https://unpkg.com/htmx.org@1.9.5"></script>
 <!DOCTYPE html>
 <html lang="en" data-topbar-color="dark">
 
@@ -247,7 +248,7 @@
                 @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager") || user.Roles.Contains("Waiter")))
                 {
                     <li class="menu-item">
-                        <a href="@Url.Action("Orders", "Waiter")" class="menu-link">
+                        <a href="@Url.Action("Index", "Waiter")" class="menu-link">
                             <span class="menu-icon"><i data-feather="clipboard"></i></span>
                             <span class="menu-text">Waiter Tab</span>
                         </a>
@@ -303,50 +304,55 @@
 
                         <!-- Bootstrap Icons CDN (make sure to include this in <head>) -->
 
+                        @if(IsWaiter != true)
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="bi bi-bell fs-4 text-light"></i>
 
-                        <li class="nav-item dropdown">
-                            <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="bi bi-bell fs-4 text-light"></i>
+                                    <!-- Notification Badge -->
+                                    <span id="notificationCount"
+                                          class="position-absolute badge rounded-pill bg-danger badge-pulse"
+                                          style="top: 4px; right: 0px; transform: translate(50%, 0); font-size: 0.7rem; padding: 3px 6px; z-index: 10;">
+                                        7
+                                    </span>
 
-                                <!-- Notification Badge -->
-                                <span id="notificationCount"
-                                      class="position-absolute badge rounded-pill bg-danger badge-pulse"
-                                      style="top: 4px; right: 0px; transform: translate(50%, 0); font-size: 0.7rem; padding: 3px 6px; z-index: 10;">
-                                    7
-                                </span>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg py-0 shadow-lg"
+                                     aria-labelledby="notificationDropdown" style="width: 360px;">
+                                    <div class="d-flex justify-content-between align-items-center border-bottom px-3 py-2 bg-light">
+                                        <h6 class="mb-0 fw-semibold">Notifications</h6>
 
-                            </a>
-                            <div class="dropdown-menu dropdown-menu-end dropdown-menu-lg py-0 shadow-lg"
-                                 aria-labelledby="notificationDropdown" style="width: 360px;">
-                                <div class="d-flex justify-content-between align-items-center border-bottom px-3 py-2 bg-light">
-                                    <h6 class="mb-0 fw-semibold">Notifications</h6>
-                                    
-                                </div>
-                                <div id="notificationList" class="overflow-auto" style="max-height: 400px;">
-                                    <!-- Example notification item -->
-                                    <div class="d-flex px-3 py-2 border-bottom hover-bg">
-                                        <div class="flex-shrink-0 text-primary me-2">
-                                            <i class="bi bi-info-circle-fill"></i>
-                                        </div>
-                                        <div class="flex-grow-1">
-                                            <div class="d-flex justify-content-between">
-                                                <p class="mb-1 fw-medium">System Update</p>
-                                                <small class="text-muted">2 min ago</small>
+                                    </div>
+                                    <div id="notificationList" class="overflow-auto" style="max-height: 400px;">
+                                        <!-- Example notification item -->
+                                        <div class="d-flex px-3 py-2 border-bottom hover-bg">
+                                            <div class="flex-shrink-0 text-primary me-2">
+                                                <i class="bi bi-info-circle-fill"></i>
                                             </div>
-                                            <p class="small mb-0">Scheduled maintenance tonight at 11 PM</p>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between">
+                                                    <p class="mb-1 fw-medium">System Update</p>
+                                                    <small class="text-muted">2 min ago</small>
+                                                </div>
+                                                <p class="small mb-0">Scheduled maintenance tonight at 11 PM</p>
+                                            </div>
+                                        </div>
+                                        <!-- Empty state -->
+                                        <div class="text-center py-4 d-none" id="emptyNotifications">
+                                            <i class="bi bi-bell-slash fs-2 text-muted"></i>
+                                            <p class="text-muted mb-0">No new notifications</p>
                                         </div>
                                     </div>
-                                    <!-- Empty state -->
-                                    <div class="text-center py-4 d-none" id="emptyNotifications">
-                                        <i class="bi bi-bell-slash fs-2 text-muted"></i>
-                                        <p class="text-muted mb-0">No new notifications</p>
+                                    <div class="text-center border-top py-2">
+                                        <a href="/Manager/IngredientList" class="small text-decoration-none">View all notifications</a>
                                     </div>
                                 </div>
-                                <div class="text-center border-top py-2">
-                                    <a href="/Manager/IngredientList" class="small text-decoration-none">View all notifications</a>
-                                </div>
-                            </div>
-                        </li>
+                            </li>
+
+                        }
+
+                        
 
 
                     <!-- User Dropdown -->
