@@ -1,0 +1,21 @@
+﻿@model List<OrderViewModel>
+@{
+    ViewData["Title"] = "Waiter Tab";
+}
+
+@foreach (var order in Model)
+{
+    <div class="order-box">
+        <h4>Order @order.Id (Table @order.Table)</h4>
+        <ul>
+            @foreach (var item in order.Items)
+            {
+                <li>@item.Name x @item.Quantity</li>
+            }
+        </ul>
+        <form asp-action="DeliverOrder" method="post">
+            <input type="hidden" name="orderId" value="@order.Id" />
+            <button type="submit" class="btn btn-success">Delivered</button>
+        </form>
+    </div>
+}
