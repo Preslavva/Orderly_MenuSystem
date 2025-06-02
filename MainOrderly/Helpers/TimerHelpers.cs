@@ -15,7 +15,7 @@ namespace MainOrderly.WebApp.Helpers
             new ConcurrentDictionary<int, DateTime>();
 
         private static readonly ConcurrentDictionary<int, int> _maxPrepMinutes =
-            new ConcurrentDictionary<int, int>();   // e.g. 5 for the “steak+fries” example
+            new ConcurrentDictionary<int, int>();   // e.g. 5 for the "steak+fries" example
 
         public TimerHelpers(MenuService menuService, KitchenOrderService kitchenOrderService)
         {
@@ -23,15 +23,13 @@ namespace MainOrderly.WebApp.Helpers
             _kitchenOrderService = kitchenOrderService;
         }
             
-
-
         /* called when the order moves to PROCESSING ----------------- */
         public void RecordStartTime(int orderId)
         {
             _startTimes.TryAdd(orderId, DateTime.Now);
 
-            /* cache the *largest* prep-time among this order’s items  */
-            int maxPrep = _kitchenOrderService.GetMenuItemsByOrderId(orderId).Max(i => i.MenuItem.PrepTime);
+            /* cache the largest prep-time among this order's items  */
+            int maxPrep = _kitchenOrderService.GetMenuItemsByOrderId(orderId, 1).Max(i => i.MenuItem.PrepTime);
             _maxPrepMinutes.AddOrUpdate(orderId, maxPrep, (_, __) => maxPrep);
         }
 

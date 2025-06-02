@@ -10,11 +10,12 @@
 }
 
 <a class="navbar-brand mx-auto position-absolute start-0 mt-4" asp-area="" asp-controller="History" asp-action="History">
-    <img class="history" src="/images/history.png" />
+    <i class="bi bi-receipt-cutoff"
+       style="font-size: 30px; color: var(--primary-color);"></i>
 </a>
 
 <div class="PaymentTitle">
-    <img src="~/images/logo.png" alt="Logo" class="logo">
+    <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" style="height:50px;">
 </div>
 <hr />
 <div class="PaymentText">
@@ -24,7 +25,8 @@
 <div class="line"></div>
 
 <div class="checkmark-container">
-    <img src="/images/check.png" alt="Confirm" width="400" height="500">
+    <i class="bi bi-check-circle-fill"
+       style="font-size: 200px; line-height: 1; color: var(--primary-color);"></i>
 </div>
 
 <div id="orderStatusButtons" data-order-id="@Model.Id" class="StatusButtons">
@@ -66,7 +68,12 @@
 
     <form asp-controller="Home" asp-action="Index" method="get">
         <div class="PaymentContainer">
-            <button class="PaymentHome">PLACE ANOTHER ORDER</button>
+        <button class="PaymentHome"
+                style="background: var(--button-color);">
+            PLACE ANOTHER ORDER
+        </button>
+
+
         </div>
     </form>
 

@@ -10,7 +10,7 @@ namespace Services
 {
     public class CartService
     {
-        private readonly IHttpContextAccessor contextAccessor;
+        private readonly IHttpContextAccessor _contextAccessor;
         private readonly MenuItemRepository _menuItemRepository;
         private Dictionary<int, int> cart;
         private readonly CartRepository _cartRepository;
@@ -19,24 +19,21 @@ namespace Services
         private readonly IngredientService _ingredientService;
         private readonly IngredientRepository _ingredientRepository;
 
-
-        public CartService(IHttpContextAccessor contxtAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService, IngredientService ingredientService,IngredientRepository ingredientRepository)
+        public CartService(IHttpContextAccessor contextAccessor, MenuItemRepository menuItemRepository, CartRepository cartRepository, CheckoutService checkoutService, IngredientService ingredientService, IngredientRepository ingredientRepository)
         {
             _ingredientRepository = ingredientRepository;
             _ingredientService = ingredientService;
             _checkoutService = checkoutService;
             _cartRepository = cartRepository;
-            contextAccessor = contxtAccessor;
+            _contextAccessor = contextAccessor;
             _menuItemRepository = menuItemRepository;
             cart = new Dictionary<int, int>();
 
-            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
+            string? jsonCart = _contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
             }
-
-            _ingredientService = ingredientService;
         }
 
         public void AddToCart(int id, int quantity)
@@ -73,9 +70,8 @@ namespace Services
         public void SaveCart()
         {
             string jsonCart = JsonSerializer.Serialize(cart);
-            //contextAccessor.HttpContext?.Session.SetString("Cart", jsonCart);
 
-            contextAccessor.HttpContext?.Response.Cookies.Append("Cart", jsonCart, new CookieOptions
+            _contextAccessor.HttpContext?.Response.Cookies.Append("Cart", jsonCart, new CookieOptions
             {
                 Expires = DateTime.Now.AddHours(1),
                 HttpOnly = true,
@@ -83,15 +79,15 @@ namespace Services
                 IsEssential = true
             });
         }
-        // Overload that accepts a dictionary
+        
         public void SaveCart(Dictionary<int, int> newCart)
         {
             cart = newCart;
             SaveCart();
         }
+        
         public void ClearCart()
         {
-            // Another convenience method to empty the cart
             cart = new Dictionary<int, int>();
             SaveCart();
         }
@@ -105,26 +101,28 @@ namespace Services
             }
             return counter;
         }
-        int restauranrId = 1;
-        public Dictionary<MenuItem, int> GetCart()
+        
+        public Dictionary<MenuItem, int> GetCart(int restaurantId)
         {
             Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
 
-            string? jsonCart = contextAccessor.HttpContext?.Request.Cookies["Cart"];
+            string? jsonCart = _contextAccessor.HttpContext?.Request.Cookies["Cart"];
             if (!string.IsNullOrEmpty(jsonCart))
             {
                 cart = JsonSerializer.Deserialize<Dictionary<int, int>>(jsonCart)!;
                 foreach (int key in cart.Keys)
                 {
-                    MenuItem? item = _menuItemRepository.GetMenuItemById(key, restauranrId);
-
-                    newCart[item] = cart[key];
+                    MenuItem? item = _menuItemRepository.GetMenuItemById(key, restaurantId);
+                    if (item != null)
+                    {
+                        newCart[item] = cart[key];
+                    }
                 }
             }
             return newCart;
         }
 
-        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart, Tip tipAmount,int customTip)
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart, Tip tipAmount, int customTip)
         {
             if (customTip >= 100)
                 customTip = 100;
@@ -145,12 +143,13 @@ namespace Services
             {
                 totalPrice += totalPrice * 0.25m;
             }
-            else if (customTip>0)
+            else if (customTip > 0)
                 totalPrice += totalPrice * (customTip / 100m);
             
             return totalPrice;
         }
-        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart) // overloading method, for no tipping.
+        
+        public decimal CalculateTotalPrice(Dictionary<MenuItem, int> cart)
         {
             decimal totalPrice = 0;
             foreach (var element in cart)
@@ -163,26 +162,24 @@ namespace Services
             return totalPrice;
         }
 
-        public int FinalizeOrder(int tableId, Restaurant restaurant)
+        public int FinalizeOrder(int tableId, Restaurant restaurant, int restaurantId)
         {
-
-            tableId = 6; // test, to remove later
-            Dictionary<MenuItem, int> cart = GetCart();
+            Dictionary<MenuItem, int> cart = GetCart(restaurantId);
 
             foreach(var element in cart)
             {
-                var ingredient = _ingredientRepository.GetIngredientsForMenuItem(element.Key.Id);
+                var ingredients = _ingredientRepository.GetIngredientsForMenuItem(element.Key.Id, restaurantId);
                 MenuItem item = element.Key;
-                item.SetIngredient(ingredient);
-                _ingredientService.SubstractStock(item);
+                item.SetIngredient(ingredients);
+                _ingredientService.SubstractStock(item, restaurantId);
             }
             
             return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
         }
 
-        public bool CheckTimeBetweenOrders(int? orderId)
+        public bool CheckTimeBetweenOrders(int? orderId, int restaurantId)
         {
-            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId, restaurantId);
             DateTime now = DateTime.Now;
             TimeSpan difference = now - orderTime;
             if(difference.TotalSeconds <= 60)
@@ -192,11 +189,10 @@ namespace Services
             return true;
         }
 
-        public DateTime GetEndOfTimer(int orderId)
+        public DateTime GetEndOfTimer(int orderId, int restaurantId)
         {
-            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId);
+            DateTime orderTime = _cartRepository.GetOrderPlacingTime(orderId, restaurantId);
             return orderTime + TimeSpan.FromMinutes(1);
         }
-
     }
 }

@@ -1,5 +1,4 @@
-﻿
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Models.Enums
 {
@@ -22,4 +21,3 @@ namespace Models.Enums
     }
 
 }
-

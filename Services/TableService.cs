@@ -12,19 +12,23 @@ namespace Services
             _tableRepository = tableRepository;
         }
 
-        public void CreateAddTableDB(Table table)
+        public void CreateAddTableDB(Table table, int restaurantId)
         {
-            _tableRepository.CreateAddTableDB(table);
+            _tableRepository.CreateAddTableDB(table, restaurantId);
         }
 
-        public void CreateTableWitNumber(Table table)
+        public void CreateTableWithNumber(Table table, int restaurantId)
         {
-            _tableRepository.CreateTableWithNumber(table);
+            _tableRepository.CreateTableWithNumber(table, restaurantId);
+        }
+        public void CreateTableWitNumber(Table table, int restaurantId)
+        {
+            _tableRepository.CreateTableWithNumber(table, restaurantId);
         }
 
-        public byte[] GetTableQRById(int tableId)
+        public byte[] GetTableQRById(int tableId, int restaurantId)
         {
-            var QrCode = _tableRepository.GetTableQRById(tableId);
+            var QrCode = _tableRepository.GetTableQRById(tableId, restaurantId);
              
             if(QrCode == null)
             {
@@ -34,9 +38,9 @@ namespace Services
             return QrCode;
         }
 
-        public int? GetTableNumberById(int tableId)
+        public int? GetTableNumberById(int tableId, int restaurantId)
         {
-            var tableNum = _tableRepository.GetTableNumberById(tableId);
+            var tableNum = _tableRepository.GetTableNumberById(tableId, restaurantId);
 
             if(tableNum == null)
             {
@@ -46,14 +50,14 @@ namespace Services
             return tableNum;
         }
 
-        public List<Table> GetAllTables()
+        public List<Table> GetAllTables(int restaurantId)
         {
-            return _tableRepository.GetAllTables();
+            return _tableRepository.GetAllTables(restaurantId);
         }
 
-        public Table GetTableByToken(string token)
+        public Table GetTableByToken(string token, int restaurantId)
         {
-            return _tableRepository.GetTableByToken(token);
+            return _tableRepository.GetTableByToken(token, restaurantId);
         }
 
         public List<Table> GetTablesByRestaurantId(int restaurantId)

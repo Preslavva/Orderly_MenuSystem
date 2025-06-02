@@ -40,16 +40,16 @@
 
         @@keyframes pulse {
             0%{
-            transform: scale(1);
-        }
+                transform: scale(1);
+            }
 
-        50% {
-            transform: scale(1.1);
-        }
+            50% {
+                transform: scale(1.1);
+            }
 
-        100% {
-            transform: scale(1);
-        }
+            100% {
+                transform: scale(1);
+            }
 
         }
 
@@ -70,9 +70,9 @@
             border-radius: 3px;
         }
 
-            #notificationList::-webkit-scrollbar-thumb:hover {
-                background: #a8a8a8;
-            }
+        #notificationList::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
     </style>
 
 </head>
@@ -107,20 +107,35 @@
             <ul class="menu">
                 <li class="menu-title">Apps</li>
 
-                @if (user != null && (user.Roles.Contains("Owner") || user.Roles.Contains("Manager")))
+                @if (user != null && (user.Roles.Contains("Owner")))
                 {
-                    <li class="menu-item">
-                        <a href="@Url.Action("Index", "Restaurant")" class="menu-link">
-                            <span class="menu-icon"><i data-feather="coffee"></i></span>
-                            <span class="menu-text">Restaurant</span>
-                        </a>
-                    </li>
+                        <li class="menu-item">
+                            <a href="#menuRestaurant" data-bs-toggle="collapse" class="menu-link">
+                                <span class="menu-icon"><i data-feather="coffee"></i></span>
+                                <span class="menu-text">Restaurant</span>
+                                <i data-feather="chevron-down" class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="menuRestaurant">
+                                <ul class="sub-menu">
+                                    <li class="menu-item">
+                                        <a href="@Url.Action("CreateRestaurant", "Restaurant")" class="menu-link">
+                                            <span class="menu-text">Create Restaurant</span>
+                                        </a>
+                                    </li>
+                                    <li class="menu-item">
+                                        <a href="@Url.Action("CustomizeRestaurant", "Restaurant")" class="menu-link">
+                                            <span class="menu-text">Customize Restaurant</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
                 }
 
                 @if (user != null && user.Roles.Contains("Owner"))
                 {
                     <li class="menu-item">
-                        <a href="@Url.Action("Index", "Company")" class="menu-link">
+                        <a href="@Url.Action("Dashboard", "Owner")" class="menu-link">
                             <span class="menu-icon"><i data-feather="briefcase"></i></span>
                             <span class="menu-text">Company Details</span>
                         </a>
@@ -204,12 +219,12 @@
                         <div class="collapse" id="menuTable">
                             <ul class="sub-menu">
                                 <li class="menu-item">
-	                                <a href="@Url.Action("AddTable", "Manager")" class="menu-link">
-		                                 <span class="menu-text">Add Table</span>
-	                                </a>
+                                    <a href="@Url.Action("AddTable", "Manager")" class="menu-link">
+                                        <span class="menu-text">Add Table</span>
+                                    </a>
                                 </li>
                                 <li class="menu-item">
-	                                <a href="@Url.Action("TableList", "Manager")" class="menu-link">
+                                    <a href="@Url.Action("TableList", "Manager")" class="menu-link">
                                         <span class="menu-text">List of Tables</span>
                                     </a>
                                 </li>
@@ -302,7 +317,7 @@
                         </div>
                     </li>
 
-                        <!-- Bootstrap Icons CDN (make sure to include this in <head>) -->
+                    <!-- Bootstrap Icons CDN (make sure to include this in <head>) -->
 
                         @if(IsWaiter != true)
                         {
@@ -434,47 +449,46 @@
     };
 </script>
 
-    <script>
-        function loadNotifications() {
-            fetch("/Manager/GetNotifications")
-                .then(res => res.json())
-                .then(data => {
-                    const list = document.getElementById("notificationList");
-                    const count = document.getElementById("notificationCount");
+<script>
+    function loadNotifications() {
+        fetch("/Manager/GetNotifications")
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById("notificationList");
+                const count = document.getElementById("notificationCount");
 
-                    list.innerHTML = "";
-                    count.textContent = data.length;
+                list.innerHTML = "";
+                count.textContent = data.length;
 
-                    if (data.length === 0) {
-                        count.style.display = "none";
-                        list.innerHTML = "<p class='text-muted'>No alerts 🎉</p>";
-                        return;
-                    }
+                if (data.length === 0) {
+                    count.style.display = "none";
+                    list.innerHTML = "<p class='text-muted'>No alerts 🎉</p>";
+                    return;
+                }
 
-                    count.style.display = "inline-block";
+                count.style.display = "inline-block";
 
-                    data.forEach(n => {
-                        const item = document.createElement("a");
-                        item.classList.add("dropdown-item", "text-wrap");
-                        item.href = n.link;
-                        item.innerHTML = `<strong>${n.title}</strong><br/><small class="text-muted">${n.time}</small>`;
-                        list.appendChild(item);
-                    });
-                })
-                .catch(err => {
-                    console.error("❌ Notification error:", err);
-                    document.getElementById("notificationList").innerHTML = "<p class='text-danger'>Failed to load</p>";
+                data.forEach(n => {
+                    const item = document.createElement("a");
+                    item.classList.add("dropdown-item", "text-wrap");
+                    item.href = n.link;
+                    item.innerHTML = `<strong>${n.title}</strong><br/><small class="text-muted">${n.time}</small>`;
+                    list.appendChild(item);
                 });
-        }
+            })
+            .catch(err => {
+                console.error("❌ Notification error:", err);
+                document.getElementById("notificationList").innerHTML = "<p class='text-danger'>Failed to load</p>";
+            });
+    }
 
-        document.addEventListener("DOMContentLoaded", () => {
-            loadNotifications();
-            setInterval(loadNotifications, 60000); // Refresh every 60 sec
-        });
-    </script>
+    document.addEventListener("DOMContentLoaded", () => {
+        loadNotifications();
+        setInterval(loadNotifications, 60000); // Refresh every 60 sec
+    });
+</script>
 
-    @RenderSection("Scripts", required: false)
+@RenderSection("Scripts", required: false)
 
 </body>
 </html>
-

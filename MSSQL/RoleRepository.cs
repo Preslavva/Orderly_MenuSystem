@@ -12,7 +12,7 @@ namespace MSSQL
     {
         public RoleRepository(IConfiguration configuration) : base(configuration) { }
 
-        public List<Role> GetAllRoles()
+        public List<Role> GetAllRoles(int restaurantId)
         {
             List<Role> roles = new List<Role>();
             try
@@ -20,17 +20,19 @@ namespace MSSQL
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT Id, Type FROM Role;";
+                    string query = "SELECT Id, Type, RestaurantId FROM Role WHERE RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
                                 roles.Add(new Role(
                                     Convert.ToInt32(reader["Id"]),
-                                    Convert.ToString(reader["Type"])
+                                    Convert.ToString(reader["Type"]),
+                                    Convert.ToInt32(reader["RestaurantId"]) 
                                 ));
                             }
                         }
@@ -44,25 +46,27 @@ namespace MSSQL
             }
         }
 
-        public Role GetRoleByType(string type)
+        public Role GetRoleByType(string type, int restaurantId)
         {
             try
             {
                 using (SqlConnection conn = new SqlConnection(_connectionString))
                 {
                     conn.Open();
-                    string query = "SELECT Id, Type FROM Role WHERE Type = @Type;";
+                    string query = "SELECT Id, Type, RestaurantId FROM Role WHERE Type = @Type AND RestaurantId = @RestaurantId;";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@Type", type);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 return new Role(
                                     Convert.ToInt32(reader["Id"]),
-                                    Convert.ToString(reader["Type"])
+                                    Convert.ToString(reader["Type"]),
+                                    Convert.ToInt32(reader["RestaurantId"]) 
                                 );
                             }
                         }

@@ -12,7 +12,7 @@ namespace MSSQL
 
         }
 
-        public List<OrderHistory> GetHistoryOrders(int orderId)
+        public List<OrderHistory> GetHistoryOrders(int orderId, int restaurantId)
         {
             List<OrderHistory> history = new List<OrderHistory>();
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -24,11 +24,12 @@ namespace MSSQL
                                                 on om.OrderId = o.Id
                                                 inner join MenuItem as m
                                                 on m.Id = om.MenuItemId
-                                                where o.Id = @Id ";
+                                                where o.Id = @Id AND o.RestaurantId = @RestaurantId AND m.RestaurantId = @RestaurantId";
                                                 
                 using (SqlCommand command = new SqlCommand(sql, conn))
                 {
                     command.Parameters.AddWithValue("@Id", orderId);
+                    command.Parameters.AddWithValue("@RestaurantId", restaurantId);
                     using SqlDataReader reader = command.ExecuteReader();
                     while (reader.Read())
                     {

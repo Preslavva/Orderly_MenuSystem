@@ -1,0 +1,160 @@
+﻿@model RestaurantViewModel
+@{
+    Layout = "_ManagerLayout";
+    ViewData["Title"] = "CreateRestaurant";
+    var user = Context.Session.GetAuthenticatedUser();
+}
+
+<h1>Register your restaurant</h1>
+<hr />
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>Success!</strong> @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Error!</strong> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if(Model != null && Model.KVK != null)
+{
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="page-title-box">
+                    <h4 class="page-title">Restaurant Management</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-centered table-nowrap mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Logo</th>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                        <th>Kvk</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        <tr>
+                                            <td>
+                                            @if (!string.IsNullOrEmpty(Model.Logo))
+                                            {
+                                                <img src="data:image/jpg;base64,@Model.Logo" alt="Logo" width="50" height="50" />
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">No logo</span>
+                                            }
+                                            </td>
+                                            <td>@Model.Name</td>
+                                            <td>@Model.Description</td>
+                                            <td>@Model.Email</td>
+                                            <td>@Model.PhoneNumber</td>
+                                            <td>@Model.Address</td>
+                                            <td>@Model.KVK</td>
+                                            <td>
+                                            <form asp-controller="Restaurant" asp-action="ArchiveRestaurantk" method="post">
+                                                <input type="hidden" name="id" value="@Model.Id" />
+                                                <input type="submit" value="Remove" class="btn btn-danger" />
+                                            </form>
+                                            </td>
+                                        </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRestaurantModal">
+        Register
+    </button>
+
+    <div class="modal fade" id="createRestaurantModal" tabindex="-1" aria-labelledby="createRestaurantModalLabel" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createRestaurantModalLabel">Register Your Restaurant</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form asp-controller="Restaurant" asp-action="RegisterRestaurant" enctype="multipart/form-data" novalidate>
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="LogoImage" class="form-label">Choose logo:</label>
+                            <input asp-for="LogoImage" type="file" name="LogoImage" class="form-control" />
+                            <span asp-validation-for="LogoImage" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name" class="form-label">Restaurant Name:</label>
+                            <input asp-for="Name" class="form-control" />
+                            <span asp-validation-for="Name" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Description:</label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label">Restaurant Email:</label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PhoneNumber" class="form-label">Restaurant Phone Number:</label>
+                            <input asp-for="PhoneNumber" class="form-control" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address" class="form-label">Address:</label>
+                            <input asp-for="Address" class="form-control" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="KVK" class="form-label">KVK:</label>
+                            <input asp-for="KVK" class="form-control" />
+                            <span asp-validation-for="KVK" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <input type="submit" value="Register" class="btn btn-primary me-2" />
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <p>Register your restaurant.</p>
+}

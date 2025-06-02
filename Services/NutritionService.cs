@@ -13,18 +13,18 @@ namespace Services
             _nutritionRepository = nutritionRepository;
         }
 
-
-        public List<Nutrition> GetNutritionForMenuItem(int id)
+        public List<Nutrition> GetNutritionForMenuItem(int id, int restaurantId)
         {
-            return _nutritionRepository.GetNutritionsForMenuItem(id)!;
+            return _nutritionRepository.GetNutritionsForMenuItem(id, restaurantId)!;
         }
 
-        public void AddNutritionToMenuItem(int menuItemId, NutritionName name, int value)
+        public void AddNutritionToMenuItem(int menuItemId, NutritionName name, int value, int restaurantId)
         {
             int nutritionId = _nutritionRepository.AddNutrition(name.ToString(), value);
             _nutritionRepository.AssignNutritionToMenuItem(menuItemId, nutritionId);
         }
-        public void UpdateNutritions(int menuItemId, Dictionary<NutritionName, double> values)
+        
+        public void UpdateNutritions(int menuItemId, Dictionary<NutritionName, double> values, int restaurantId)
         {
             _nutritionRepository.DeleteAllForMenuItem(menuItemId);
 
@@ -34,7 +34,5 @@ namespace Services
                 _nutritionRepository.AssignNutritionToMenuItem(menuItemId, nutritionId);
             }
         }
-
-
     }
 }

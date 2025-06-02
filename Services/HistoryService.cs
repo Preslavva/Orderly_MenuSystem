@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.AspNetCore.Http;
 using Models.Entities;
+using Models.Enums;
 using MSSQL;
 
 namespace Services
@@ -9,6 +10,7 @@ namespace Services
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly OrderHistoryRepository _historyRepository;
+        
         public HistoryService(IHttpContextAccessor contextAccessor, OrderHistoryRepository historyRepository)
         {
             _contextAccessor = contextAccessor;
@@ -18,22 +20,37 @@ namespace Services
         public void SaveOrderIds(int newOrderId)
         {
             List<int> orderIdsHistory = DeserializeHistory();
-
             orderIdsHistory.Add(newOrderId);
-
-           SerializeHistory(orderIdsHistory);
-
+            SerializeHistory(orderIdsHistory);
         }
 
-        public List<OrderHistory> GetHistory()
+        public List<OrderHistory> GetHistory(int restaurantId)
         {
-            List<int>historyIds = DeserializeHistory();
+            List<int> historyIds = DeserializeHistory();
             List<OrderHistory> history = new List<OrderHistory>();
+            List<OrderHistory> orderedHistory = new List<OrderHistory>();
+            
             foreach (var historyId in historyIds)
             {
-               history.AddRange(_historyRepository.GetHistoryOrders(historyId));
+                history.AddRange(_historyRepository.GetHistoryOrders(historyId, restaurantId));
             }
-            return history;
+            
+            orderedHistory.AddRange(
+                history.Where(h => h.Status == OrderStatus.NEW_ORDER)
+                .OrderByDescending(h => h.OrderTimeStamp)
+            );
+
+            orderedHistory.AddRange(
+                history.Where(h => h.Status == OrderStatus.PROCESSING)
+                       .OrderByDescending(h => h.OrderTimeStamp)
+            );
+
+            orderedHistory.AddRange(
+                history.Where(h => h.Status == OrderStatus.COMPLETED)
+                       .OrderByDescending(h => h.OrderTimeStamp)
+            );
+            
+            return orderedHistory;
         }
 
         private List<int> DeserializeHistory()
@@ -64,6 +81,5 @@ namespace Services
                 HttpOnly = true
             });
         }
-
     }
 }

@@ -36,7 +36,6 @@ namespace MSSQL
             }
         }
 
-
         public void AssignNutritionToMenuItem(int menuItemId, int nutritionId)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
@@ -92,8 +91,7 @@ namespace MSSQL
             return nutritions;
         }
 
-
-        public List<Nutrition>? GetNutritionsForMenuItem(int id)
+        public List<Nutrition>? GetNutritionsForMenuItem(int id, int restaurantId)
         {
             List<Nutrition> nutritions = new List<Nutrition>();
 
@@ -107,10 +105,12 @@ namespace MSSQL
                     SELECT n.Id, n.Name, n.Value
                     FROM Nutrition n
                     INNER JOIN MenuItem_Nutrition mn ON n.Id = mn.NutritionId
-                    WHERE mn.MenuItemId = @MenuItemId;";
+                    INNER JOIN MenuItem m ON mn.MenuItemId = m.Id
+                    WHERE mn.MenuItemId = @MenuItemId AND m.RestaurantId = @RestaurantId;";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@MenuItemId", id);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -120,8 +120,6 @@ namespace MSSQL
                                     Id = reader.GetInt32(0),
                                     Name = (NutritionName)Enum.Parse(typeof(NutritionName), reader.GetString(1)),
                                     Value =  reader.GetInt32(2)
-
-
                                 });
                             }
                         }
@@ -139,7 +137,6 @@ namespace MSSQL
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
-
 
         public void DeleteAllForMenuItem(int menuItemId)
         {
@@ -170,6 +167,5 @@ namespace MSSQL
                 throw new Exception($"Error deleting nutritions for MenuItem {menuItemId}: {ex.Message}", ex);
             }
         }
-
     }
 }

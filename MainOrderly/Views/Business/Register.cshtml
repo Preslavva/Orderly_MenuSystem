@@ -1,34 +1,162 @@
+@model MainOrderly.WebApp.ViewModels.RegisterViewModel
 @{
-    ViewData["Title"] = "Create Account";
+    ViewData["Title"] = "Create Restaurant Account";
     Layout = "_BusinessLayout";
 }
 
 <div class="auth-container">
-    <div class="auth-card">
-        <h2 class="auth-title">Create Account</h2>
-        <form method="post" asp-controller="BusinessAccount" asp-action="Register">
+    <div class="auth-card" style="max-width: 600px; margin: 2rem auto;">
+        <h2 class="auth-title">Create Restaurant Account</h2>
+        <p class="text-muted mb-4">Join our platform and start managing your restaurant digitally</p>
+
+        <form asp-action="Register" method="post">
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-danger">
                     <div asp-validation-summary="All"></div>
                 </div>
             }
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+
+            <!-- Personal Information -->
+            <div class="mb-4">
+                <h5 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Personal Information</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="FirstName">First Name <span class="text-danger">*</span></label>
+                            <input asp-for="FirstName" class="form-control" placeholder="Enter your first name" required>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="LastName">Last Name <span class="text-danger">*</span></label>
+                            <input asp-for="LastName" class="form-control" placeholder="Enter your last name" required>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Email">Email <span class="text-danger">*</span></label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="your.email@example.com" required>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Phone">Phone <span class="text-danger">*</span></label>
+                            <input asp-for="Phone" class="form-control" placeholder="+31 6 12345678" required>
+                            <span asp-validation-for="Phone" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="Password">Password <span class="text-danger">*</span></label>
+                            <input asp-for="Password" type="password" class="form-control" placeholder="Minimum 6 characters" required>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword">Confirm Password <span class="text-danger">*</span></label>
+                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Confirm your password" required>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Create a password" required>
+
+            <!-- Restaurant Information -->
+            <div class="mb-4">
+                <h5 class="text-primary mb-3"><i class="fas fa-utensils me-2"></i>Restaurant Information</h5>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="RestaurantName">Restaurant Name <span class="text-danger">*</span></label>
+                            <input asp-for="RestaurantName" class="form-control" placeholder="Your restaurant name" required>
+                            <span asp-validation-for="RestaurantName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="KVK">KVK Number <span class="text-danger">*</span></label>
+                            <input asp-for="KVK" class="form-control" placeholder="12345678" maxlength="8" required>
+                            <small class="form-text text-muted">8-digit Chamber of Commerce number</small>
+                            <span asp-validation-for="KVK" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="RestaurantEmail">Restaurant Email <span class="text-danger">*</span></label>
+                            <input asp-for="RestaurantEmail" type="email" class="form-control" placeholder="restaurant@example.com" required>
+                            <span asp-validation-for="RestaurantEmail" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label asp-for="RestaurantPhone">Restaurant Phone <span class="text-danger">*</span></label>
+                            <input asp-for="RestaurantPhone" class="form-control" placeholder="+31 20 1234567" required>
+                            <span asp-validation-for="RestaurantPhone" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label asp-for="RestaurantAddress">Restaurant Address <span class="text-danger">*</span></label>
+                    <input asp-for="RestaurantAddress" class="form-control" placeholder="Street address, City, Postal Code" required>
+                    <span asp-validation-for="RestaurantAddress" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Description">Restaurant Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3" placeholder="Tell us about your restaurant (optional)"></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="phoneNumber">Phone Number</label>
-                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" placeholder="Enter your phone number">
-            </div>
-            <button type="submit" class="btn btn-auth">CREATE ACCOUNT</button>
+
+            <button type="submit" class="btn btn-auth w-100">CREATE RESTAURANT ACCOUNT</button>
+
             <div class="auth-footer">
                 <p>Already have an account? <a href="@Url.Action("Login", "BusinessAccount")">Log in</a></p>
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script>
+        // Format KVK number input
+        document.querySelector('input[asp-for="KVK"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/\D/g, '').substring(0, 8);
+        });
+
+        // Format phone numbers
+        document.querySelectorAll('input[type="tel"], input[placeholder*="phone"], input[placeholder*="Phone"]').forEach(function(input) {
+            input.addEventListener('input', function(e) {
+                this.value = this.value.replace(/[^0-9\s\(\)\-\+]/g, '');
+            });
+        });
+    </script>
+}
+
+<style>
+    .auth-card {
+        max-width: 600px !important;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .required::after {
+        content: " *";
+        color: #dc3545;
+    }
+</style>

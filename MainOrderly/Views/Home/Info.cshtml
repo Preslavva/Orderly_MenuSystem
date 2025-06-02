@@ -20,27 +20,44 @@
 
         <div class="card-body2">
             <h1 class="card-title">@Model.MenuItemViewModel.Name</h1>
-            <p class="card-text">@Model.MenuItemViewModel.Description</p>
+         <p class="card-text" style="color: dimgray;">
+             @Model.MenuItemViewModel.Description
+         </p>
 
            @if (@Model.MenuItemViewModel.Category!=Category.Drinks)
             {
-                <button class="btn toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
+                <button class="toggle-ingredients-btn" type="button" data-bs-toggle="collapse" data-bs-target="#ingredientsCollapse" aria-expanded="false" aria-controls="ingredientsCollapse">
                     Show Ingredients
                 </button>
             }
 
-                      <div class="collapse mt-2" id="ingredientsCollapse">
-                        @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
-                      </div>
+            <div class="collapse mt-2" id="ingredientsCollapse">
+              @string.Join(", ", Model.IngredientViewModel.Select(i => i.Name))
+            </div>
 
 
 
-            <div class="nutritions d-flex flex-wrap justify-content-center">
+            <div class="nutritions d-flex flex-wrap justify-content-center mt-2">
                 @foreach (var nutrition in Model.NutritionViewModel)
                 {
-                    <div class="nutrition-item text-center m-1">
-                        <img src="/images/@(nutrition.Name).png" alt="@nutrition.Name" style="width: 80px; height: 80px;" />
-                        <br />
+                    <div class="nutrition-item text-center m-2">
+                        @if (nutrition.Name == NutritionName.Kcal)
+                          {
+                    <svg width="70px" height="70px" viewBox="-11.2 -11.2 54.40 54.40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" fill="var(--background-color)"><g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-11.2" y="-11.2" width="54.40" height="54.40" rx="27.2" fill="var(--primary-color)" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>fire-2</title> <desc>Created with Sketch Beta.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"> <g id="Icon-Set" sketch:type="MSLayerGroup" transform="translate(-415.000000, -411.000000)" fill="var(--background-color)"> <path d="M428.5,441 C422.148,441 417,435.641 417,429.625 C417,428.228 417.031,427.094 418,426 C417.895,426.634 419.397,432.055 424.305,431.771 C424.092,427.652 422.978,417.561 428.152,414.073 C427.695,419.557 429.038,426.924 435.029,428 C434.686,425.801 434.727,422.143 436.267,421.467 C436.433,424.836 438.924,426.914 438.924,430.152 C438.924,436.016 433.251,441 428.5,441 L428.5,441 Z M437.905,417.953 C433.52,419.203 432.717,422.748 433,425 C429.872,421.322 430,417.093 430,411 C419.968,414.783 422.301,425.688 422,429 C419.477,426.935 419,422 419,422 C416.336,423.371 415,427.031 415,430 C415,437.18 420.82,443 428,443 C435.18,443 441,437.18 441,430 C441,425.733 437.867,423.765 437.905,417.953 L437.905,417.953 Z" id="fire-2" sketch:type="MSShapeGroup"> </path> </g> </g> </g></svg>
+                          }
+                          else if (nutrition.Name == NutritionName.Carbs)
+                          {
+                    <svg width="70px" height="70px" viewBox="-2.4 -2.4 28.80 28.80" fill="var(--primary-color)" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-2.4" y="-2.4" width="28.80" height="28.80" rx="14.4" fill="var(--primary-color)" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M12 4L10.8522 5.91303C9.94978 7.41704 9.49857 8.16905 9.49857 9C9.49857 9.83095 9.94978 10.583 10.8522 12.087L11.5713 13.2854C11.7627 13.6045 11.8585 13.7641 12 13.7641C12.1415 13.7641 12.2373 13.6045 12.4287 13.2854L13.1478 12.087C14.0502 10.583 14.5014 9.83095 14.5014 9C14.5014 8.16905 14.0502 7.41704 13.1478 5.91303L12 4ZM12 4V2" stroke="var(--background-color)"></path> <path d="M20.1603 12.5981L17.9296 12.5606C16.1759 12.5311 15.2991 12.5163 14.5794 12.9318C13.8598 13.3473 13.4342 14.114 12.5828 15.6475L11.9045 16.8695C11.7239 17.1949 11.6336 17.3575 11.7043 17.4801C11.7751 17.6027 11.9612 17.6058 12.3332 17.6121L13.7307 17.6356C15.4844 17.6651 16.3612 17.6799 17.0809 17.2644C17.8005 16.8489 18.2262 16.0821 19.0775 14.5486L20.1603 12.5981ZM20.1603 12.5981L21.8923 11.5981" stroke="var(--background-color)"></path> <path d="M3.83972 12.5981L6.07035 12.5606C7.82407 12.5311 8.70093 12.5163 9.42056 12.9318C10.1402 13.3473 10.5658 14.114 11.4172 15.6475L12.0955 16.8695C12.2761 17.1949 12.3664 17.3575 12.2957 17.4801C12.2249 17.6027 12.0388 17.6058 11.6668 17.6121L10.2693 17.6356C8.51561 17.6651 7.63876 17.6799 6.91913 17.2644C6.1995 16.8489 5.77385 16.0821 4.92254 14.5486L3.83972 12.5981ZM3.83972 12.5981L2.10767 11.5981" stroke="var(--background-color)"></path> <path d="M12 15V22.5" stroke="var(--background-color)"></path> </g></svg>
+                          }
+                          else if (nutrition.Name == NutritionName.Proteins)
+                          {
+                    <svg fill="var(--background-color)" width="70px" height="70px" viewBox="-12.99 -12.99 155.90 155.90" enable-background="new 0 0 129.921 129.921" version="1.1" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-12.99" y="-12.99" width="155.90" height="155.90" rx="77.95" fill="var(--primary-color)" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g id="Layer_2"></g> <g id="Layer_1"> <g> <g> <path d="M66.057,115.946c-21.963,0-39.832-17.869-39.832-39.833c0-7.026,1.938-13.959,5.758-20.609 c0.289-0.502,0.575-0.991,0.855-1.472c2.234-3.819,3.847-6.578,3.848-10.689c0.001-16.193,13.177-29.367,29.371-29.367 c10.612,0.001,20.51,5.822,25.831,15.192c2.343,4.126,2.77,8.254,3.182,12.246c0.075,0.725,0.15,1.458,0.239,2.2 c0.188,1.582,0.515,3.037,1,4.45c0.796,2.313,1.984,4.447,3.645,7.141c3.883,6.3,5.936,13.53,5.936,20.908 C105.89,98.077,88.021,115.946,66.057,115.946z M66.057,19.921c-12.916,0-23.424,10.507-23.426,23.423 c0,5.722-2.264,9.592-4.661,13.69c-0.273,0.468-0.552,0.943-0.833,1.432c-3.296,5.737-4.967,11.674-4.967,17.647 C32.17,94.797,47.372,110,66.057,110c18.686,0,33.888-15.203,33.888-33.888c0-6.274-1.747-12.426-5.052-17.789 c-1.874-3.041-3.23-5.494-4.205-8.326c-0.625-1.817-1.045-3.676-1.283-5.683c-0.092-0.773-0.171-1.537-0.249-2.291 c-0.381-3.691-0.71-6.879-2.438-9.921C82.451,24.589,74.534,19.921,66.057,19.921z"></path> </g> <g> <path d="M66.057,100.825c-12.129,0-21.997-9.868-21.997-21.996c0-12.13,9.867-21.999,21.997-21.999 c12.129,0,21.997,9.869,21.997,21.999C88.054,90.957,78.186,100.825,66.057,100.825z M66.057,62.776 c-8.851,0-16.051,7.201-16.051,16.053c0,8.85,7.2,16.051,16.051,16.051s16.052-7.201,16.052-16.051 C82.109,69.977,74.908,62.776,66.057,62.776z"></path> </g> </g> </g> </g></svg>
+                          }
+                          else if (nutrition.Name == NutritionName.Fats)
+                          {
+                    <svg fill="var(--background-color)" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="70px" height="70px" viewBox="-7 -7 84.00 84.00" enable-background="new 0 0 70 70" xml:space="preserve"><g id="SVGRepo_bgCarrier" stroke-width="0"><rect x="-7" y="-7" width="84.00" height="84.00" rx="42" fill="var(--primary-color)" strokewidth="0"></rect></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <path d="M59.892,12.361c-0.413-0.884-4.61-8.645-24.58-8.645c-20.223,0-24.952,8.129-25.144,8.477 c-0.304,0.551-0.33,1.147-0.071,1.722l23.392,51.752c0.323,0.717,1.037,0.916,1.823,0.916c0.003,0,0.007,0,0.01,0 c0.79,0,1.504-0.216,1.821-0.939L59.912,14.02C60.143,13.493,60.136,12.883,59.892,12.361z M35.312,7.749 c14.059,0,19.07,4.11,20.484,5.702l-1.434,3.268c-2.213-2.083-7.468-5.209-19.093-5.209c-11.759,0-17.242,3.188-19.56,5.252 l-1.47-3.26C15.837,11.842,21.21,7.749,35.312,7.749z M39.861,13.7c4.23,0.362,7.255,1.204,9.386,2.134 c-0.606,2.579-3.195,4.184-5.779,3.589C40.902,18.826,39.299,16.266,39.861,13.7z M27.089,42.002 c0.06-0.013,0.12-0.012,0.179-0.036c1.09-0.454,2.291-0.456,3.383-0.006c1.091,0.45,1.942,1.298,2.395,2.389 c0.454,1.09,0.456,2.291,0.006,3.383c-0.44,1.065-1.263,1.896-2.317,2.356L27.089,42.002z M35.287,60.185l-3.732-8.277 c1.521-0.672,2.71-1.872,3.346-3.414c0.654-1.585,0.65-3.33-0.008-4.913c-0.659-1.584-1.895-2.815-3.479-3.469 c-1.586-0.653-3.33-0.65-4.914,0.009c-0.077,0.032-0.134,0.086-0.198,0.134l-9.725-21.57c1.523-1.597,6.318-5.174,18.693-5.174 c0.904,0,1.762,0.021,2.584,0.058c-0.615,3.531,1.629,6.981,5.162,7.802c0.516,0.12,1.033,0.178,1.543,0.178 c2.937,0,5.592-1.925,6.485-4.8c1.247,0.74,2.012,1.453,2.449,1.95l-5.475,12.475c-1.039-0.692-2.269-1.082-3.555-1.082 c-3.539,0-6.418,2.881-6.418,6.421c0,3.014,2.091,5.543,4.896,6.229L35.287,60.185z M43.768,40.86 c-2.104-0.337-3.722-2.15-3.722-4.349c0-2.438,1.981-4.421,4.418-4.421c1.008,0,1.963,0.348,2.732,0.956L43.768,40.86z"></path> <path d="M29.209,17.955c-3.464,0-6.283,2.819-6.283,6.284s2.818,6.283,6.283,6.283c3.465,0,6.284-2.818,6.284-6.283 S32.675,17.955,29.209,17.955z M29.209,28.522c-2.361,0-4.283-1.922-4.283-4.283c0-2.362,1.921-4.284,4.283-4.284 c2.362,0,4.284,1.922,4.284,4.284C33.494,26.601,31.572,28.522,29.209,28.522z"></path> </g> </g></svg>
+                          }
+               
 
                         <div class="small">
                             @if (nutrition.Name != NutritionName.Kcal)

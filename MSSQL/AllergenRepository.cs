@@ -15,7 +15,7 @@ namespace MSSQL
     {
         public AllergenRepository(IConfiguration configuration) : base(configuration) { }
 
-        public List<Allergen>? GetAllergensForMenuItem(int id)
+        public List<Allergen>? GetAllergensForMenuItem(int id, int restaurantId)
         {
             List<Allergen> allergens = new List<Allergen>();
 
@@ -29,10 +29,12 @@ namespace MSSQL
                    SELECT a.Id, a.Name
 FROM Allergen a
 INNER JOIN MenuItem_Allergen ma ON a.Id = ma.AllergenId
-WHERE ma.MenuItemId  = @MenuItemId;";
+INNER JOIN MenuItem m ON ma.MenuItemId = m.Id
+WHERE ma.MenuItemId = @MenuItemId AND m.RestaurantId = @RestaurantId;";
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@MenuItemId", id);
+                        cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
@@ -58,7 +60,5 @@ WHERE ma.MenuItemId  = @MenuItemId;";
                 throw new Exception($"An unexpected error occurred in {MethodBase.GetCurrentMethod()!.Name}: {ex.Message}", ex);
             }
         }
-
-
     }
 }
