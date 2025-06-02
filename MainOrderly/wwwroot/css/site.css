@@ -1647,3 +1647,17 @@ input[type="submit"][disabled] {
 }
 
 
+
+
+.dropdown-menu-custom {
+    top: 0 !important;
+    left: 100% !important;
+    margin-left: 0.25rem; 
+    right: auto !important;
+    transform: none !important;
+    border-color: var(--primary-color)
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: var(--primary-color);
+}

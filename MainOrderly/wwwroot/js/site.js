@@ -10,6 +10,7 @@
             fetch(`/Home/Index?searchTerm=${encodeURIComponent(term)}&category=${encodeURIComponent(category)}`, {
                 headers: { "X-Requested-With": "XMLHttpRequest" }
             })
+
                 .then(response => response.text())
                 .then(html => {
                     resultsContainer.innerHTML = html;

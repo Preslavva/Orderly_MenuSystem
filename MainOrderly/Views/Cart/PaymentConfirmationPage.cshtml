@@ -1,7 +1,7 @@
 ﻿@model OrderViewModel
 
 @{
-    ViewBag.HideHeader = true;
+    //ViewBag.HideHeader = true;
     ViewBag.HideFooter = true;
 }
 
@@ -9,15 +9,15 @@
     ViewData["Title"] = "Order Confirmation Page";
 }
 
-<a class="navbar-brand mx-auto position-absolute start-0 mt-4" asp-area="" asp-controller="History" asp-action="History">
+@* <a class="navbar-brand mx-auto position-absolute start-0 mt-4" asp-area="" asp-controller="History" asp-action="History">
     <i class="bi bi-receipt-cutoff"
        style="font-size: 30px; color: var(--primary-color);"></i>
 </a>
 
 <div class="PaymentTitle">
     <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" style="height:50px;">
-</div>
-<hr />
+</div> *@
+@* <hr /> *@
 <div class="PaymentText">
     <h3>Order Confirmed</h3>
     <p>Your order #@Model.Id was sent to the kitchen.</p>
