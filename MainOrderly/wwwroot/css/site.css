@@ -1652,10 +1652,10 @@ input[type="submit"][disabled] {
 .dropdown-menu-custom {
     top: 0 !important;
     left: 100% !important;
-    margin-left: 0.25rem; 
+    margin-left: 0.25rem;
     right: auto !important;
     transform: none !important;
-    border-color: var(--primary-color)
+    box-shadow: 0 0 4px 2px var(--primary-color);
 }
 
 .dropdown-menu .dropdown-item:hover {
