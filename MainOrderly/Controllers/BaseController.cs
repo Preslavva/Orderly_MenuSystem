@@ -16,13 +16,20 @@ namespace MainOrderly.WebApp.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            Restaurant restaurant = _restaurantService.GetRestaurantById(16);
+           Restaurant restaurant = _restaurantService.GetRestaurantById(20);
 
             ViewBag.ColorDefault = restaurant.ColorDefault ?? "#000000";
             ViewBag.ColorButtons = restaurant.ColorButtons ?? "#4CAF50";
             ViewBag.ColorBackground = restaurant.ColorBackground ?? "#ffffff";
 
-            ViewBag.Font = restaurant.Font ?? "Arial";
+            var result = (restaurant.Font ?? string.Empty)
+     .Split(',', StringSplitOptions.RemoveEmptyEntries)
+     .Select(s => s.Trim())
+     .ToList();
+
+            ViewBag.FontName = result.ElementAtOrDefault(0) ?? "Arial";
+            ViewBag.FontFamily = result.ElementAtOrDefault(1) ?? "sans-serif";
+
 
             if (restaurant.Logo != null)
             {
