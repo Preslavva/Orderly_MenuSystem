@@ -53,12 +53,31 @@
                         </a>
                     }
 
-                    @if (ViewData["Page"] == "Index")
+                    @if (ViewData["Page"] == "Index" || ViewData["Page"] == "Order Confirmation Page")
                     {
-                        <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="History" asp-action="History">
-                            <i class="bi bi-receipt-cutoff"
-                               style="font-size: 30px; color: var(--primary-color);"></i>
-                        </a>
+                        @*  <a class="navbar-brand mx-auto position-absolute start-0" asp-area="" asp-controller="History" asp-action="History">
+                <i class="bi bi-receipt-cutoff"
+                style="font-size: 30px; color: var(--primary-color);"></i>
+                </a> *@
+
+                        @*    <div class= "navbar-brand mx-auto position-absolute start-0">
+                <i class="bi bi-list menu-icon" id="menuToggle" data-bs-toggle="dropdown" aria-expanded="false" role="button" style="font-size: 30px;"></i>
+                <ul class="dropdown-menu" aria-labelledby="menuToggle">
+                <li><a class="dropdown-item" asp-area="" asp-controller="History" asp-action="History">History</a></li>
+                <li><a class="dropdown-item" asp-controller="BusinessAccount" asp-action="Login">Staff Login</a></li>
+                </ul>
+                </div> *@
+
+                        <div class="dropdown position-relative">
+                            <i class="bi bi-list menu-icon" style="font-size: 35px; color: var(--primary-color)" id="menuToggle" data-bs-toggle="dropdown" aria-expanded="false" role="button"></i>
+
+                            <ul class="dropdown-menu dropdown-menu-custom" aria-labelledby="menuToggle">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="History" asp-action="History">Order History</a></li>
+                                <li><a class="dropdown-item" asp-controller="BusinessAccount" asp-action="Login">Staff Login</a></li>
+                            </ul>
+                        </div>
+
+
                     }
 
                     <a class="navbar-brand mx-auto" asp-area="" asp-controller="Home" asp-action="Index">
@@ -75,11 +94,11 @@
                             </span>
                         }
                     </a>
-                    
+
                     <!-- Add Staff Login Link to Footer -->
-                    <div class="ms-auto">
-                        <a asp-controller="BusinessAccount" asp-action="Login" class="nav-link">Staff Login</a>
-                    </div>
+                    @* <div class="ms-auto">
+                <a asp-controller="BusinessAccount" asp-action="Login" class="nav-link">Staff Login</a>
+                </div> *@
                 </div>
             </nav>
         </header>
@@ -92,18 +111,18 @@
     </div>
 
     @* ✅ FOOTER *@
-   @*  @if (ViewBag.HideFooter != true)
+    @*  @if (ViewBag.HideFooter != true)
     {
-        <footer class="custom-footer d-flex justify-content-around align-items-center">
-            <button type="button" class="btn footer-btn"></button>
-            <button type="button" class="btn footer-btn"></button>
-            <button type="button" class="btn footer-btn">
-                <i class="fas fa-home"></i>
-            </button>
-        </footer>
+    <footer class="custom-footer d-flex justify-content-around align-items-center">
+    <button type="button" class="btn footer-btn"></button>
+    <button type="button" class="btn footer-btn"></button>
+    <button type="button" class="btn footer-btn">
+    <i class="fas fa-home"></i>
+    </button>
+    </footer>
     }  *@
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="https://unpkg.com/htmx.org@1.9.2"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

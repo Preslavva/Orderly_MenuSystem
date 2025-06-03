@@ -34,38 +34,26 @@ namespace MSSQL
             }
         }
 
-        public void UpdateRestaurant(Restaurant restaurant)
+        public void CustomizeRestaurant(Restaurant restaurant)
         {
             string sql = @"
         UPDATE Restaurant
         SET 
-            [Name] = @Name,
-            Email = @Email,
-            Phone = @Phone,
-            [Address] = @Address,
-            Description = @Description,
             Logo = @Logo,
             Font = @Font,
             ColorButtons = @ColorButtons,
             ColorDefault = @ColorDefault,
-            ColorBackground = @ColorBackground,
-            KVK = @KVK
+            ColorBackground = @ColorBackground
         WHERE Id = @Id";
 
             using (var conn = new SqlConnection(_connectionString))
             using (var cmd = new SqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@Name", restaurant.Name);
-                cmd.Parameters.AddWithValue("@Email", restaurant.Email);
-                cmd.Parameters.AddWithValue("@Phone", restaurant.PhoneNumber);
-                cmd.Parameters.AddWithValue("@Address", restaurant.Address);
-                cmd.Parameters.AddWithValue("@Description", restaurant.Description ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Logo", restaurant.Logo ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@Font", restaurant.Font ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ColorButtons", restaurant.ColorButtons ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ColorDefault", restaurant.ColorDefault ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@ColorBackground", restaurant.ColorBackground ?? (object)DBNull.Value);
-				cmd.Parameters.AddWithValue("@KVK", restaurant.KVK ?? (object)DBNull.Value);
 				cmd.Parameters.AddWithValue("@Id", restaurant.Id);
 
                 conn.Open();

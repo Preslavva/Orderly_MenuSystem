@@ -5,7 +5,7 @@ using MainOrderly.WebApp.Attributes;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    [RequireRole("Waiter")]
+    [RequireRole("Owner", "Manager", "Waiter")]
     public class WaiterController : Controller
     {
         private readonly WaiterService _waiterService;

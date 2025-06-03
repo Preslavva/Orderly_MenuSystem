@@ -10,7 +10,6 @@
 
             public byte[] Logo { get; }
 
-
             public string Email { get; }
 
             public string PhoneNumber { get; }

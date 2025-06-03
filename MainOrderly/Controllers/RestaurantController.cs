@@ -113,7 +113,7 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpPost]
-        public IActionResult UpdateRestaurantK(RestaurantViewModel restaurantViewModel)
+        public IActionResult CustomizeRestaurant(RestaurantViewModel restaurantViewModel)
         {
             try
             {
@@ -122,7 +122,7 @@ namespace MainOrderly.WebApp.Controllers
                     restaurantViewModel.Logo = _restaurantService.ConvertToString(restaurantViewModel.LogoImage);
                 }
                 Restaurant restaurant = RestaurantViewModel.ConvertToEntity(restaurantViewModel);
-                _restaurantService.UpdateRepository(restaurant);
+                _restaurantService.CustomizeRestaurant(restaurant);
                 TempData["SuccessMessage"] = "Restaurant was successfully updated!";
             }
             catch (ArgumentException ex)
@@ -130,13 +130,6 @@ namespace MainOrderly.WebApp.Controllers
                 TempData["ErrorMessage"] = ex.Message;
             }
             return RedirectToAction("CustomizeRestaurant", "Restaurant");
-        }
-
-        [HttpPost]
-        public IActionResult ArchiveRestaurantk(int id)
-        {
-            _restaurantService.RemoveRestaurant(id);
-            return RedirectToAction("CreateRestaurant", "Restaurant");
         }
 
         [HttpPost]
@@ -181,7 +174,8 @@ namespace MainOrderly.WebApp.Controllers
             foreach (var font in items.EnumerateArray())
             {
                 var family = font.GetProperty("family").GetString();
-                fonts.Add(new SelectListItem { Text = family, Value = family.Replace(" ", "+") });
+                var category = font.GetProperty("category").GetString();
+                fonts.Add(new SelectListItem { Text = family, Value = $"{family},{category}" });
             }
 
             return fonts;
