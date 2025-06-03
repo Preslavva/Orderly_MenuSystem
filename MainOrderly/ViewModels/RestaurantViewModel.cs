@@ -22,7 +22,8 @@ namespace MainOrderly.WebApp.ViewModels
 
         [Required]
         public string Address { get; set; }
-        public string? Font { get; set; }
+        public string? Family { get; set; }
+        public string Font { get; set; }
         public string? ColorButtons { get; set; }
         public string? ColorDeafult { get; set; }
         public string? ColorBackground { get; set; }
