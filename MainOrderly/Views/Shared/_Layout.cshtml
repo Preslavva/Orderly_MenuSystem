@@ -10,26 +10,20 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto&family=Lobster&display=swap" rel="stylesheet">
-    @{
-        // Pick a default if FontName was not supplied
-        var fontFamily = (ViewBag.FontName ?? "Arial").ToString();
-
-        // Google Fonts expects spaces as +
-        var gfontParam = Uri.EscapeDataString(fontFamily.Replace(" ", "+"));
-    }
-
-    <link rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=@gfontParam&display=swap">
-
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/OrderlyTest.styles.css" asp-append-version="true" />
+
+    @if (ViewBag.GoogleFontLink is string link)
+    {
+        <link rel="stylesheet" href="@link">
+    }
 
     <style>
         :root {
             --primary-color: @(ViewBag.ColorDefault ?? "#000000");
             --button-color: @(ViewBag.ColorButtons ?? "#4CAF50");
             --background-color: @(ViewBag.ColorBackground ?? "#ffffff");
-            --font-family: '@ViewBag.FontName', 'Arial', @ViewBag.FontFamily;
+            --font-family: '@ViewBag.FontName', @ViewBag.FontFamily;
             --logo-url: url('@(ViewBag.LogoDataUrl ?? "/images/default-logo.png")');
         }
     </style>
