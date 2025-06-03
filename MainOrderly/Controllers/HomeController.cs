@@ -36,10 +36,12 @@ namespace MainOrderly.WebApp.Controllers
             _ingredientService = ingredientService;
         }
 
-        public IActionResult LoadingPage(string token,int restaurantId)
+
+
+        public IActionResult LoadingPage(string token)
         {
-          
-            Table table = _tableService.GetTableByToken(token, restaurantId);
+            Table table = _tableService.GetTableByToken(token);
+            var restaurantId = table.RestaurantId;
 
             if (table == null)
             {
@@ -59,15 +61,16 @@ namespace MainOrderly.WebApp.Controllers
             
             if (!string.IsNullOrEmpty(token))
             {
-                var table = _tableService.GetTableByToken(token, restaurantId);
+                var table = _tableService.GetTableByToken(token);
                 if (table != null)
                 {
                     HttpContext.Session.SetInt32("TableId", table.Id);
-                    HttpContext.Session.SetInt32("RestaurantId", restaurantId);
+                    HttpContext.Session.SetInt32("RestaurantId", table.RestaurantId);
                 }
             }
 
             int? tableId = HttpContext.Session.GetInt32("TableId");
+            int? restId = HttpContext.Session.GetInt32("RestaurantId");
 
             if (tableId.HasValue)
             {
@@ -103,7 +106,7 @@ namespace MainOrderly.WebApp.Controllers
                     });
             }
 
-            List<MenuItem> allMenuItems = _menuService.LoadMenuItems(restaurantId);
+            List<MenuItem> allMenuItems = _menuService.LoadMenuItems((int)restId!);
 
             if (!category.HasValue)
             {

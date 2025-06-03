@@ -2,23 +2,20 @@
     Layout = "_ManagerLayout";
 }
 
-@* @model RestaurantAnalyticsViewModel *@
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
             <h1 class="mb-4">Restaurant Analytics Dashboard</h1>
+			
+        <div class="mb-4 d-flex justify-content-end ">
+	        <input type="month" id="dateInput" class="form-control"
+	               value="@DateTime.Now.ToString("yyyy-MM")"
+	               max="@DateTime.Now.ToString("yyyy-MM")"
+	               onchange="onDateChange()" style="width: 150px; font-size:20px" />
+        </div>
 
-            <!-- Date Range Filter -->
-            <div class="card mb-4">
-	            <input type="month" id="dateInput" class="form-control"
-	                   value="@DateTime.Now.ToString("yyyy-MM")"
-	                   max="@DateTime.Now.ToString("yyyy-MM")"
-	                   onchange="onDateChange()" style="width: 150px;" />
-
-            </div>
-
-            <!-- KPI Cards -->
+        <!-- KPI Cards -->
             <div class="row mb-4">
                 <div class="col-md-4">
                     <div class="card text-white bg-success">
@@ -107,59 +104,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Best Selling Items Table -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Top Menu Items Details</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead class="table-dark">
-                                        <tr>
-                                            <th>Rank</th>
-                                            <th>Item Name</th>
-                                            <th>Category</th>
-                                            <th>Quantity Sold</th>
-                                            <th>Revenue</th>
-                                            <th>Avg Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @* @if (Model.BestSellingItems != null && Model.BestSellingItems.Any()) *@
-                                        @* { *@
-                                        @*     @for (int i = 0; i < Model.BestSellingItems.Count(); i++) *@
-                                        @*     { *@
-                                        @*         var item = Model.BestSellingItems.ElementAt(i); *@
-                                        @*         <tr> *@
-                                        @*             <td><span class="badge bg-primary">@(i + 1)</span></td> *@
-                                        @*             <td><strong>@item.ItemName</strong></td> *@
-                                        @*             <td>@item.Category</td> *@
-                                        @*             <td>@item.QuantitySold</td> *@
-                                        @*             <td>@item.Revenue.ToString("C")</td> *@
-                                        @*             <td>@item.AveragePrice.ToString("C")</td> *@
-                                        @*         </tr> *@
-                                        @*     } *@
-                                        @* } *@
-                                        @* else *@
-                                        @* { *@
-                                        @*     <tr> *@
-                                        @*         <td colspan="6" class="text-center text-muted">No data available for selected period</td> *@
-                                        @*     </tr> *@
-                                        @* } *@
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -356,6 +300,15 @@
             }
         });
     }
+
+			window.onload = function() {
+					loadRevenueTrendChart();
+					loadOrdersByHourChart();
+								loadBestSellingItemsChart();
+											loadRevenueByCategoryChart();
+														};
+
+    
 
 
 </script>

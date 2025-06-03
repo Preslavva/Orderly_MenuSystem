@@ -3,6 +3,7 @@
     public class Table
     {
         public int Id { get; }
+        public int  RestaurantId { get; private set; }
         public byte[] QrCode { get; set; }
         public string GuidToken { get; set; }
         public int Number { get; set; }
@@ -28,6 +29,14 @@
             GuidToken = guidToken;
         }
 
+        public Table(int id,int restaurantId ,byte[] qrCode, string guidToken)
+        {
+            Id = id;
+            RestaurantId = restaurantId;
+            QrCode = qrCode;
+            GuidToken = guidToken;
+        }
+
         public Table(byte[] qrCode, string guidToken)
         {
             QrCode = qrCode;
@@ -46,5 +55,9 @@
             Number = number;
         }
 
+        public void SetRestaurantId(int restaurantId)
+        {
+            RestaurantId = restaurantId;
+        }
     }
 }

@@ -55,9 +55,9 @@ namespace Services
             return _tableRepository.GetAllTables(restaurantId);
         }
 
-        public Table GetTableByToken(string token, int restaurantId)
+        public Table GetTableByToken(string token)
         {
-            return _tableRepository.GetTableByToken(token, restaurantId);
+            return _tableRepository.GetTableByToken(token);
         }
 
         public List<Table> GetTablesByRestaurantId(int restaurantId)

@@ -127,7 +127,7 @@ namespace MSSQL
             return tables;
         }
 
-        public Table? GetTableByToken(string token, int restaurantId)
+        public Table? GetTableByToken(string token)
         {
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -135,13 +135,12 @@ namespace MSSQL
 
                 string queryGetTable = """
                             SELECT * FROM [Table]
-                            WHERE GuidToken = @GuidToken AND RestaurantId = @RestaurantId
+                            WHERE GuidToken = @GuidToken 
                         """;
 
                 using (SqlCommand cmdGetTable = new SqlCommand(queryGetTable, conn))
                 {
                     cmdGetTable.Parameters.AddWithValue("@GuidToken", token);
-                    cmdGetTable.Parameters.AddWithValue("@RestaurantId", restaurantId);
 
                     SqlDataReader dr = cmdGetTable.ExecuteReader();
 
@@ -149,6 +148,7 @@ namespace MSSQL
                     {
                         return new Table(
                     Convert.ToInt32(dr["Id"]),
+                    Convert.ToInt32(dr["RestaurantId"]),
                     (byte[])dr["QRCode"],
                     dr["GuidToken"].ToString()
                 );
