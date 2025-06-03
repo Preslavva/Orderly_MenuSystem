@@ -41,6 +41,8 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<AllergenService>();
             builder.Services.AddScoped<OrderHistoryRepository>();
             builder.Services.AddScoped<HistoryService>();
+            builder.Services.AddScoped<AnalyticsService>();
+
 
             builder.Services.AddScoped<IngredientService>();
             builder.Services.AddScoped<IngredientRepository>();
@@ -48,6 +50,7 @@ namespace MainOrderly.WebApp
             builder.Services.AddScoped<StaffService>();
             builder.Services.AddScoped<RestaurantRepository>();
             builder.Services.AddScoped<RestaurantService>();
+            builder.Services.AddScoped<AnalyticsRepository>();
 
             // New services for authentication
             builder.Services.AddScoped<OwnerRepository>();
