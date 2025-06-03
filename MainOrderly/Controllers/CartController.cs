@@ -23,31 +23,31 @@ namespace MainOrderly.WebApp.Controllers
             _restaurantService = restaurantService;
         }
 
-        private int GetRestaurantId()
+        private int? GetRestaurantId()
         {
-            var user = HttpContext.Session.GetAuthenticatedUser();
-            return user?.RestaurantId ?? 1;
+            return HttpContext.Session.GetInt32("RestaurantId");
         }
 
-        private Dictionary<MenuItem, int> GetOrderList()
+        private Dictionary<MenuItem, int> GetOrderList(int restaurantId)
         {
-            int restaurantId = GetRestaurantId();
             return _cartService.GetCart(restaurantId); 
         }
 
         private List<CartViewModel> GetCartViewModel()
         {
-            List<CartViewModel> viewModel = GetOrderList().Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
+            int? restaurantId = GetRestaurantId();
+            List<CartViewModel> viewModel = GetOrderList((int)restaurantId).Select(item => CartViewModel.ConvertToViewModel(item.Key, item.Value)).ToList();
             return viewModel;
         }
 
         [HttpGet]
         public IActionResult OrderList()
         {
+            var restaurantId = GetRestaurantId();
             ViewData["Page"] = "Order overview";
             List<CartViewModel> model = GetCartViewModel();
 
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList((int)restaurantId));
             TempData["CartCount"] = _cartService.GetCartCount();
             return View(model);
         }
@@ -55,7 +55,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult RemoveItemFromCart(int id)
         {
-            int restaurantId = GetRestaurantId();
+            var restaurantId = GetRestaurantId();
             _cartService.RemoveFromCart(id);
             return RedirectToAction("OrderList", "Cart");
         }
@@ -63,7 +63,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult UpdateItemQuantity(int id, int quantity)
         {
-            int restaurantId = GetRestaurantId();
+            var restaurantId = GetRestaurantId();
             _cartService.UpdateQuantity(id, quantity);
             return RedirectToAction("OrderList", "Cart");
         }
@@ -71,12 +71,13 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult OrderSummaryPage(Tip tipAmount, int customTip)    
         {
+            var restaurantId = GetRestaurantId();
             ViewData["Page"] = "Order summary";
             List<CartViewModel> viewModel = GetCartViewModel();
 
             ViewBag.SelectedTip = tipAmount;
-            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList(), tipAmount, customTip);
-            ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList());
+            ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList((int)restaurantId), tipAmount, customTip);
+            ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList((int)restaurantId));
             
             return View(viewModel);
         }
@@ -102,9 +103,9 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Checkout()
         {
             int tableId = HttpContext.Session.GetInt32("TableId") ?? 0;
-            int restaurantId = GetRestaurantId();
+            var restaurantId = GetRestaurantId();
 
-            Restaurant restaurant = _restaurantService.GetRestaurantById(restaurantId);
+            Restaurant restaurant = _restaurantService.GetRestaurantById((int)restaurantId);
             if (restaurant == null)
             {
                 TempData["ErrorMessage"] = "Restaurant not found.";
@@ -114,7 +115,7 @@ namespace MainOrderly.WebApp.Controllers
             int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
             if (oldOrderId != null)
             {
-                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId, restaurantId);
+                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId, (int)restaurantId);
                 if (!IsNotExpired)
                 {
                     TempData["ErrorMessage"] = "You cannot place another order because the time restriction has not expired.";
@@ -127,7 +128,7 @@ namespace MainOrderly.WebApp.Controllers
             {
                 return RedirectToAction("OrderList");
             }
-            int newOrderId = _cartService.FinalizeOrder(tableId, restaurant, restaurantId);
+            int newOrderId = _cartService.FinalizeOrder(tableId, restaurant, (int)restaurantId);
             
             _historyService.SaveOrderIds(newOrderId);
             HttpContext.Session.SetInt32("oldOrderId", newOrderId);
@@ -153,8 +154,8 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult Timer(int orderId)
         {
-            int restaurantId = GetRestaurantId();
-            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId, restaurantId);  
+            var restaurantId = GetRestaurantId();
+            DateTime endOfTimer = _cartService.GetEndOfTimer(orderId, (int)restaurantId);  
             TimeSpan remainingTime = endOfTimer - DateTime.Now;
 
             if (remainingTime.TotalSeconds <= 0)

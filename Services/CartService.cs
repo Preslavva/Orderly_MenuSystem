@@ -104,6 +104,7 @@ namespace Services
         
         public Dictionary<MenuItem, int> GetCart(int restaurantId)
         {
+            
             Dictionary<MenuItem, int> newCart = new Dictionary<MenuItem, int>();
 
             string? jsonCart = _contextAccessor.HttpContext?.Request.Cookies["Cart"];

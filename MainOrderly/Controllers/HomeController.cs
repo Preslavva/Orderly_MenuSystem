@@ -31,6 +31,7 @@ namespace MainOrderly.WebApp.Controllers
             _cartService = cartService;
             _menuService = menuService;
             _tableService = tableService;
+            _restaurantService = restaurantService;
             _nutritionService = nutritionService;
             _allergenService = allergenService;
             _ingredientService = ingredientService;
@@ -57,6 +58,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult Index(int restaurantId,Category? category = null, string token = "", string searchTerm = "")
         {
+
             ViewData["Page"] = "Index";
             
             if (!string.IsNullOrEmpty(token))
@@ -71,6 +73,41 @@ namespace MainOrderly.WebApp.Controllers
 
             int? tableId = HttpContext.Session.GetInt32("TableId");
             int? restId = HttpContext.Session.GetInt32("RestaurantId");
+            
+            if(restId == null)
+            {
+                restId = -1; // Default value if not set
+            }
+
+            ///
+
+            Restaurant restaurant = _restaurantService.GetRestaurantById((int)restId);
+
+            ViewBag.ColorDefault = restaurant.ColorDefault;
+            ViewBag.ColorButtons = restaurant.ColorButtons;
+            ViewBag.ColorBackground = restaurant.ColorBackground;
+            var parts = (restaurant.Font ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .ToList();
+
+            string fontName = parts.ElementAtOrDefault(0) ?? "Arial";
+            string genericFamily = parts.ElementAtOrDefault(1) ?? "sans-serif";
+
+            ViewBag.FontName = fontName;
+            ViewBag.FontFamily = genericFamily;
+
+            string? familyParam = SafeGoogleFont.ToGoogleParam(fontName);
+
+            ViewBag.GoogleFontLink = familyParam is null
+                ? null
+                : $"https://fonts.googleapis.com/css2?family={familyParam}&display=swap";
+
+            ViewBag.LogoDataUrl = restaurant.Logo is { Length: > 0 }
+                ? $"data:image/png;base64,{Convert.ToBase64String(restaurant.Logo)}"
+                : "/images/default-logo.png";
+
+            ///
 
             if (tableId.HasValue)
             {
