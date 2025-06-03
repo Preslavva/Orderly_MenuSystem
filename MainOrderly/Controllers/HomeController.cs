@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using MainOrderly.WebApp.Extensions;
 using MainOrderly.WebApp.Helpers;
 using MainOrderly.WebApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -35,9 +36,17 @@ namespace MainOrderly.WebApp.Controllers
             _ingredientService = ingredientService;
         }
 
+        private int GetCurrentRestaurantId()
+        {
+            var user = HttpContext.Session.GetAuthenticatedUser();
+            return user?.RestaurantId ?? 0;
+        }
+
         public IActionResult LoadingPage(string token)
         {
-            int restaurantId = 1; // Default or get from configuration
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
             Table table = _tableService.GetTableByToken(token, restaurantId);
 
             if (table == null)
