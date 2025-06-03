@@ -13,12 +13,17 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/OrderlyTest.styles.css" asp-append-version="true" />
 
+    @if (ViewBag.GoogleFontLink is string link)
+    {
+        <link rel="stylesheet" href="@link">
+    }
+
     <style>
         :root {
             --primary-color: @(ViewBag.ColorDefault ?? "#000000");
             --button-color: @(ViewBag.ColorButtons ?? "#4CAF50");
             --background-color: @(ViewBag.ColorBackground ?? "#ffffff");
-            --font-family: '@(ViewBag.Font ?? "Arial")', sans-serif;
+            --font-family: '@ViewBag.FontName', @ViewBag.FontFamily;
             --logo-url: url('@(ViewBag.LogoDataUrl ?? "/images/default-logo.png")');
         }
     </style>
