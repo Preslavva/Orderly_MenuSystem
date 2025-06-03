@@ -174,7 +174,8 @@ namespace MainOrderly.WebApp.Controllers
             foreach (var font in items.EnumerateArray())
             {
                 var family = font.GetProperty("family").GetString();
-                fonts.Add(new SelectListItem { Text = family, Value = family.Replace(" ", "+") });
+                var category = font.GetProperty("category").GetString();
+                fonts.Add(new SelectListItem { Text = family, Value = $"{family},{category}" });
             }
 
             return fonts;
