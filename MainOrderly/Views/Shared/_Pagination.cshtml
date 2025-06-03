@@ -1,0 +1,26 @@
+﻿@model PaginationModel
+
+<div class="d-flex justify-content-center mt-3">
+    <ul class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <li class="page-item">
+                <a href="#" class="page-link page-btn" data-page="@(Model.Page - 1)">«</a>
+            </li>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <li class="page-item @(Model.Page == i ? "active" : "")">
+                <a href="#" class="page-link page-btn" data-page="@i">@i</a>
+            </li>
+        }
+
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a href="#" class="page-link page-btn" data-page="@(Model.Page + 1)">»</a>
+            </li>
+        }
+    </ul>
+</div>

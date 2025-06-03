@@ -48,8 +48,8 @@
                                 <span asp-validation-for="Price" class="text-danger"></span>
                             </div>
 
-                            
-                            
+
+
                             <div class="mb-3">
                                 <label class="form-label">Allergens</label>
                                 <div>
@@ -68,7 +68,7 @@
                             </div>
 
 
-                           
+
                         </div>
                     </div>
                 </div> <!-- end col -->
@@ -82,7 +82,7 @@
                             <div class="mb-3">
                                 <label class="form-label">Upload Image (max 2MB (1024X1024))</label>
                                 <input asp-for="ImageFile" type="file" class="form-control" accept="image/*" />
-                                <input type="hidden" asp-for="Picture" /> <!-- ✅ сохраняет путь, если новое изображение не загружено -->
+                                <input type="hidden" asp-for="Picture" />
                                 <span asp-validation-for="ImageFile" class="text-danger"></span>
                             </div>
 
@@ -124,10 +124,10 @@
                             </div>
 
                         </div>
-                       
+
                     </div> <!-- end col-->
 
-                    
+
 
 
                 </div> <!-- end col-->
@@ -144,8 +144,6 @@
                 <a asp-action="MenuItems" class="btn btn-light">Cancel</a>
 
                 <button type="submit" formaction="@Url.Action("Create", "Manager")" class="btn btn-success">Save</button>
-
-                <button type="submit" formaction="@Url.Action("Delete", "Manager", new { id = Model.Id })" class="btn btn-danger">Delete</button>
             </div>
         </form>
 
@@ -155,9 +153,9 @@
             <div class="card mt-1 mb-0 shadow-none border">
                 <div class="p-2">
                     <div class="row align-items-center">
-                        <div class="col-auto">
+                        @*  <div class="col-auto">
                             <img data-dz-thumbnail src="ecommerce-product-edit.html#" class="avatar-sm rounded bg-light" alt="">
-                        </div>
+                        </div> *@
                         <div class="col ps-0">
                             <a href="javascript:void(0);" class="text-muted fw-bold" data-dz-name></a>
                             <p class="mb-0" data-dz-size></p>
@@ -177,114 +175,64 @@
     </div> <!-- container -->
 
 </div> <!-- content -->
+@section Scripts {
+    <script>
+                let selectedIngredients = {};
 
-<script>
-    // Global state
-    let selectedIngredientIds = new Set();
-    let ingredientQuantities = {};
+        function collectSelectedIngredients() {
+            document.querySelectorAll("input[name='SelectedIngredientIds']:checked").forEach(cb => {
+                const id = cb.value;
+                const qty = document.querySelector(`input[name='IngredientQuantities[${id}]']`)?.value || 0;
+                selectedIngredients[id] = qty;
+            });
 
-    // Image preview logic (unchanged)
-    document.querySelector('input[type="file"]').addEventListener('change', function (e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('file-previews');
-        if (file && file.type.startsWith("image/")) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail mt-2" style="max-width: 200px;" />`;
-            };
-            reader.readAsDataURL(file);
+            document.querySelectorAll("input[name='SelectedIngredientIds']:not(:checked)").forEach(cb => {
+                const id = cb.value;
+                delete selectedIngredients[id];
+            });
         }
-    });
 
-    function bindIngredientSelectionHandlers() {
-        document.querySelectorAll("input[type='checkbox'][name='SelectedIngredientIds']").forEach(checkbox => {
-            checkbox.addEventListener("change", () => {
-                const id = checkbox.value;
-                if (checkbox.checked) {
-                    selectedIngredientIds.add(id);
-                } else {
-                    selectedIngredientIds.delete(id);
-                    delete ingredientQuantities[id];
-                }
+        function restoreSelections() {
+            Object.keys(selectedIngredients).forEach(id => {
+                const cb = document.querySelector(`input[name='SelectedIngredientIds'][value='${id}']`);
+                const qty = document.querySelector(`input[name='IngredientQuantities[${id}]']`);
+                if (cb) cb.checked = true;
+                if (qty) qty.value = selectedIngredients[id];
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('form').addEventListener('submit', function () {
+                document.querySelectorAll('.dynamic-ingredient-fields').forEach(e => e.remove());
+
+                Object.entries(selectedIngredients).forEach(([id, qty]) => {
+                    let checkbox = document.createElement('input');
+                    checkbox.type = 'hidden';
+                    checkbox.name = 'SelectedIngredientIds';
+                    checkbox.value = id;
+                    checkbox.classList.add('dynamic-ingredient-fields');
+                    this.appendChild(checkbox);
+
+                    let quantity = document.createElement('input');
+                    quantity.type = 'hidden';
+                    quantity.name = `IngredientQuantities[${id}]`;
+                    quantity.value = qty;
+                    quantity.classList.add('dynamic-ingredient-fields');
+                    this.appendChild(quantity);
+                });
             });
         });
 
-        document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
-            input.addEventListener("input", () => {
-                const id = input.name.match(/\d+/)[0];
-                const value = parseFloat(input.value) || 0;
-                ingredientQuantities[id] = value;
 
-                if (value > 0) {
-                    selectedIngredientIds.add(id);
-                    const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
-                    if (checkbox) checkbox.checked = true;
-                }
+          function loadCreatePage(pageNumber) {
+            collectSelectedIngredients();
+
+            $.get('/Manager/LoadIngredientTableForCreate', { pageNumber: pageNumber }, function (data) {
+                $('#ingredient-table-container').html(data);
+                restoreSelections();
             });
-        });
-    }
-
-    function restoreSelections() {
-        selectedIngredientIds.forEach(id => {
-            const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
-            if (checkbox) checkbox.checked = true;
-        });
-
-        Object.entries(ingredientQuantities).forEach(([id, value]) => {
-            const input = document.querySelector(`input[name='IngredientQuantities[${id}]']`);
-            if (input) input.value = value;
-        });
-    }
-
-    // Rebind on page load and after AJAX pagination
-    document.addEventListener("DOMContentLoaded", function () {
-        bindIngredientSelectionHandlers();
-        restoreSelections();
-         bindPaginationButtons();
-        // Inject selected ingredients before form submission
-        document.querySelector("form").addEventListener("submit", function (e) {
-            // Clear old injected inputs
-              // Remove ALL matching fields — checkbox or hidden
-    document.querySelectorAll("input[name='SelectedIngredientIds'], input[name^='IngredientQuantities']").forEach(el => {
-        if (el.closest('form')) el.remove(); // only from inside the form
-    });
+        }
 
 
-            // Add hidden inputs for selected ingredients
-            selectedIngredientIds.forEach(id => {
-                const hidden = document.createElement("input");
-                hidden.type = "hidden";
-                hidden.name = "SelectedIngredientIds";
-                hidden.value = id;
-                hidden.classList.add("persisted-ingredient");
-                this.appendChild(hidden);
-            });
-
-            Object.entries(ingredientQuantities).forEach(([id, value]) => {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = `IngredientQuantities[${id}]`;
-                input.value = value;
-                input.classList.add("persisted-ingredient");
-                this.appendChild(input);
-            });
-        });
-    });
-        function bindPaginationButtons() {
-        document.querySelectorAll(".page-btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                const page = this.dataset.page;
-    fetch(`/Manager/LoadIngredientsPartial?pageNumber=${page}`)
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById("ingredient-table-container").innerHTML = html;
-            bindPaginationButtons();
-            bindIngredientSelectionHandlers();
-            restoreSelections();
-        });
-
-            });
-        });
-    }
-
-</script>
+    </script>
+}

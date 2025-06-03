@@ -42,7 +42,15 @@ namespace MainOrderly.WebApp.ViewModels
                 IngredientQuantities = new Dictionary<int, int>()
             };
         }
-
+        public PaginationModel Pagination => new PaginationModel
+        {
+            Page = PageNumber,
+            PageSize = PageSize,
+            TotalItems = TotalItems,
+            PageUrl = Id == 0
+       ? "/Manager/Create"
+       : $"/Manager/EditWithIngredients?id={Id}"
+        };  
 
     }
     public class NutritionEntry

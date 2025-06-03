@@ -23,8 +23,6 @@
                     data-unit="@i.Unit.ToLower()"
                     data-quantity="@Convert.ToDouble(i.QuantityInStock)"
                     data-minimum="@Convert.ToDouble(i.MinimumStockLevel)">
-
-
                     <td>@i.Id</td>
                     <td>@i.Name</td>
                     <td>@i.QuantityInStock</td>
@@ -41,17 +39,20 @@
         </tbody>
     </table>
 
-    <div class="d-flex justify-content-between align-items-center mt-3">
-        @if (Model.PageNumber > 1)
-        {
-            <button type="button" class="btn btn-outline-secondary page-btn" data-page="@(Model.PageNumber - 1)">Previous</button>
-        }
+    @if (Model.Pagination.TotalPages > 1)
+    {
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            @if (Model.Pagination.HasPreviousPage)
+            {
+                <button type="button" class="btn btn-outline-secondary page-btn" data-page="@(Model.Pagination.Page - 1)">Previous</button>
+            }
 
-        <span>Page @Model.PageNumber</span>
+            <span>Page @Model.Pagination.Page of @Model.Pagination.TotalPages</span>
 
-        @if (Model.PageNumber * Model.PageSize < Model.TotalItems)
-        {
-            <button type="button" class="btn btn-outline-secondary page-btn" data-page="@(Model.PageNumber + 1)">Next</button>
-        }
-    </div>
+            @if (Model.Pagination.HasNextPage)
+            {
+                <button type="button" class="btn btn-outline-secondary page-btn" data-page="@(Model.Pagination.Page + 1)">Next</button>
+            }
+        </div>
+    }
 </div>

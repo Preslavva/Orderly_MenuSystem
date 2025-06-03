@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Entities;
 using Models.Enums;
 using Services;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Processing;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -36,42 +39,63 @@ namespace MainOrderly.WebApp.Controllers
             return user?.RestaurantId ?? 0;
         }
 
-        public IActionResult Index()
+        public IActionResult Logout()
         {
-            return View();
+            return RedirectToAction("Logout", "BusinessAccount");
         }
 
+        [HttpGet]
+        public IActionResult GetNotifications()
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            var lowStock = _ingredientService.GetLowStockIngredients(restaurantId);
+
+            var notifications = lowStock.Select(i => new
+            {
+                title = $"Low stock: {i.Name}",
+                time = DateTime.Now.ToString("HH:mm, dd MMM"),
+                link = "/Manager/IngredientList"
+            }).ToList();
+
+            return Json(notifications);
+        }
+
+
+
+
+
+        //Menu Items
         [HttpGet]
         public IActionResult Create(int pageNumber = 1)
         {
             var restaurantId = GetCurrentRestaurantId();
             if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
+
             const int pageSize = 5;
-            var ingredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId)
-                .Select(e => new IngredientViewModel
-                {
-                    Id = e.Id,
-                    Name = e.Name,
-                    Unit = e.Unit,
-                    QuantityInStock = e.QuantityInStock,
-                    MinimumStockLevel = e.MinimumStockLevel
-                }).ToList();
+            var ingredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId);
 
             var pagedIngredients = ingredients
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .Select(i => new IngredientViewModel
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Unit = i.Unit,
+                    QuantityInStock = i.QuantityInStock,
+                    MinimumStockLevel = i.MinimumStockLevel
+                }).ToList();
 
             var model = new CreateMenuItemViewModel
             {
-                IsAvailable = true,
                 AvailableIngredients = pagedIngredients,
                 SelectedIngredientIds = new List<int>(),
                 IngredientQuantities = new Dictionary<int, int>(),
                 PageNumber = pageNumber,
                 PageSize = pageSize,
-                TotalItems = ingredients.Count,
+                TotalItems = ingredients.Count
             };
 
             return View(model);
@@ -82,37 +106,61 @@ namespace MainOrderly.WebApp.Controllers
         {
             var restaurantId = GetCurrentRestaurantId();
             if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
+
             ModelState.Remove("AvailableIngredients");
             ModelState.Remove("Picture");
-            
+
             if (!ModelState.IsValid)
             {
                 return View("Create", model);
             }
-            
-            if (model.ImageFile != null)
+
+            if (model.ImageFile != null && model.ImageFile.Length > 0)
             {
-                if (model.ImageFile.Length > 2 * 1024 * 1024) 
+                if (model.ImageFile.Length > 2 * 1024 * 1024)
                 {
                     ModelState.AddModelError("ImageFile", "Image must be less than 2MB.");
                     return View("Create", model);
                 }
 
-                var fileName = Path.GetFileNameWithoutExtension(model.ImageFile.FileName);
-                var extension = Path.GetExtension(model.ImageFile.FileName);
-                var uniqueName = $"{fileName}_{Guid.NewGuid()}{extension}";
-                var filePath = Path.Combine("wwwroot/images", uniqueName);
-              
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                using var image = Image.Load(model.ImageFile.OpenReadStream());
+
+                int cropSize = Math.Min(image.Width, image.Height);
+                if (cropSize < 10)
                 {
-                    model.ImageFile.CopyTo(stream);
+                    ModelState.AddModelError("ImageFile", "Image is too small.");
+                    return View("Create", model);
                 }
 
-                model.Picture = "/images/" + uniqueName; 
+                // Crop center square
+                var cropRect = new Rectangle(
+                    (image.Width - cropSize) / 2,
+                    (image.Height - cropSize) / 2,
+                    cropSize,
+                    cropSize
+                );
+
+                // Final size: HALF of original crop size
+                int targetSize = cropSize / 2;
+
+                image.Mutate(x => x
+                    .Crop(cropRect)
+                    .Resize(targetSize, targetSize)); // correct resize
+
+                var fileName = $"{Path.GetFileNameWithoutExtension(model.ImageFile.FileName)}_{Guid.NewGuid()}.png";
+                var filePath = Path.Combine("wwwroot/images", fileName);
+
+                using var fileStream = new FileStream(filePath, FileMode.Create);
+                image.Save(fileStream, new PngEncoder());
+
+                model.Picture = "/images/" + fileName;
             }
-            
+
+
+
+            // Use nutrition and ingredient data to create the menu item
             var nutritionDict = model.NutritionValues.ToDictionary(e => e.Name, e => e.Value);
+
             int menuId = _menuService.CreateMenuItem(
                 model.Name,
                 model.Description,
@@ -120,8 +168,8 @@ namespace MainOrderly.WebApp.Controllers
                 model.IsAvailable,
                 model.Picture,
                 model.Category,
-                restaurantId, 
-                nutritionDict, 
+                restaurantId,
+                nutritionDict,
                 model.SelectedAllergens,
                 model.PrepTime
             );
@@ -130,7 +178,8 @@ namespace MainOrderly.WebApp.Controllers
                 .Where(id => model.IngredientQuantities.ContainsKey(id))
                 .Select(id => new { Id = id, Quantity = model.IngredientQuantities[id] })
                 .ToList();
-            bool result = _menuService.AddIngridientsToMenuItem(
+
+            _menuService.AddIngridientsToMenuItem(
                 menuId,
                 selectedWithQuantities.Select(x => x.Id).ToArray(),
                 selectedWithQuantities.Select(x => x.Quantity).ToArray(),
@@ -187,30 +236,19 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Edit(int id)
         {
             var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
             var item = _menuService.GetMenuItemWithIngredient(id, restaurantId);
+            if (item == null) return RedirectToAction("MenuItems");
+
             var availableIngredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId);
             var nutritions = _nutritionService.GetNutritionForMenuItem(id, restaurantId);
+            var nutritionList = Enum.GetValues(typeof(NutritionName)).Cast<NutritionName>()
+                .Select(n => new NutritionEntry { Name = n, Value = nutritions.FirstOrDefault(x => x.Name == n)?.Value ?? 0 })
+                .ToList();
 
-            var nutritionList = Enum.GetValues(typeof(NutritionName))
-                .Cast<NutritionName>()
-                .Select(nutritionName =>
-                {
-                    var found = nutritions.FirstOrDefault(n => n.Name == nutritionName);
-                    return new NutritionEntry
-                    {
-                        Name = nutritionName,
-                        Value = found?.Value ?? 0
-                    };
-                }).ToList();
-            
             var allergens = _menuService.GetAllergensForMenuItem(id, restaurantId);
-
-            if (item == null)
-            {
-                return RedirectToAction("MenuItems");
-            }
+            var selectedQuantities = item.Ingredients
+                .GroupBy(i => i.IngredientId)
+                .ToDictionary(g => g.Key, g => g.First().Quantity);
 
             var model = new CreateMenuItemViewModel
             {
@@ -222,17 +260,16 @@ namespace MainOrderly.WebApp.Controllers
                 IsAvailable = item.IsAvailable,
                 Category = item.Category,
                 AvailableIngredients = availableIngredients
-                    .Select(e => new IngredientViewModel
+                    .Select(i => new IngredientViewModel
                     {
-                        Id = e.Id,
-                        Name = e.Name,
-                        Unit = e.Unit,
-                        QuantityInStock = e.QuantityInStock,
-                        MinimumStockLevel = e.MinimumStockLevel
+                        Id = i.Id,
+                        Name = i.Name,
+                        Unit = i.Unit,
+                        QuantityInStock = i.QuantityInStock,
+                        MinimumStockLevel = i.MinimumStockLevel
                     }).ToList(),
-                IngredientQuantities = item.Ingredients
-                    .GroupBy(i => i.IngredientId)
-                    .ToDictionary(g => g.Key, g => g.First().Quantity),
+                IngredientQuantities = selectedQuantities,
+                SelectedIngredientIds = selectedQuantities.Keys.ToList(),
                 NutritionValues = nutritionList,
                 SelectedAllergens = allergens,
                 PrepTime = item.PrepTime,
@@ -249,8 +286,6 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Edit(CreateMenuItemViewModel model)
         {
             var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
             if (!ModelState.IsValid)
             {
                 RehydrateEditFormData(model);
@@ -266,9 +301,7 @@ namespace MainOrderly.WebApp.Controllers
                     return View("EditMenuItem", model);
                 }
 
-                var fileName = Path.GetFileNameWithoutExtension(model.ImageFile.FileName);
-                var extension = Path.GetExtension(model.ImageFile.FileName);
-                var uniqueName = $"{fileName}_{Guid.NewGuid()}{extension}";
+                var uniqueName = $"{Path.GetFileNameWithoutExtension(model.ImageFile.FileName)}_{Guid.NewGuid()}{Path.GetExtension(model.ImageFile.FileName)}";
                 var filePath = Path.Combine("wwwroot/images", uniqueName);
 
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -283,28 +316,24 @@ namespace MainOrderly.WebApp.Controllers
                 var existing = _menuService.GetMenuItemWithIngredient(model.Id, restaurantId);
                 model.Picture = existing?.Picture ?? "";
             }
-
+            if (model.IsAvailable.Equals(false))
+            {
+                model.IsAvailable = false;
+            }
+            else
+            {
+                model.IsAvailable = true;
+            }
             var updated = new MenuItem(
-                model.Id,
-                model.Name,
-                model.Description,
-                model.Price,
-                model.IsAvailable,
-                model.Picture,
-                model.Category,
-                restaurantId,
-                model.PrepTime
-            );
-
-            var nutritionDict = model.NutritionValues
-                .ToDictionary(e => e.Name, e => e.Value);
+                model.Id, model.Name, model.Description, model.Price,
+                model.IsAvailable, model.Picture, model.Category, restaurantId, model.PrepTime);
 
             _menuService.UpdateMenuItem(updated, restaurantId);
-            _nutritionService.UpdateNutritions(model.Id, nutritionDict, restaurantId);
+            _nutritionService.UpdateNutritions(model.Id, model.NutritionValues.ToDictionary(e => e.Name, e => e.Value), restaurantId);
             _menuService.UpdateMenuItemAllergens(model.Id, model.SelectedAllergens, restaurantId);
 
-            var selectedIngredients = model.IngredientQuantities
-                ?.Where(kv => kv.Value > 0)
+            var selectedIngredients = model.IngredientQuantities?
+                .Where(kv => kv.Value > 0)
                 .ToDictionary(kv => kv.Key, kv => (decimal)kv.Value)
                 ?? new Dictionary<int, decimal>();
 
@@ -313,6 +342,51 @@ namespace MainOrderly.WebApp.Controllers
             TempData["Success"] = "Menu item updated successfully!";
             return RedirectToAction("MenuItems");
         }
+
+        [HttpGet]
+        public IActionResult LoadIngredientsPartialForEdit(int id, int pageNumber = 1, string search = "", string category = "all", bool lowStockOnly = false)
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            const int pageSize = 5;
+            var filtered = _ingredientService.GetIngredientsByRestaurantId(restaurantId)
+                .Where(i => string.IsNullOrEmpty(search) || i.Name.Contains(search, StringComparison.OrdinalIgnoreCase))
+                .Where(i => category == "all" || i.Unit == category)
+                .Where(i => !lowStockOnly || i.QuantityInStock < i.MinimumStockLevel)
+                .ToList();
+
+            var menuItem = _menuService.GetMenuItemWithIngredient(id, restaurantId);
+            var selectedQuantities = menuItem.Ingredients
+                .GroupBy(i => i.IngredientId)
+                .ToDictionary(g => g.Key, g => g.First().Quantity);
+
+            var pagedIngredients = filtered
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(i => new IngredientViewModel
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Unit = i.Unit,
+                    QuantityInStock = i.QuantityInStock,
+                    MinimumStockLevel = i.MinimumStockLevel
+                }).ToList();
+
+            var model = new CreateMenuItemViewModel
+            {
+                Id = menuItem.Id,
+                AvailableIngredients = pagedIngredients,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalItems = filtered.Count,
+                IngredientQuantities = selectedQuantities,
+                SelectedIngredientIds = selectedQuantities.Keys.ToList()
+            };
+
+            ViewData["ButtonClass"] = "edit-page-btn";
+            return PartialView("_IngredientTable", model);
+
+        }
+
 
         [HttpPost]
         public IActionResult Delete(int id)
@@ -333,12 +407,51 @@ namespace MainOrderly.WebApp.Controllers
             return RedirectToAction("MenuItems");
         }
 
+        [HttpGet] //dont touch
+        public IActionResult LoadIngredientTableForCreate(int pageNumber = 1)
+        {
+            const int pageSize = 5;
+            var restaurantId = GetCurrentRestaurantId();
+            var ingredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId);
+
+            var pagedIngredients = ingredients
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(i => new IngredientViewModel
+                {
+                    Id = i.Id,
+                    Name = i.Name,
+                    Unit = i.Unit,
+                    QuantityInStock = i.QuantityInStock,
+                    MinimumStockLevel = i.MinimumStockLevel
+                }).ToList();
+
+            var model = new CreateMenuItemViewModel
+            {
+                AvailableIngredients = pagedIngredients,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                TotalItems = ingredients.Count,
+                SelectedIngredientIds = new List<int>(),
+                IngredientQuantities = new Dictionary<int, int>()
+            };
+
+            return PartialView("_IngredientTable", model);
+        }
+
+
+
+
+
+
+
+        //Ingredient 
         [HttpPost]
         public IActionResult AddIngredient([FromBody] IngredientViewModel model)
         {
             var restaurantId = GetCurrentRestaurantId();
             if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState.Values
@@ -355,7 +468,7 @@ namespace MainOrderly.WebApp.Controllers
                 unit: model.Unit,
                 quantityInStock: model.QuantityInStock,
                 minimumStockLevel: model.MinimumStockLevel,
-                restaurantId: restaurantId 
+                restaurantId: restaurantId
             );
 
             _ingredientService.AddIngredient(ingredient);
@@ -363,28 +476,21 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult IngredientList(int pageNumber = 1, int pageSize = 10)
+        public IActionResult IngredientList()
         {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
+            int restaurantId = GetCurrentRestaurantId();
             var ingredients = _ingredientService.GetIngredientsByRestaurantId(restaurantId);
 
-            var pagedIngredients = ingredients
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .Select(IngredientViewModel.ConvertToViewModel)
-                .ToList();
-
-            var model = new IngredientListViewModel
+            var viewModelList = ingredients.Select(i => new IngredientViewModel
             {
-                Ingredients = pagedIngredients,
-                PageNumber = pageNumber,
-                PageSize = pageSize,
-                TotalItems = ingredients.Count
-            };
+                Id = i.Id,
+                Name = i.Name,
+                Unit = i.Unit,
+                QuantityInStock = i.QuantityInStock,
+                MinimumStockLevel = i.MinimumStockLevel
+            }).ToList();
 
-            return View(model);
+            return View(viewModelList);
         }
 
         [HttpGet]
@@ -392,7 +498,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             var restaurantId = GetCurrentRestaurantId();
             if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
+
             var ingredient = _ingredientService.GetIngredientById(id, restaurantId);
             if (ingredient == null) return NotFound();
 
@@ -405,138 +511,6 @@ namespace MainOrderly.WebApp.Controllers
                 unit = ingredient.Unit
             });
         }
-        
-        public IActionResult Logout()
-        {
-            return RedirectToAction("Logout", "BusinessAccount");
-        }
-
-        [HttpPut]
-        public IActionResult UpdateIngredient([FromBody] IngredientViewModel model)
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
-            if (!ModelState.IsValid)
-                return BadRequest("Invalid input");
-
-            var updated = new Ingredient(
-                id: model.Id,
-                name: model.Name,
-                unit: model.Unit,
-                quantityInStock: model.QuantityInStock,
-                minimumStockLevel: model.MinimumStockLevel,
-                restaurantId: restaurantId 
-            );
-
-            _ingredientService.UpdateIngredient(updated);
-            return Json(new { success = true });
-        }
-
-        [HttpDelete]
-        public IActionResult DeleteIngredient(int id)
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
-            var ingredient = _ingredientService.GetIngredientById(id, restaurantId);
-            if (ingredient == null)
-                return NotFound("Ingredient not found.");
-
-            _ingredientService.DeleteIngredient(id, restaurantId);
-            return Json(new { success = true });
-        }
-
-        [HttpGet]
-        public IActionResult GetNotifications()
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
-            var lowStock = _ingredientService.GetLowStockIngredients(restaurantId);
-
-            var notifications = lowStock.Select(i => new
-            {
-                title = $"Low stock: {i.Name}",
-                time = DateTime.Now.ToString("HH:mm, dd MMM"),
-                link = "/Manager/IngredientList"
-            }).ToList();
-
-            return Json(notifications);
-        }
-
-        [HttpGet]
-        public IActionResult TableList()
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
-            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
-
-            var viewModelList = tables.Select(t => new TableViewModel
-            {
-                Id = t.Id,
-                TableNumber = t.Number
-            }).ToList();
-
-            return View(viewModelList);
-        }
-
-        [HttpGet]
-        public IActionResult AddTable()
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-            
-            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
-            return View(tables.Count);
-        }
-
-      
-        [HttpPost]
-        public IActionResult AddNewTable(int tableNumber)
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-
-            string guidToken = Guid.NewGuid().ToString();
-            string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
-            byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
-
-            var table = new Table(qrCodeImage, guidToken, tableNumber);
-            _tableService.CreateTableWithNumber(table, restaurantId);
-
-            return RedirectToAction("TableList");
-        }
-
-        [HttpGet]
-        public IActionResult TableQR(int tableId)
-        {
-            var restaurantId = GetCurrentRestaurantId();
-            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
-
-            if (tableId == 0)
-            {
-                return View("Error"); 
-            }
-
-            var qrCode = _tableService.GetTableQRById(tableId, restaurantId);
-            var tableNum = _tableService.GetTableNumberById(tableId, restaurantId);
-
-            if(qrCode == null || tableNum == null)
-            {
-                return View("Error");
-            }
-            
-            var model = new TableQrViewModel
-            {
-                TableNumber = (int)tableNum,
-                QrCode = qrCode
-            };
-
-            return PartialView("TableQR", model);
-        }
-
         private void RehydrateEditFormData(CreateMenuItemViewModel model)
         {
             var restaurantId = GetCurrentRestaurantId();
@@ -575,5 +549,122 @@ namespace MainOrderly.WebApp.Controllers
 
             ViewData["ButtonClass"] = "edit-page-btn";
         }
+
+        [HttpPut]
+        public IActionResult UpdateIngredient([FromBody] IngredientViewModel model)
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid input");
+
+            var updated = new Ingredient(
+                id: model.Id,
+                name: model.Name,
+                unit: model.Unit,
+                quantityInStock: model.QuantityInStock,
+                minimumStockLevel: model.MinimumStockLevel,
+                restaurantId: restaurantId
+            );
+
+            _ingredientService.UpdateIngredient(updated);
+            return Json(new { success = true });
+        }
+
+        [HttpDelete]
+        public IActionResult DeleteIngredient(int id)
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            var ingredient = _ingredientService.GetIngredientById(id, restaurantId);
+            if (ingredient == null)
+                return NotFound("Ingredient not found.");
+
+            _ingredientService.DeleteIngredient(id, restaurantId);
+            return Json(new { success = true });
+        }
+
+
+
+
+
+
+
+
+        //Tables
+        [HttpGet]
+        public IActionResult TableList()
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
+
+            var viewModelList = tables.Select(t => new TableViewModel
+            {
+                Id = t.Id,
+                TableNumber = t.Number
+            }).ToList();
+
+            return View(viewModelList);
+        }
+
+        [HttpGet]
+        public IActionResult AddTable()
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            var tables = _tableService.GetTablesByRestaurantId(restaurantId);
+            return View(tables.Count);
+        }
+
+        [HttpPost]
+        public IActionResult AddNewTable(int tableNumber)
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            string guidToken = Guid.NewGuid().ToString();
+            string qrUrl = $"{_baseUrl}/Home/LoadingPage?token={guidToken}";
+            byte[] qrCodeImage = _qrCodeService.GenerateQRCode(qrUrl);
+
+            var table = new Table(qrCodeImage, guidToken, tableNumber);
+            _tableService.CreateTableWithNumber(table, restaurantId);
+
+            return RedirectToAction("TableList");
+        }
+
+        [HttpGet]
+        public IActionResult TableQR(int tableId)
+        {
+            var restaurantId = GetCurrentRestaurantId();
+            if (restaurantId == 0) return RedirectToAction("Login", "BusinessAccount");
+
+            if (tableId == 0)
+            {
+                return View("Error");
+            }
+
+            var qrCode = _tableService.GetTableQRById(tableId, restaurantId);
+            var tableNum = _tableService.GetTableNumberById(tableId, restaurantId);
+
+            if (qrCode == null || tableNum == null)
+            {
+                return View("Error");
+            }
+
+            var model = new TableQrViewModel
+            {
+                TableNumber = (int)tableNum,
+                QrCode = qrCode
+            };
+
+            return PartialView("TableQR", model);
+        }
+
+
     }
 }

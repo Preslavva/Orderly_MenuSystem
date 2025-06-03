@@ -46,11 +46,13 @@ namespace Services
             return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities, restaurantId);
         }
 
-        public List<MenuItem> LoadMenuItems(int restaurantId)
+        public List<MenuItem> LoadMenuItems(int restaurantId)// for the user side
         {
+
             var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
             foreach (var item in menuItems)
                 item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id, restaurantId));
+
 
             var available = new List<MenuItem>();
 
@@ -62,14 +64,19 @@ namespace Services
                     return inv.QuantityInStock >= ing.Quantity;
                 });
 
-                item.SetMenuItemAvailability(inStock);
+                bool isMarkedAvailable = item.IsAvailable;
 
-                if (inStock)
-                    available.Add(item);           
+                item.SetMenuItemAvailability(inStock && isMarkedAvailable);
+
+                if (inStock && isMarkedAvailable)
+                {
+                    available.Add(item);
+                }
             }
 
             return available;
         }
+
 
         public List<MenuItem> LoadMenuItemsForManager(int restaurantId)
         {
