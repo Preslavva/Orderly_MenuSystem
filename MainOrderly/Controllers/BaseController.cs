@@ -12,7 +12,7 @@ namespace MainOrderly.WebApp.Controllers
         private readonly RestaurantService _restaurantService;
 
         public BaseController(RestaurantService restaurantService)
-        {
+        { 
             _restaurantService = restaurantService;
         }
 
