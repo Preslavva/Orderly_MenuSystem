@@ -109,11 +109,27 @@ namespace MainOrderly.WebApp.Controllers
 
             ModelState.Remove("AvailableIngredients");
             ModelState.Remove("Picture");
+            for (int i = 0; i < model.NutritionValues.Count; i++)
+            {
+                var n = model.NutritionValues[i];
+                if (n.Value < 0)
+                {
+                    ModelState.AddModelError($"NutritionValues[{i}].Value", $"{n.Name} must be 0 or greater.");
+                }
+            }
 
             if (!ModelState.IsValid)
             {
                 RehydrateCreateFormData(model);
                 return View("Create", model);
+            }
+
+            model.SelectedIngredientIds ??= model.IngredientQuantities?.Keys.ToList() ?? new List<int>();
+
+            // ✅ Validate ingredient selection
+            if (!model.SelectedIngredientIds.Any())
+            {
+                ModelState.AddModelError("SelectedIngredientIds", "Please select at least one ingredient.");
             }
 
             if (model.ImageFile != null && model.ImageFile.Length > 0)
@@ -154,6 +170,7 @@ namespace MainOrderly.WebApp.Controllers
 
                 model.Picture = "/images/" + fileName;
             }
+            model.Picture ??= "/images/default.png";
 
             var lowStock = model.SelectedIngredientIds.Any(id =>
             {
@@ -337,15 +354,25 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult Edit(CreateMenuItemViewModel model)
         {
             var restaurantId = GetCurrentRestaurantId();
+            model.SelectedIngredientIds ??= model.IngredientQuantities?.Keys.ToList() ?? new List<int>();
 
+            ModelState.Remove("SelectedIngredientIds");
             if (!ModelState.IsValid)
             {
                 RehydrateEditFormData(model);
+                foreach (var key in ModelState.Keys)
+                {
+                    var state = ModelState[key];
+                    foreach (var error in state.Errors)
+                    {
+                        Console.WriteLine($"❌ Model error on '{key}': {error.ErrorMessage}");
+                    }
+                }
+
                 return View("EditMenuItem", model);
             }
 
             // ✅ Ensure ingredient selection is not null
-            model.SelectedIngredientIds ??= model.IngredientQuantities?.Keys.ToList() ?? new List<int>();
 
             // ✅ Validate that IsAvailable is not allowed with low-stock ingredients
             var lowStock = model.SelectedIngredientIds.Any(id =>
@@ -403,12 +430,19 @@ namespace MainOrderly.WebApp.Controllers
             _nutritionService.UpdateNutritions(model.Id, model.NutritionValues.ToDictionary(e => e.Name, e => e.Value), restaurantId);
             _menuService.UpdateMenuItemAllergens(model.Id, model.SelectedAllergens, restaurantId);
 
-            var selectedIngredients = model.IngredientQuantities?
-                .Where(kv => kv.Value > 0)
-                .ToDictionary(kv => kv.Key, kv => (decimal)kv.Value)
-                ?? new Dictionary<int, decimal>();
+            // ✅ Safely update ingredients only if data is present
+            if (model.IngredientQuantities != null && model.IngredientQuantities.Count > 0)
+            {
+                var selectedIngredients = model.IngredientQuantities
+                    .Where(kv => kv.Value > 0)
+                    .ToDictionary(kv => kv.Key, kv => (decimal)kv.Value);
 
-            _ingredientService.UpdateMenuItemIngredients(model.Id, selectedIngredients, restaurantId);
+                _ingredientService.UpdateMenuItemIngredients(model.Id, selectedIngredients, restaurantId);
+            }
+            else
+            {
+                Console.WriteLine("⚠️ No IngredientQuantities received — skipping ingredient update.");
+            }
 
             TempData["Success"] = "Menu item updated successfully!";
             return RedirectToAction("MenuItems");

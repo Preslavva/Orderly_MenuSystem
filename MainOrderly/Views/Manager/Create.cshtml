@@ -100,8 +100,11 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Nutrition Facts</label>
+
                                 @for (int i = 0; i < Enum.GetValues(typeof(NutritionName)).Length; i++)
                                 {
+
+                                    <span asp-validation-for="NutritionValues[@i].Value" class="text-danger"></span>
                                     var nutrition = (NutritionName)Enum.GetValues(typeof(NutritionName)).GetValue(i);
                                     <div class="input-group mb-2">
                                         <span class="input-group-text">@nutrition</span>
@@ -138,6 +141,8 @@
                 </div> <!-- end col-->
             </div>
             <!-- end row -->
+            <span asp-validation-for="SelectedIngredientIds" class="text-danger"></span>
+
             <div id="ingredient-table-container">
                 @await Html.PartialAsync("_IngredientTable", Model)
             </div>

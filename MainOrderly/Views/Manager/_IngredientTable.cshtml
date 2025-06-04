@@ -30,7 +30,8 @@
                             <input type="checkbox"
                                    name="SelectedIngredientIds"
                                    value="@ingredient.Id"
-                            @(Model.SelectedIngredientIds?.Contains(ingredient.Id) == true ? "checked" : "") />
+                            @(Model.SelectedIngredientIds != null && Model.SelectedIngredientIds.Contains(ingredient.Id) ? "checked=\"checked\"" : "") />
+
 
                             <input type="number"
                                    name="IngredientQuantities[@ingredient.Id]"
