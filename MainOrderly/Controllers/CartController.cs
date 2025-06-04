@@ -70,13 +70,18 @@ namespace MainOrderly.WebApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult OrderSummaryPage(Tip tipAmount, int customTip)    
+        public async Task<IActionResult> OrderSummaryPage(Tip tipAmount, int customTip)    
         {
             var restaurantId = GetRestaurantId();
             ApplyStyling((int)restaurantId);
             ViewData["Page"] = "Order summary";
             List<CartViewModel> viewModel = GetCartViewModel();
-
+            Restaurant restaurant = await _restaurantService.GetRestaurantAsync(restaurantId);
+            if(restaurant != null)
+            {
+                HttpContext.Session.SetInt32("IncludePayment", restaurant.IncludePayment ? 1 : 0);
+                HttpContext.Session.SetInt32("IncludeAntiAbuse", restaurant.IncludeAntiAbuse ? 1 : 0);
+            } 
             ViewBag.SelectedTip = tipAmount;
             ViewBag.TotalPrice = _cartService.CalculateTotalPrice(GetOrderList((int)restaurantId), tipAmount, customTip);
             ViewBag.NoTipTotalPrice = _cartService.CalculateTotalPrice(GetOrderList((int)restaurantId));
@@ -115,14 +120,17 @@ namespace MainOrderly.WebApp.Controllers
                 return RedirectToAction("OrderSummaryPage", "Cart");
             }
 
-            int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
-            if (oldOrderId != null)
+            if(HttpContext.Session.GetInt32("IncludeAntiAbuse") == 1)
             {
-                bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId, (int)restaurantId);
-                if (!IsNotExpired)
+                int? oldOrderId = HttpContext.Session.GetInt32("oldOrderId");
+                if (oldOrderId != null)
                 {
-                    TempData["ErrorMessage"] = "You cannot place another order because the time restriction has not expired.";
-                    return RedirectToAction("OrderSummaryPage", "Cart");
+                    bool IsNotExpired = _cartService.CheckTimeBetweenOrders(oldOrderId, (int)restaurantId);
+                    if (!IsNotExpired)
+                    {
+                        TempData["ErrorMessage"] = "You cannot place another order because the time restriction has not expired.";
+                        return RedirectToAction("OrderSummaryPage", "Cart");
+                    }
                 }
             }
 

@@ -29,6 +29,15 @@ namespace Services
             return _restaurantRepository.GetOwnerRestaurant(ownerId);
         }
 
+        public async Task<Restaurant> GetRestaurantAsync(int? restaurantId)
+        { 
+            if(restaurantId!= null && restaurantId!=0)
+            {
+                return await _restaurantRepository.GetRestaurantByIdAsync(restaurantId.Value);
+            }
+            return null;
+        }
+
 		public string ConvertToString(IFormFile image)
 		{
 			using (var ms = new MemoryStream())

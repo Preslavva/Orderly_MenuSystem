@@ -22,8 +22,10 @@
              public string ColorDefault { get; }
              public string ColorBackground { get; }
             public string KVK { get; set; }
+            public bool IncludePayment { get; set; }
+            public bool IncludeAntiAbuse { get; set; }
 
-            public List<MenuItem> MenuItems { get; }
+        public List<MenuItem> MenuItems { get; }
             public List<Table> Tables { get; }
             public List<Order> Orders { get; }
 
@@ -68,7 +70,9 @@
        string colorDefault,
        string colorBackground,
        bool isActive,
-       string kvk)
+       string kvk,
+        bool includePayment,
+        bool includeAntiAbuse)
         {
             Id = id;
             Name = name;
@@ -82,7 +86,9 @@
             ColorDefault = colorDefault;
             ColorBackground = colorBackground;
             KVK = kvk;
-            IsActive = isActive; 
+            IsActive = isActive;
+            IncludePayment = includePayment;
+            IncludeAntiAbuse = includeAntiAbuse;
         }
 
         public Restaurant(
@@ -97,7 +103,9 @@
   string colorButtons,
   string colorDefault,
   string colorBackground,
-  string kvk)
+  string kvk,
+  bool includePayment,
+  bool includeAntiAbuse)
         {
             Id = id;
             Name = name;
@@ -111,6 +119,8 @@
             ColorDefault = colorDefault;
             ColorBackground = colorBackground;
             KVK = kvk;
+            IncludePayment = includePayment;
+            IncludeAntiAbuse = includeAntiAbuse;
         }
 
     }

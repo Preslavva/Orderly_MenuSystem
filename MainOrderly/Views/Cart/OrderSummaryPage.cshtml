@@ -2,6 +2,7 @@
 @{
     ViewData["Title"] = "Order Summary";
     var selected = (Tip?)ViewBag.SelectedTip ?? Tip.None;
+    var payment = Context.Session.GetInt32("IncludePayment");
 }
 
 <link rel="stylesheet" href="~/css/orderSummary.css" />
@@ -27,36 +28,48 @@
                 </p>
             }
         </div>
-        <!-- Tipping Section -->
-        <div class="tipping-section">
-            <div class="tipping-title">Add a tip</div>
-            <div class="tipping-options">
-                <form asp-action="OrderSummaryPage" method="get">
-                    <div class="tip-buttons-row">
-                        <button type="submit" name="tipAmount" value="None" class="tip-btn @(selected == Tip.None ? "active" : "")">No Tip</button>
-                        <button type="submit" name="tipAmount" value="Tip15" class="tip-btn @(selected == Tip.Tip15 ? "active" : "")">15%</button>
-                        <button type="submit" name="tipAmount" value="Tip25" class="tip-btn @(selected == Tip.Tip25 ? "active" : "")">25%</button>
-                    </div>
-                    <div class="custom-tip">
-                        <input formtype="number" id="customTipInput" name="customTip" placeholder="Custom %" min="0" max="100" />
-                        <button type="submit" class="tip-btn">Apply</button>
-                    </div>
-                </form>
+        
+        @if(payment == 1)
+        {
+            <div class="tipping-section">
+                <div class="tipping-title">Add a tip</div>
+                <div class="tipping-options">
+                    <form asp-action="OrderSummaryPage" method="get">
+                        <div class="tip-buttons-row">
+                            <button type="submit" name="tipAmount" value="None" class="tip-btn @(selected == Tip.None ? "active" : "")">No Tip</button>
+                            <button type="submit" name="tipAmount" value="Tip15" class="tip-btn @(selected == Tip.Tip15 ? "active" : "")">15%</button>
+                            <button type="submit" name="tipAmount" value="Tip25" class="tip-btn @(selected == Tip.Tip25 ? "active" : "")">25%</button>
+                        </div>
+                        <div class="custom-tip">
+                            <input formtype="number" id="customTipInput" name="customTip" placeholder="Custom %" min="0" max="100" />
+                            <button type="submit" class="tip-btn">Apply</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="grand-total">
+                    <span>Grand Total:</span>
+                    <span id="grandTotal">@ViewBag.TotalPrice.ToString("C")</span>
+                </div>
+                <div>
+                    <span>Total without tip:</span>
+                    <span id="withoutTip">@ViewBag.NoTipTotalPrice.ToString("C")</span>
+                </div>
             </div>
-            <div class="grand-total">
-                <span>Grand Total:</span>
-                <span id="grandTotal">@ViewBag.TotalPrice.ToString("C")</span>
-            </div>
+        }
+        else
+        {
             <div>
                 <span>Total without tip:</span>
                 <span id="withoutTip">@ViewBag.NoTipTotalPrice.ToString("C")</span>
             </div>
-        </div>
+        }
         <form asp-controller="Cart" asp-action="CheckOut" method="post">
             <input type="submit" value="Pay now" class="btn-order-now" />
         </form>
     </div>
 </div>
+
+
 <style>
     /* Tipping Section Styles */
     .tipping-section {
