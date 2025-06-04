@@ -12,14 +12,15 @@ namespace MainOrderly.WebApp.Controllers
         private readonly CartService _cartService;
         private readonly HistoryService _historyService;
         private readonly RestaurantService _restaurantService;
-     
+        private readonly MenuService _menuService;
+
         public CartController(CartService cartService, IngredientService ingredientService, 
-            HistoryService historyService, RestaurantService restaurantService): base(restaurantService)
+            HistoryService historyService, RestaurantService restaurantService, MenuService menuService): base(restaurantService)
         {
             _cartService = cartService;
             _historyService = historyService;
             _restaurantService = restaurantService;
-          
+            _menuService = menuService;
         }
 
         private int? GetRestaurantId()
@@ -139,6 +140,9 @@ namespace MainOrderly.WebApp.Controllers
             {
                 return RedirectToAction("OrderList");
             }
+
+            var cart = GetOrderList((int)restaurantId);
+
             int newOrderId = _cartService.FinalizeOrder(tableId, restaurant, (int)restaurantId);
             
             _historyService.SaveOrderIds(newOrderId);

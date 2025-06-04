@@ -78,6 +78,33 @@ namespace Services
         }
 
 
+        public List<MenuItem> LoadMenuItemsForUser(int restaurantId)// for the user side
+        {
+
+            var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
+            foreach (var item in menuItems)
+                item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id, restaurantId));
+
+
+           ;
+
+            foreach (var item in menuItems)
+            {
+                bool inStock = item.Ingredients.All(ing =>
+                {
+                    var inv = _ingredientService.GetIngredientById(ing.IngredientId, restaurantId);
+                    return inv.QuantityInStock >= ing.Quantity;
+                });
+
+                bool isMarkedAvailable = item.IsAvailable;
+
+                item.SetMenuItemAvailability(inStock && isMarkedAvailable);
+            }
+
+            return menuItems;
+        }
+
+
         public List<MenuItem> LoadMenuItemsForManager(int restaurantId)
         {
             var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);

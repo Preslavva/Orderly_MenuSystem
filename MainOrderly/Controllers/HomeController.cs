@@ -194,6 +194,18 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity)
         {
+            int? restId = HttpContext.Session.GetInt32("RestaurantId");
+            List<MenuItem> menuItems = _menuService.LoadMenuItemsForUser((int)restId!);
+
+            foreach (var selected in menuItems)
+            {
+                if (selected.Id == id && !selected.IsAvailable)
+                {
+                    TempData["NotAvailable"] = "This item is currently unavailable.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+            }
             _cartService.AddToCart(id, quantity);
             ViewBag.CartCount = _cartService.GetCartCount();
             return RedirectToAction("Index", "Home");

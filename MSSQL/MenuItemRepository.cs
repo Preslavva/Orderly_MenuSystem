@@ -66,8 +66,8 @@ namespace MSSQL
                     conn.Open();
                     string query = @"
                INSERT INTO MenuItem ([Name], [Description], Price, IsAvailable, Picture, Category, RestaurantId, PrepTime)
-OUTPUT INSERTED.Id
-VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId, @PrepTime);";
+                            OUTPUT INSERTED.Id
+                    VALUES (@Name, @Description, @Price, @IsAvailable, @Picture, @Category, @RestaurantId, @PrepTime);";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {

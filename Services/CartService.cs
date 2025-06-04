@@ -175,11 +175,9 @@ namespace Services
                 var ingredients = _ingredientRepository.GetIngredientsForMenuItem(element.Key.Id, restaurantId);
                 MenuItem item = element.Key;
                 int quantity = element.Value;
-                item.SetIngredient(ingredients);
+                item.SetIngredient(ingredients); 
                 _ingredientService.SubstractStock(item, restaurantId);
                 newCart.Add(item,quantity);
-
-                
 
             }
             
