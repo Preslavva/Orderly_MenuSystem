@@ -15,11 +15,13 @@ namespace MainOrderly.WebApp.Controllers
     {
         private readonly KitchenOrderService _kitchenOrderService;
         private readonly TimerHelpers _timerHelpers;
+        private readonly RestaurantService _restaurantService;
 
-        public KitchenController(KitchenOrderService kitchenOrderService, TimerHelpers timerHelpers)
+        public KitchenController(KitchenOrderService kitchenOrderService, TimerHelpers timerHelpers, RestaurantService restaurantService)
         {
             _kitchenOrderService = kitchenOrderService;
             _timerHelpers = timerHelpers;
+            _restaurantService = restaurantService; 
         }
 
         private int GetRestaurantId()
@@ -210,10 +212,11 @@ namespace MainOrderly.WebApp.Controllers
         [AllowAnonymous]
         public IActionResult GetOrderStatus(int orderId)
         {
+            int restaurantId = GetRestaurantId();
             if (orderId == 0)
                 return BadRequest("Order ID is required.");
 
-            OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId, 1));
+            OrderViewModel order = OrderViewModel.ConvertToViewModel(_kitchenOrderService.GetOrderById(orderId, restaurantId));
             return Content(order.Status.ToString());
         }
 
