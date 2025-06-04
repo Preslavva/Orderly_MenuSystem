@@ -23,7 +23,7 @@ namespace MainOrderly.WebApp.ViewModels
 
         public string Picture { get; set; }
 
-        [Range(1, 240, ErrorMessage = "Prep time must be between 1 and 240 minutes.")]
+        [Range(0, 240, ErrorMessage = "Prep time must be between 0 and 240 minutes.")]
         public int PrepTime { get; set; }
         public Category Category { get; set; }
 
