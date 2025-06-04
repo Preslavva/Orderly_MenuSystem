@@ -30,6 +30,30 @@ namespace MainOrderly.WebApp.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult GetAnalyticsKpis(string date)
+        {
+            var restaurantId = GetRestaurantId();
+            if (!DateTime.TryParse(date, out var actualDate))
+            {
+                actualDate = DateTime.Today;
+            }
+
+            var year = actualDate.Year;
+            var selectedMonth = actualDate.Month;
+
+            var revenue = _analyticsService.GetTotalRevenue(restaurantId, selectedMonth, year);
+            var totalOrders = _analyticsService.GetTotalOrders(restaurantId, selectedMonth, year);
+         
+            return Json(new
+            {
+                revenue,
+                totalOrders
+            });
+        }
+
+
+
         public JsonResult GetTopSellingItems(string date)
         {
             var restaurantId = GetRestaurantId();

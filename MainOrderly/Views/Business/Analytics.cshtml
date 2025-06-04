@@ -23,7 +23,7 @@
                             <h5 class="card-title mb-0">Total Revenue</h5>
                         </div>
                         <div class="card-body">
-                            <h2 class="card-text">3333</h2>
+                            <h2 id="revenueValue" class="card-text">€0</h2>
                             <small>For selected period</small>
                         </div>
                     </div>
@@ -34,19 +34,8 @@
                             <h5 class="card-title mb-0">Total Orders</h5>
                         </div>
                         <div class="card-body">
-                            <h2 class="card-text">22</h2>
+	                        <h2 id="ordersValue" class="card-text">0</h2>
                             <small>Orders completed</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card text-white bg-warning">
-                        <div class="card-header">
-                            <h5 class="card-title mb-0">Average Order Value</h5>
-                        </div>
-                        <div class="card-body">
-                            <h2 class="card-text">2</h2>
-                            <small>Per order</small>
                         </div>
                     </div>
                 </div>
@@ -109,6 +98,7 @@
 <script>
 
        function onDateChange() {
+        loadAnalyticsKpis();
         loadRevenueTrendChart();
         loadOrdersByHourChart();
 		loadBestSellingItemsChart();
@@ -301,7 +291,21 @@
         });
     }
 
+                    async function loadAnalyticsKpis() {
+                    const monthInput = document.getElementById('dateInput');
+                    const selectedDateStr = monthInput.value;
+
+                                            const response = await fetch(`/Business/GetAnalyticsKpis?date=${selectedDateStr}`);
+                    const json = await response.json();
+
+                    document.querySelector("#revenueValue").textContent = `$${json.revenue.toLocaleString()}`;
+                    document.querySelector("#ordersValue").textContent = json.totalOrders;
+                
+                }
+
+
 			window.onload = function() {
+                    loadAnalyticsKpis();
 					loadRevenueTrendChart();
 					loadOrdersByHourChart();
 								loadBestSellingItemsChart();

@@ -22,52 +22,44 @@ namespace MSSQL
             conn.Open();
 
             // Base SQL
-            string query = @"
-        WITH HourlyRange AS (
-            SELECT 8 AS Hour 
-            UNION SELECT 9
-            UNION SELECT 10 
-            UNION SELECT 11 
-            UNION SELECT 12
-            UNION SELECT 13
-            UNION SELECT 14
-            UNION SELECT 15
-            UNION SELECT 16
-            UNION SELECT 17
-            UNION SELECT 18
-            UNION SELECT 19
-            UNION SELECT 20
-            UNION SELECT 21
-            UNION SELECT 22
-            UNION SELECT 23
-            UNION SELECT 24
-        ),
-        DistinctRestaurants AS (
-            SELECT DISTINCT RestaurantId FROM [Order]
-        ),
-        AllCombos AS (
-            SELECT r.RestaurantId, h.Hour
-            FROM DistinctRestaurants r
-            CROSS JOIN HourlyRange h
-        ),
-        OrderCounts AS (
-            SELECT 
-                RestaurantId,
-                DATEPART(HOUR, OrderTimeStamp) AS OrderHour,
-                COUNT(*) AS OrderCount
-            FROM [Order]
-            WHERE DATEPART(HOUR, OrderTimeStamp) BETWEEN 8 AND 24 AND MONTH(OrderTimeStamp) = @Month AND YEAR(OrderTimeStamp) = @Year AND RestaurantId = @RestaurantId
-            GROUP BY RestaurantId, DATEPART(HOUR, OrderTimeStamp)
-        )
-        SELECT 
-            ac.RestaurantId,
-            ac.Hour,
-            ISNULL(oc.OrderCount, 0) AS OrderCount
-        FROM AllCombos ac
-        LEFT JOIN OrderCounts oc 
-            ON ac.RestaurantId = oc.RestaurantId AND ac.Hour = oc.OrderHour
-        ORDER BY ac.RestaurantId, ac.Hour;
-    ";
+            string query = @"WITH HourlyRange AS (
+    SELECT 8 AS Hour 
+    UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 
+    UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15
+    UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19
+    UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24
+),
+DistinctRestaurants AS (
+    SELECT DISTINCT RestaurantId 
+    FROM [Order]
+    WHERE RestaurantId = 21
+),
+AllCombos AS (
+    SELECT r.RestaurantId, h.Hour
+    FROM DistinctRestaurants r
+    CROSS JOIN HourlyRange h
+),
+OrderCounts AS (
+    SELECT 
+        RestaurantId,
+        DATEPART(HOUR, OrderTimeStamp) AS OrderHour,
+        COUNT(*) AS OrderCount
+    FROM [Order]
+    WHERE DATEPART(HOUR, OrderTimeStamp) BETWEEN 8 AND 24 
+          AND MONTH(OrderTimeStamp) = @Month
+          AND YEAR(OrderTimeStamp) = @Year 
+          AND RestaurantId = @RestaurantId
+    GROUP BY RestaurantId, DATEPART(HOUR, OrderTimeStamp)
+)
+SELECT 
+    ac.RestaurantId,
+    ac.Hour,
+    ISNULL(oc.OrderCount, 0) AS OrderCount
+FROM AllCombos ac
+LEFT JOIN OrderCounts oc 
+    ON ac.RestaurantId = oc.RestaurantId AND ac.Hour = oc.OrderHour
+ORDER BY ac.RestaurantId, ac.Hour;
+";
             using SqlCommand cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
             cmd.Parameters.AddWithValue("@Year", year);
@@ -106,7 +98,7 @@ namespace MSSQL
             using SqlCommand cmd = new SqlCommand(query, conn);
             cmd.Parameters.AddWithValue("@Month", month);
             cmd.Parameters.AddWithValue("@Year", year);
-            cmd.Parameters.AddWithValue("@RestaurantId", 1);
+            cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
           
             using SqlDataReader reader = cmd.ExecuteReader();
             List<ItemSale> bestSellingItems = new List<ItemSale>();
@@ -123,7 +115,42 @@ namespace MSSQL
 
         }
 
+        public int GetTotalOrders(int restaurantId, int month, int year)
+        {
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+            string query = @"
+            SELECT COUNT(*) AS TotalOrders
+            FROM [Order]
+            WHERE MONTH(OrderTimeStamp) = @Month AND YEAR(OrderTimeStamp) = @Year AND RestaurantId = @RestaurantId;
+            ";
+            using SqlCommand cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+            cmd.Parameters.AddWithValue("@Year", year);
+            cmd.Parameters.AddWithValue("@Month", month);
+            object result = cmd.ExecuteScalar();
+            return result != DBNull.Value ? Convert.ToInt32(result) : 0;
+        }
 
+        public decimal GetTotalRevenue(int restaurantId, int month, int year)
+        {
+
+            using SqlConnection conn = new SqlConnection(_connectionString);
+            conn.Open();
+            string query = @"
+            SELECT SUM(SubTotal) AS TotalRevenue
+            FROM [Order]
+            WHERE MONTH(OrderTimeStamp) = @Month AND YEAR(OrderTimeStamp) = @Year AND RestaurantId = @RestaurantId;
+            ";
+            using SqlCommand cmd = new SqlCommand(query, conn);
+            cmd.Parameters.AddWithValue("@RestaurantId", restaurantId);
+            cmd.Parameters.AddWithValue("@Year", year);
+            cmd.Parameters.AddWithValue("@Month", month);
+            object result = cmd.ExecuteScalar();
+            return result != DBNull.Value ? Convert.ToDecimal(result) : 0m;
+        }
+
+                
         public List<RevenueEntry> GetRevenue(int restaurantId,int? year, int? month)
         {
             using SqlConnection conn = new SqlConnection(_connectionString);

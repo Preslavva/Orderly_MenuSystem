@@ -29,5 +29,11 @@ namespace Services
 
         public List<CategoryRevenue> GetCategoryRevenues(int year, int month, int restaurantId) =>
             _analyticsRepository.GetCategoryRevenues(restaurantId, year, month);
+
+        public decimal GetTotalRevenue(int restaurantId, int month, int year) => 
+        _analyticsRepository.GetTotalRevenue(restaurantId, month, year);
+
+        public int GetTotalOrders(int restaurantId, int month, int year) =>
+        _analyticsRepository.GetTotalOrders(restaurantId, month, year);
     }
 }
