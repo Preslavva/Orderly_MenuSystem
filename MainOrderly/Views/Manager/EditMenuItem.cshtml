@@ -132,6 +132,7 @@
                             </div>
 
                             <div class="mb-3 form-check">
+                                <span asp-validation-for="IsAvailable" class="text-danger"></span>
                                 <input asp-for="IsAvailable" class="form-check-input" />
                                 <label asp-for="IsAvailable" class="form-check-label">Available</label>
                             </div>
@@ -205,36 +206,13 @@
         let selectedIngredientIds = new Set();
         let ingredientQuantities = {};
 
-               function bindIngredientEditSelectionHandlers() {
-            document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
-                const id = input.name.match(/\d+/)[0];
-
-                if (ingredientQuantities[id] !== undefined) {
-                    input.value = ingredientQuantities[id];
-                }
-
-                input.addEventListener("input", () => {
-                    const value = parseFloat(input.value) || 0;
-                    ingredientQuantities[id] = value;
-
-                    if (value > 0) {
-                        selectedIngredientIds.add(id);
-                        const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
-                        if (checkbox) checkbox.checked = true;
-                    }
-                });
-            });
-                    function loadEditPage(menuItemId, pageNumber) {
-            $.get(`/Manager/LoadIngredientsPartialForEdit?id=${menuItemId}&pageNumber=${pageNumber}`, function (data) {
-                $('#ingredient-table-content').html(data);
-            });
-        }
-
+        function bindIngredientEditSelectionHandlers() {
+            // Preload checked checkboxes and quantities on first load or pagination
             document.querySelectorAll("input[type='checkbox'][name='SelectedIngredientIds']").forEach(checkbox => {
                 const id = checkbox.value;
 
-                if (selectedIngredientIds.has(id)) {
-                    checkbox.checked = true;
+                if (checkbox.checked) {
+                    selectedIngredientIds.add(id);
                 }
 
                 checkbox.addEventListener("change", () => {
@@ -243,6 +221,28 @@
                     } else {
                         selectedIngredientIds.delete(id);
                         delete ingredientQuantities[id];
+                    }
+                });
+            });
+
+            // Preload or bind quantities
+            document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
+                const id = input.name.match(/\d+/)[0];
+                const value = parseFloat(input.value) || 0;
+
+                if (value > 0) {
+                    ingredientQuantities[id] = value;
+                    selectedIngredientIds.add(id);
+                }
+
+                input.addEventListener("input", () => {
+                    const newValue = parseFloat(input.value) || 0;
+                    ingredientQuantities[id] = newValue;
+
+                    if (newValue > 0) {
+                        selectedIngredientIds.add(id);
+                        const checkbox = document.querySelector(`input[type='checkbox'][value='${id}']`);
+                        if (checkbox) checkbox.checked = true;
                     }
                 });
             });
@@ -270,8 +270,9 @@
                         .then(response => response.text())
                         .then(html => {
                             document.getElementById("edit-ingredient-table").innerHTML = html;
+
+                            // Rebind all events after pagination
                             bindEditPaginationButtons();
-                            bindQuantityAutoCheck();
                             bindIngredientEditSelectionHandlers();
                             restoreIngredientSelections();
                         })
@@ -280,32 +281,20 @@
             });
         }
 
-
-        function bindQuantityAutoCheck() {
-            document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
-                input.addEventListener("input", function () {
-                    const ingredientId = input.name.match(/\d+/)[0];
-                    const checkbox = document.querySelector(`input[type='checkbox'][value='${ingredientId}']`);
-                    if (checkbox) {
-                        checkbox.checked = parseFloat(input.value) > 0;
-                    }
-                });
-            });
-        }
-
         document.addEventListener("DOMContentLoaded", function () {
             const menuItemId = document.querySelector("input[name='Id']").value;
 
+            // Initial load of ingredients table
             fetch(`/Manager/LoadIngredientsPartialForEdit?id=${menuItemId}&pageNumber=1`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById("edit-ingredient-table").innerHTML = html;
                     bindEditPaginationButtons();
-                    bindQuantityAutoCheck();
                     bindIngredientEditSelectionHandlers();
                     restoreIngredientSelections();
                 });
 
+            // Before form submission: add all selections to hidden fields
             document.querySelector("form").addEventListener("submit", function () {
                 document.querySelectorAll(".persisted-ingredient").forEach(el => el.remove());
 
@@ -328,6 +317,7 @@
                 });
             });
 
+            // Image preview
             const fileInput = document.querySelector('input[type="file"]');
             if (fileInput) {
                 fileInput.addEventListener("change", function (e) {
@@ -345,5 +335,3 @@
         });
     </script>
 }
-
-

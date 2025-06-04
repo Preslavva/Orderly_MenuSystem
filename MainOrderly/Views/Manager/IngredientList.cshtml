@@ -12,16 +12,16 @@
                 <h1 class="h3 mb-0">🧂 Ingredient Stock</h1>
             </div>
             <div class="col-md-6">
-                <div class="input-group">
+                @* <div class="input-group">
                     <input type="text" id="searchInput" class="form-control" placeholder="Search ingredients...">
                     <button class="btn btn-outline-secondary" type="button">
                         <i class="bi bi-search"></i>
                     </button>
-                </div>
+                </div> *@
             </div>
             <div class="col-md-6 text-md-end mt-3 mt-md-0 d-flex justify-content-end align-items-center gap-2">
                 <!-- Filter -->
-                <div class="dropdown">
+               @*  <div class="dropdown">
                     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="categoryFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                         Filter by Category
                     </button>
@@ -31,7 +31,7 @@
                         <li><a class="dropdown-item" href="#" data-category="ml">Milliliters</a></li>
                         <li><a class="dropdown-item" href="#" data-category="pcs">Pieces</a></li>
                     </ul>
-                </div>
+                </div> *@
                 <button id="lowStockFilterBtn" class="btn btn-outline-danger">
                     <i class="bi bi-exclamation-triangle me-1"></i> Low Stock Only
                 </button>
@@ -132,10 +132,9 @@
 <div class="row justify-content-center">
     <div class="col-11">
         <div class="table-responsive">
-            <table class="table table-centered table-nowrap mb-0">
+            <table id="ingredientTable" class="table table-centered table-nowrap mb-0 display">
                 <thead class="table-light">
                     <tr>
-
                         <th>ID</th>
                         <th>Name</th>
                         <th>Quantity in Stock</th>
@@ -151,63 +150,152 @@
                         var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
                         var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
 
-                        <tr data-unit="@i.Unit.ToLower()">
+                        <tr>
                             <td>@i.Id</td>
                             <td>@i.Name</td>
                             <td>@i.QuantityInStock</td>
                             <td>@i.Unit</td>
                             <td>@i.MinimumStockLevel</td>
-                            <td><h5><span class="badge @badgeClass">@status</span></h5></td>
+                            <td><span class="badge @badgeClass">@status</span></td>
                             <td>
-                                <a href="javascript:void(0);" class="action-icon edit-btn"
-                                   data-id="@i.Id" data-bs-toggle="modal" data-bs-target="#editIngredientModal">✏️</a>
+                                <a href="javascript:void(0);" class="action-icon edit-btn" data-id="@i.Id">✏️</a>
                                 <a href="javascript:void(0);" class="action-icon delete-btn" data-id="@i.Id">🗑️</a>
                             </td>
                         </tr>
                     }
-
-                    @*  @foreach (var i in Model)
-                        {
-                            var status = i.QuantityInStock < i.MinimumStockLevel ? "Low" : "In Stock";
-                            var badgeClass = status == "Low" ? "bg-danger" : "bg-success";
-                            <tr>
-
-                                <td>@i.Id</td>
-                                <td>@i.Name</td>
-                                <td>@i.QuantityInStock</td>
-                                <td>@i.Unit</td>
-                                <td>@i.MinimumStockLevel</td>
-                                <td><h5><span class="badge @badgeClass">@status</span></h5></td>
-                                <td>
-                                    <a href="javascript:void(0);"
-                                       class="action-icon edit-btn"
-                                       data-id="@i.Id"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#editIngredientModal">✏️</a>
-
-                                    <a href="javascript:void(0);"
-                                       class="action-icon delete-btn"
-                                       data-id="@i.Id">🗑️</a>
-
-                                </td>
-                            </tr>
-                        } *@
                 </tbody>
-
             </table>
+
         </div>
     </div>
 </div>
 
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-        </div> <!-- end col -->
-    </div>
-<!-- end row -->
-</div>
+    <script>
+        $(function () {
+            // Low stock filtering extension
+            $.fn.dataTable.ext.search.push((settings, data) => {
+                if (!window.lowStockFilterActive) return true;
+                const stock = parseFloat(data[2]);
+                const min = parseFloat(data[4]);
+                return stock < min;
+            });
+
+            // ✅ Save DataTable instance
+            const table = $('#ingredientTable').DataTable({
+                pageLength: 10,
+                    lengthChange: true,
+        lengthMenu: [ [5, 10, 25, 50, 100], [5, 10, 25, 50, 100] ],
+              
+                ordering: true,
+                searching: true,
+                info: false,
+                columnDefs: [{ targets: 6, orderable: false }]
+            });
+
+            window.lowStockFilterActive = false;
+
+            $('#lowStockFilterBtn').on('click', function () {
+                window.lowStockFilterActive = !window.lowStockFilterActive;
+                table.draw();
+                $(this).toggleClass('btn-danger', window.lowStockFilterActive)
+                       .toggleClass('btn-outline-danger', !window.lowStockFilterActive)
+                       .html(window.lowStockFilterActive
+                            ? '<i class="bi bi-exclamation-triangle me-1"></i> Showing Low Stock'
+                            : '<i class="bi bi-exclamation-triangle me-1"></i> Low Stock Only');
+            });
+
+            // ✅ Use event delegation
+            $('#ingredientTable').on('click', '.edit-btn', function () {
+                const id = $(this).data('id');
+                fetch(`/Manager/GetIngredientById/${id}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        $('#editId').val(data.id);
+                        $('#editName').val(data.name);
+                        $('#editQuantity').val(data.quantityInStock);
+                        $('#editMinimumStockLevel').val(data.minimumStockLevel);
+                        $('#editUnit').val(data.unit);
+                        $('#editIngredientModal').modal('show');
+                    });
+            });
+
+            $('#ingredientTable').on('click', '.delete-btn', function () {
+                const id = $(this).data('id');
+                if (!confirm("❗ Are you sure you want to delete this ingredient?")) return;
+                fetch(`/Manager/DeleteIngredient/${id}`, { method: 'DELETE' })
+                    .then(r => {
+                        if (!r.ok) throw new Error("Delete failed");
+                        return r.json();
+                    })
+                    .then(() => location.reload())
+                    .catch(err => alert("❌ " + err.message));
+            });
+
+            // Add new ingredient
+            $('#ingredientForm').on('submit', function (e) {
+                e.preventDefault();
+                const data = {
+                    name: $('#ingredientName').val(),
+                    unit: $('#unit').val(),
+                    quantityInStock: parseInt($('#quantity').val()),
+                    minimumStockLevel: parseInt($('#minimumStockLevel').val())
+                };
+                fetch("/Manager/AddIngredient", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                }).then(resp => {
+                    if (!resp.ok) throw new Error("Add failed");
+                    return resp.json();
+                }).then(() => location.reload())
+                  .catch(err => alert("❌ " + err.message));
+            });
+
+            // Update ingredient
+            $('#editIngredientForm').on('submit', function (e) {
+                e.preventDefault();
+                const data = {
+                    id: parseInt($('#editId').val()),
+                    name: $('#editName').val(),
+                    unit: $('#editUnit').val(),
+                    quantityInStock: parseInt($('#editQuantity').val()),
+                    minimumStockLevel: parseInt($('#editMinimumStockLevel').val())
+                };
+                fetch("/Manager/UpdateIngredient", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                }).then(resp => {
+                    if (!resp.ok) return resp.text().then(text => { throw new Error(text); });
+                    return resp.json();
+                }).then(() => location.reload())
+                  .catch(err => alert("❌ " + err.message));
+            });
+        });
+    </script>
+}
 
 
-<script>
+
+
+@* <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        $('#ingredientTable').DataTable({
+            pageLength: 10,
+            lengthChange: false,
+            ordering: true,
+            searching: true,
+            info: false,
+            columnDefs: [
+                { targets: 6, orderable: false } // disable sorting on Action column
+            ]
+        });
+    });
     document.addEventListener("DOMContentLoaded", () => {
         const searchInput = document.getElementById("searchInput");
         const categoryLinks = document.querySelectorAll(".dropdown-menu a[data-category]");
@@ -422,3 +510,4 @@
         });
     });
 </script>
+ *@

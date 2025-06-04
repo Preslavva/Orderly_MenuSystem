@@ -20,8 +20,9 @@ namespace MainOrderly.WebApp.ViewModels
         public int Quantity { get; set; }
 
         public Category Category { get; set; }
+        public bool HasLowStockIngredients { get; set; }
 
-      
+
 
         public static MenuItemViewModel ConvertToViewModel(MenuItem menuItem)
         {

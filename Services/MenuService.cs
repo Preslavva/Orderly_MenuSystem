@@ -86,13 +86,20 @@ namespace Services
 
             foreach (var item in menuItems)
             {
+
                 bool inStock = item.Ingredients.All(ing =>
                 {
                     var inv = _ingredientService.GetIngredientById(ing.IngredientId, restaurantId);
-                    return inv.QuantityInStock >= ing.Quantity;
+                    return inv != null && inv.QuantityInStock >= ing.Quantity;
                 });
 
-                item.SetMenuItemAvailability(inStock);
+                //item. item.HasLowStockIngredients = !hasAllIngredients;
+
+                if (!item.IsAvailable || !inStock)
+                {
+                    item.SetMenuItemAvailability(false); // ✅ override to false if any understocked
+                }
+            
             }
 
             return menuItems;
@@ -106,7 +113,7 @@ namespace Services
         public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
         {
             var item = _menuItemRepository.GetMenuItemById(id, restaurantId);
-
+            Console.WriteLine("IsAvailable: " + item?.IsAvailable);
             if (item == null)
             {
                 return null; 

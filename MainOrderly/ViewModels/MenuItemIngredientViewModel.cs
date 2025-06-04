@@ -10,6 +10,7 @@ namespace MainOrderly.WebApp.ViewModels
         public string IngredientUnit { get; set; }
         public int Quantity { get; set; } // required
         public int StockAvailable { get; set; }
+        public int MinimumStockLevel { get; set; }
         public string FormattedQuantity => $"{Quantity} {IngredientUnit}";
 
         public static MenuItemIngredientViewModel ConvertToViewModel(MenuItemIngredient menuItemIngredient)
@@ -21,6 +22,7 @@ namespace MainOrderly.WebApp.ViewModels
                 IngredientUnit = menuItemIngredient.Ingredient.Unit,
                 Quantity = menuItemIngredient.Quantity,
                 StockAvailable = menuItemIngredient.Ingredient.QuantityInStock,
+                MinimumStockLevel = menuItemIngredient.Ingredient.MinimumStockLevel
 
             };          
         }

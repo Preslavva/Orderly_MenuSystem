@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Models.Entities;
 using Models.Enums;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MainOrderly.WebApp.ViewModels
@@ -9,8 +10,11 @@ namespace MainOrderly.WebApp.ViewModels
     public class CreateMenuItemViewModel
     {
         public int Id { get; set; }
+        [Required]
         public string Name { get; set; }
         public string Description { get; set; }
+
+        [Range(0.01, 1000.0, ErrorMessage = "Price must be greater than 0.")]
         public decimal Price { get; set; }
         public bool IsAvailable { get; set; }
 
@@ -18,6 +22,8 @@ namespace MainOrderly.WebApp.ViewModels
         public IFormFile? ImageFile { get; set; }
 
         public string Picture { get; set; }
+
+        [Range(1, 240, ErrorMessage = "Prep time must be between 1 and 240 minutes.")]
         public int PrepTime { get; set; }
         public Category Category { get; set; }
 

@@ -121,7 +121,9 @@
                             <div class="mb-3 form-check">
                                 <input asp-for="IsAvailable" class="form-check-input" />
                                 <label asp-for="IsAvailable" class="form-check-label"></label>
+                                <span asp-validation-for="IsAvailable" class="text-danger"></span> @* ✅ validation display *@
                             </div>
+
 
                         </div>
 
@@ -176,6 +178,91 @@
 
 </div> <!-- content -->
 @section Scripts {
+    <script>
+        let selectedIngredients = {};
+
+        function collectSelectedIngredients() {
+            document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
+                const id = input.name.match(/\d+/)[0];
+                const value = parseFloat(input.value) || 0;
+
+                if (value > 0) {
+                    selectedIngredients[id] = value;
+
+                    // ✅ Automatically check the checkbox
+                    const cb = document.querySelector(`input[name='SelectedIngredientIds'][value='${id}']`);
+                    if (cb) cb.checked = true;
+                } else {
+                    delete selectedIngredients[id];
+                    const cb = document.querySelector(`input[name='SelectedIngredientIds'][value='${id}']`);
+                    if (cb) cb.checked = false;
+                }
+            });
+        }
+
+        function restoreSelections() {
+            Object.entries(selectedIngredients).forEach(([id, qty]) => {
+                const cb = document.querySelector(`input[name='SelectedIngredientIds'][value='${id}']`);
+                const input = document.querySelector(`input[name='IngredientQuantities[${id}]']`);
+
+                if (input) input.value = qty;
+                if (cb) cb.checked = true;
+            });
+        }
+
+        function bindQuantityAutoCheck() {
+            document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
+                input.addEventListener("input", () => {
+                    const id = input.name.match(/\d+/)[0];
+                    const qty = parseFloat(input.value) || 0;
+
+                    selectedIngredients[id] = qty;
+
+                    const cb = document.querySelector(`input[name='SelectedIngredientIds'][value='${id}']`);
+                    if (cb) cb.checked = qty > 0;
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelector('form').addEventListener('submit', function () {
+                collectSelectedIngredients();
+                document.querySelectorAll('.dynamic-ingredient-fields').forEach(e => e.remove());
+
+                Object.entries(selectedIngredients).forEach(([id, qty]) => {
+                    let checkbox = document.createElement('input');
+                    checkbox.type = 'hidden';
+                    checkbox.name = 'SelectedIngredientIds';
+                    checkbox.value = id;
+                    checkbox.classList.add('dynamic-ingredient-fields');
+                    this.appendChild(checkbox);
+
+                    let quantity = document.createElement('input');
+                    quantity.type = 'hidden';
+                    quantity.name = `IngredientQuantities[${id}]`;
+                    quantity.value = qty;
+                    quantity.classList.add('dynamic-ingredient-fields');
+                    this.appendChild(quantity);
+                });
+            });
+
+            // initial bind if quantities are present
+            bindQuantityAutoCheck();
+        });
+
+        function loadCreatePage(pageNumber) {
+            collectSelectedIngredients();
+
+            $.get('/Manager/LoadIngredientTableForCreate', { pageNumber: pageNumber }, function (data) {
+                $('#ingredient-table-container').html(data);
+                restoreSelections();
+                bindQuantityAutoCheck(); // rebind events on new elements
+            });
+        }
+    </script>
+}
+
+@* @section Scripts {
     <script>
                 let selectedIngredients = {};
 
@@ -236,3 +323,4 @@
 
     </script>
 }
+ *@
