@@ -2,10 +2,33 @@
 @{
     Layout = "_ManagerLayout";
     ViewData["Title"] = "CustomizeRestaurant";
-   var user = Context.Session.GetAuthenticatedUser();
+    var user = Context.Session.GetAuthenticatedUser();
 }
 
-<h1>Customize your restaurant</h1>
+<head>
+    @* Load Google Fonts dynamically *@
+    @foreach (var fontItem in Model.Fonts)
+    {
+        var fontFamilyForUrl = fontItem.Text.Replace(" ", "+");
+        <link href="https://fonts.googleapis.com/css2?family=@fontFamilyForUrl&display=swap" rel="stylesheet" />
+    }
+
+    <style>
+        @* Define CSS classes for each font option *@
+        @foreach (var fontItem in Model.Fonts)
+        {
+            var fontFamily = fontItem.Text;
+            var safeFontClass = fontFamily.Replace(" ", "-").ToLowerInvariant();
+            <text>
+                option.font-@safeFontClass {
+                    font-family: '@fontFamily', sans-serif;
+                }
+            </text>
+        }
+    </style>
+</head>
+
+<h1 class="preview-area">Customize your restaurant</h1>
 <hr />
 @if (TempData["SuccessMessage"] != null)
 {
@@ -14,7 +37,6 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -23,11 +45,10 @@
     </div>
 }
 
-<div class="row justify-content-center">
+<div class="row justify-content-center preview-area">
     <div class="col-md-10">
         <form asp-controller="Restaurant" asp-action="CustomizeRestaurant" enctype="multipart/form-data" novalidate>
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3 text-center"></div>
-
             <input asp-for="Id" type="hidden" />
 
             <div class="row">
@@ -52,47 +73,57 @@
                     </div>
 
                     <div class="mb-3">
-                        <label asp-for="Font" class="form-label">Font:</label>
-                        <select asp-for="Font" asp-items="@Model.Fonts" class="form-select">
+                        <label for="Font" class="form-label">Font:</label>
+                        <select name="Font" id="Font" class="form-select">
                             <option value="">Select a Font</option>
+                            @foreach (var fontItem in Model.Fonts)
+                            {
+                                var fontFamily = fontItem.Text;
+                                var safeFontClass = fontFamily.Replace(" ", "-").ToLowerInvariant();
+                                var value = fontItem.Value;
+                                var selected = (Model.Font == value) ? " selected" : "";
+                                @: <option class="font-@safeFontClass" value="@value"@selected>@fontFamily</option>
+                            }
                         </select>
-                        <span asp-validation-for="Font" class="text-danger"></span>
+                        <span class="text-danger">@ViewData.ModelState["Font"]?.Errors.FirstOrDefault()?.ErrorMessage</span>
                     </div>
 
-                    <div class="d-flex justify-content-start gap-4 mb-3">
-                        <div class="d-flex flex-column align-items-center">
+
+
+                    <div class="row mb-3">
+                        <div class="col-6 d-flex justify-content-start">
+                            <div class="form-check">
+                                <input asp-for="IncludePayment" class="form-check-input" type="checkbox" />
+                                <label asp-for="IncludePayment" class="form-check-label"></label>
+                                <span asp-validation-for="IncludePayment" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                        <div class="col-6 d-flex justify-content-end">
+                            <div class="form-check">
+                                <input asp-for="IncludeAniAbuse" class="form-check-input" type="checkbox" />
+                                <label asp-for="IncludeAniAbuse" class="form-check-label"></label>
+                                <span asp-validation-for="IncludeAniAbuse" class="text-danger d-block"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-4 text-start d-flex flex-column align-items-start">
                             <label asp-for="ColorBackground" class="form-label">Background Color:</label>
                             <input asp-for="ColorBackground" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
                             <span asp-validation-for="ColorBackground" class="text-danger"></span>
                         </div>
-
-                        <div class="d-flex flex-column align-items-center">
+                        <div class="col-4 text-center d-flex flex-column align-items-center">
                             <label asp-for="ColorButtons" class="form-label">Buttons Color:</label>
                             <input asp-for="ColorButtons" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
                             <span asp-validation-for="ColorButtons" class="text-danger"></span>
                         </div>
-
-                        <div class="d-flex flex-column align-items-center">
+                        <div class="col-4 text-end d-flex flex-column align-items-end">
                             <label asp-for="ColorDeafult" class="form-label">Default Color:</label>
                             <input asp-for="ColorDeafult" type="color" class="form-control form-control-color" style="width: 80px; height: 40px;" />
                             <span asp-validation-for="ColorDeafult" class="text-danger"></span>
                         </div>
                     </div>
-
-                    <div class="row mb-3">
-                        <div class="col-md-6 form-check">
-                            <input asp-for="IncludePayment" class="form-check-input" type="checkbox" id="IncludePayment" />
-                            <label asp-for="IncludePayment" class="form-check-label"></label>
-                            <span asp-validation-for="IncludePayment" class="text-danger"></span>
-                        </div>
-
-                        <div class="col-md-6 form-check">
-                            <input asp-for="IncludeAniAbuse" class="form-check-input" type="checkbox" id="IncludeAniAbuse" />
-                            <label asp-for="IncludeAniAbuse" class="form-check-label"></label>
-                            <span asp-validation-for="IncludeAniAbuse" class="text-danger"></span>
-                        </div>
-                    </div>
-
 
                     <div class="d-grid mt-4">
                         <button type="submit" class="btn btn-primary">Update</button>
@@ -102,6 +133,3 @@
         </form>
     </div>
 </div>
-
-
-

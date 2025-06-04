@@ -171,11 +171,17 @@ namespace MainOrderly.WebApp.Controllers
 
             var fonts = new List<SelectListItem>();
 
+            int count = 0;
+
             foreach (var font in items.EnumerateArray())
             {
                 var family = font.GetProperty("family").GetString();
                 var category = font.GetProperty("category").GetString();
                 fonts.Add(new SelectListItem { Text = family, Value = $"{family},{category}" });
+
+                count++;
+                if (count >= 500)
+                    break; 
             }
 
             return fonts;
