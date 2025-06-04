@@ -62,7 +62,7 @@ namespace MainOrderly.WebApp.ViewModels
     public class NutritionEntry
     {
         public NutritionName Name { get; set; }
-        public double Value { get; set; }
+        public int Value { get; set; }
     }
 
 }

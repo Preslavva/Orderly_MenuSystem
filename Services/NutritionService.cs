@@ -24,7 +24,7 @@ namespace Services
             _nutritionRepository.AssignNutritionToMenuItem(menuItemId, nutritionId);
         }
         
-        public void UpdateNutritions(int menuItemId, Dictionary<NutritionName, double> values, int restaurantId)
+        public void UpdateNutritions(int menuItemId, Dictionary<NutritionName, int> values, int restaurantId)
         {
             _nutritionRepository.DeleteAllForMenuItem(menuItemId);
 

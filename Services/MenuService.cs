@@ -22,7 +22,7 @@ namespace Services
         }
 
         public int CreateMenuItem(string name, string description, decimal price, bool isAvailable, string picture, Category category, int restaurantId,
-         Dictionary<NutritionName, double> nutritionValues,
+         Dictionary<NutritionName, int> nutritionValues,
          List<AllergenName> allergens, int prepTime)
         {
             int menuItemId = _menuItemRepository.AddMenuItem(name, description, price, isAvailable, picture, category, restaurantId, prepTime);

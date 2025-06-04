@@ -274,12 +274,64 @@
                             // Rebind all events after pagination
                             bindEditPaginationButtons();
                             bindIngredientEditSelectionHandlers();
-                            restoreIngredientSelections();
+                           collectIngredientSelections(); // ✅ Critical
+        restoreIngredientSelections();
                         })
                         .catch(error => console.error("❌ Error loading ingredients:", error));
                 });
             });
         }
+                                function collectIngredientSelections() {
+            // Only touch visible checkboxes and inputs
+            const visibleCheckboxes = document.querySelectorAll("input[type='checkbox'][name='SelectedIngredientIds']");
+            const visibleQuantities = document.querySelectorAll("input[name^='IngredientQuantities']");
+                   document.querySelectorAll("input[name^='IngredientQuantities']").forEach(input => {
+            const id = input.name.match(/\d+/)[0];
+            const value = parseFloat(input.value) || 0;
+
+            if (selectedIngredientIds.has(id) && value > 0) {
+                ingredientQuantities[id] = value;
+            } else {
+                delete ingredientQuantities[id]; // ensure stale data is cleared
+            }
+        });
+                document.querySelectorAll("input[type='checkbox'][name='SelectedIngredientIds']").forEach(cb => {
+            const id = cb.value;
+
+            if (cb.checked) {
+                selectedIngredientIds.add(id);
+            } else {
+                selectedIngredientIds.delete(id);
+                delete ingredientQuantities[id];
+            }
+        });
+            // Update selectedIngredientIds
+            visibleCheckboxes.forEach(cb => {
+                const id = cb.value;
+
+                if (cb.checked) {
+                    selectedIngredientIds.add(id);
+                } else {
+                    selectedIngredientIds.delete(id);
+                    delete ingredientQuantities[id];
+                }
+            });
+
+            // Update quantities ONLY if checkbox is still selected
+            visibleQuantities.forEach(input => {
+                const id = input.name.match(/\d+/)[0];
+                const value = parseFloat(input.value) || 0;
+
+                if (selectedIngredientIds.has(id) && value > 0) {
+                    ingredientQuantities[id] = value;
+                }
+            });
+
+            
+        }
+
+
+
 
         document.addEventListener("DOMContentLoaded", function () {
             const menuItemId = document.querySelector("input[name='Id']").value;
@@ -296,6 +348,7 @@
 
             // Before form submission: add all selections to hidden fields
             document.querySelector("form").addEventListener("submit", function () {
+                 collectIngredientSelections();
                 document.querySelectorAll(".persisted-ingredient").forEach(el => el.remove());
 
                 selectedIngredientIds.forEach(id => {
