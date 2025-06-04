@@ -16,7 +16,6 @@
 	}
     <p>Your order #@Model.Id was sent to the kitchen.</p>
 </div>
-<div class="line"></div>
 
 <div class="checkmark-container">
     <i class="bi bi-check-circle-fill"
@@ -24,7 +23,7 @@
 </div>
 
 
-<div id="orderStatusButtons" data-order-id="@Model.Id ??" class="StatusButtons">
+<div id="orderStatusButtons" data-order-id="@Model.Id" class="StatusButtons">
     <button type="button" data-status="NEW_ORDER" class="btn btn-outline-secondary">
         <svg class="" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="#000000">
             <g id="SVGRepo_bgCarrier" stroke-width="0"></g>

@@ -71,7 +71,7 @@ namespace MainOrderly.WebApp.Controllers
             }
             else if (user.Roles.Contains("Waiter"))
             {
-                return RedirectToAction("Orders", "Waiter");
+                return RedirectToAction("Index", "Waiter");
             }
             else
             {
