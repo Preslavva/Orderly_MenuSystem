@@ -27,7 +27,36 @@
     <div class="row mb-3">
 
         <div class="col-md-6">
-           
+            <form id="filterForm" method="get" asp-action="MenuItems" class="row g-2 mb-3">
+                <div class="col-md-3">
+                    <input type="text" name="search" placeholder="Search..." value="@(Context.Request.Query["search"])" class="form-control" />
+                </div>
+
+                <div class="col-md-3">
+                    @{
+                        var availability = Context.Request.Query["availability"];
+                    }
+                    <select name="availability" class="form-select">
+                        <option value="">All Availability</option>
+                        <option value="available" selected="@(availability == "available" ? "selected" : null)">Available</option>
+                        <option value="unavailable" selected="@(availability == "unavailable" ? "selected" : null)">Unavailable</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    @{
+                        var stock = Context.Request.Query["lowStockOnly"];
+                    }
+                    <select name="lowStockOnly" class="form-select">
+                        <option value="">Stock Status</option>
+                        <option value="true" selected="@(stock == "true" ? "selected" : null)">Low Stock Only</option>
+                    </select>
+                </div>
+
+                
+            </form>
+
+
         </div>
 
         <div class="col-md-6">
@@ -56,6 +85,7 @@
 
 
                     </ul>
+
                 </div>
             </div>
         </div>
@@ -72,7 +102,7 @@
         <div class="row" id="menuItemsContainer">
             @foreach (var item in Model)
             {
-                <div class="col-md-4 mb-4 menu-item-card" data-category="@item.Category">
+                <div class="col-md-3 mb-3 menu-item-card" data-category="@item.Category">
                     <div class="card h-100">
                         <img src="@item.Picture" class="card-img-top menu-item-image" alt="@item.Name">
                         <div class="card-body">
@@ -80,9 +110,28 @@
                             <p class="card-text text-truncate">@item.Description</p>
                             <p class="text-primary fw-bold">@item.Price.ToString("C")</p>
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")">
-                                    @(item.IsAvailable ? "Available" : "Unavailable")
+                                <span class="badge @(item.IsAvailable ? "bg-success" : "bg-danger")"
+                                      title="@(
+          item.IsAvailable
+              ? "This item is available for customers"
+              : item.HasLowStockIngredients
+                  ? "Unavailable due to low-stock ingredients"
+                  : "Manually marked as unavailable"
+      )">
+                                    @if (!item.IsAvailable && item.HasLowStockIngredients)
+                                    {
+                                        @:Unavailable (Low Stock)
+                                    }
+                                    else if (!item.IsAvailable)
+                                    {
+                                        @:Unavailable (Manual)
+                                    }
+                                    else
+                                    {
+                                        @:Available
+                                    }
                                 </span>
+
                                 <span class="badge bg-info">@GetDisplayName(item.Category)</span>
                             </div>
                         </div>
@@ -104,3 +153,15 @@
 </div>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterForm = document.getElementById("filterForm");
+
+        // Auto-submit on dropdown or text input change
+        filterForm.querySelectorAll("select, input[type='text']").forEach(el => {
+            el.addEventListener("change", () => {
+                filterForm.submit();
+            });
+        });
+    });
+</script>

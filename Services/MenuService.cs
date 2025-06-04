@@ -46,11 +46,13 @@ namespace Services
             return _menuItemRepository.AddMenuIngredients(menuId, ingredientIds, quantities, restaurantId);
         }
 
-        public List<MenuItem> LoadMenuItems(int restaurantId)
+        public List<MenuItem> LoadMenuItems(int restaurantId)// for the user side
         {
+
             var menuItems = _menuItemRepository.LoadMenuItems(restaurantId);
             foreach (var item in menuItems)
                 item.SetIngredient(_ingredientService.GetIngredientForMenuItem_MenuItemIngredient(item.Id, restaurantId));
+
 
             var available = new List<MenuItem>();
 
@@ -62,14 +64,19 @@ namespace Services
                     return inv.QuantityInStock >= ing.Quantity;
                 });
 
-                item.SetMenuItemAvailability(inStock);
+                bool isMarkedAvailable = item.IsAvailable;
 
-                if (inStock)
-                    available.Add(item);           
+                item.SetMenuItemAvailability(inStock && isMarkedAvailable);
+
+                if (inStock && isMarkedAvailable)
+                {
+                    available.Add(item);
+                }
             }
 
             return available;
         }
+
 
         public List<MenuItem> LoadMenuItemsForManager(int restaurantId)
         {
@@ -79,13 +86,20 @@ namespace Services
 
             foreach (var item in menuItems)
             {
+
                 bool inStock = item.Ingredients.All(ing =>
                 {
                     var inv = _ingredientService.GetIngredientById(ing.IngredientId, restaurantId);
-                    return inv.QuantityInStock >= ing.Quantity;
+                    return inv != null && inv.QuantityInStock >= ing.Quantity;
                 });
 
-                item.SetMenuItemAvailability(inStock);
+                //item. item.HasLowStockIngredients = !hasAllIngredients;
+
+                if (!item.IsAvailable || !inStock)
+                {
+                    item.SetMenuItemAvailability(false); // ✅ override to false if any understocked
+                }
+            
             }
 
             return menuItems;
@@ -99,7 +113,7 @@ namespace Services
         public MenuItem GetMenuItemWithIngredient(int id, int restaurantId)
         {
             var item = _menuItemRepository.GetMenuItemById(id, restaurantId);
-
+            Console.WriteLine("IsAvailable: " + item?.IsAvailable);
             if (item == null)
             {
                 return null; 
