@@ -100,14 +100,17 @@
 
                             <div class="mb-3">
                                 <label class="form-label">Nutrition Facts</label>
-                                @foreach (var nutrition in Enum.GetValues(typeof(NutritionName)).Cast<NutritionName>())
+                                @for (int i = 0; i < Enum.GetValues(typeof(NutritionName)).Length; i++)
                                 {
+                                    var nutrition = (NutritionName)Enum.GetValues(typeof(NutritionName)).GetValue(i);
                                     <div class="input-group mb-2">
                                         <span class="input-group-text">@nutrition</span>
-                                        <input type="number" step="0.01" class="form-control" name="NutritionValues[@nutrition]" />
+                                        <input type="hidden" name="NutritionValues[@i].Name" value="@nutrition" />
+                                        <input type="number" step="0.01" class="form-control" name="NutritionValues[@i].Value" />
                                     </div>
                                 }
                             </div>
+
 
                             <div class="mb-3">
                                 <label asp-for="Category" class="form-label">Category</label>
