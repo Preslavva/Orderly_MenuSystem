@@ -269,7 +269,9 @@ namespace MSSQL
                                 reader.IsDBNull("ColorDefault") ? null : Convert.ToString(reader["ColorDefault"]),
                                 reader.IsDBNull("ColorBackground") ? null : Convert.ToString(reader["ColorBackground"]),
                                 reader.IsDBNull("isActive") ? false : Convert.ToBoolean(reader["isActive"]),
-                                reader.IsDBNull("KVK") ? null : Convert.ToString(reader["KVK"])
+                                reader.IsDBNull("KVK") ? null : Convert.ToString(reader["KVK"]),
+                                reader.IsDBNull("IncludePayment") ? false : Convert.ToBoolean(reader["IncludePayment"]),
+                                reader.IsDBNull("IncludeAntiAbuse") ? false : Convert.ToBoolean(reader["IncludeAntiAbuse"])
                             );
                         }
                     }

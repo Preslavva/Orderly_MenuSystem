@@ -31,6 +31,9 @@ namespace MainOrderly.WebApp.ViewModels
 
         [Required]
         public string KVK { get; set; }
+        public bool IncludePayment { get; set; }
+        public bool IncludeAniAbuse { get; set; }
+
         public List<SelectListItem> Fonts { get; set; } 
 
         public static RestaurantViewModel ConvertToViewModel(Restaurant restaurant, List<SelectListItem> fonts)
@@ -53,7 +56,9 @@ namespace MainOrderly.WebApp.ViewModels
                 ColorBackground = restaurant.ColorBackground,
                 IsActive = restaurant.IsActive, 
                 KVK = restaurant.KVK,
-                Fonts = fonts
+                Fonts = fonts,
+                IncludePayment = restaurant.IncludePayment,
+                IncludeAniAbuse = restaurant.IncludeAntiAbuse
             };
             return viewModel;
         }
@@ -73,7 +78,9 @@ namespace MainOrderly.WebApp.ViewModels
                 model.ColorDeafult, 
                 model.ColorBackground, 
                 model.IsActive, 
-                model.KVK
+                model.KVK,
+                model.IncludePayment,
+                model.IncludeAniAbuse
             );
         }
     }

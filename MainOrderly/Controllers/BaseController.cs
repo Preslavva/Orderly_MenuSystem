@@ -20,6 +20,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             Restaurant restaurant = _restaurantService.GetRestaurantById(restId);
 
+            ViewBag.Description = restaurant.Description;
             ViewBag.ColorDefault = restaurant.ColorDefault;
             ViewBag.ColorButtons = restaurant.ColorButtons;
             ViewBag.ColorBackground = restaurant.ColorBackground;

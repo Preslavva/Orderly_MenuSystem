@@ -41,9 +41,11 @@ namespace MainOrderly.WebApp.Controllers
 
         public IActionResult LoadingPage(string token)
         {
+         
             Table table = _tableService.GetTableByToken(token);
             var restaurantId = table.RestaurantId;
 
+            ApplyStyling(restaurantId);
             if (table == null)
             {
                 return NotFound("Invalid token.");
