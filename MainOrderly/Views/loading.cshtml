@@ -1,6 +1,7 @@
 ﻿@{
 
     ViewData["Title"] = "Test Page";
+    ViewBag.HideHeader = true;
 }
 <!DOCTYPE html>
 <html>
@@ -15,13 +16,13 @@
 <body>
     
     <!-- Loader container -->
+    <!-- Loader markup -->
     <div id="loader">
-        <img class="img-fluid" src="~/Images/logo.png" />
-        <div id="fancy-text">
-            WORLD OF FLAVORS ON YOUR PLATE
-        </div>
+        <img src="@ViewBag.LogoDataUrl" alt="Restaurant Logo" />
+        <div id="fancy-text">@ViewBag.Description</div>
         <div id="progress-bar"></div>
     </div>
+
     @{
         var token = Context.Request.Query["token"];
     }
