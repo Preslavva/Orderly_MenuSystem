@@ -7,25 +7,16 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    public class HistoryController : BaseController
+    public class HistoryController(HistoryService historyService, RestaurantService restaurantService)
+        : BaseController(restaurantService)
     {
-        private readonly HistoryService _historyService;
-        private readonly RestaurantService _restaurantService;
-
-
-        public HistoryController(HistoryService historyService, RestaurantService restaurantService) : base(restaurantService)
-        {
-            _historyService = historyService;
-            _restaurantService = restaurantService;
-        }
-
         [HttpGet]
         public IActionResult History()
         {
             ViewData["Page"] = "History";
             var restaurantId = HttpContext.Session.GetInt32("restaurantId");
             ApplyStyling((int)restaurantId);
-            List<OrderHistory> orders = _historyService.GetHistory((int)restaurantId);
+            List<OrderHistory> orders = historyService.GetHistory((int)restaurantId);
             List<OrderHistoryViewModel> historyViewModel = orders.Select(OrderHistoryViewModel.ConvertToViewModel).ToList();
             return View(historyViewModel);
         }
