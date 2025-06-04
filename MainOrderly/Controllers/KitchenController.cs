@@ -7,6 +7,7 @@ using MainOrderly.WebApp.Helpers;
 using MainOrderly.WebApp.Attributes;
 using MainOrderly.WebApp.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -159,8 +160,14 @@ namespace MainOrderly.WebApp.Controllers
             if (newStatus == OrderStatus.PROCESSING)
             {
                 var orders = _kitchenOrderService.GetMenuItemsOrder(OrderStatus.PROCESSING, id,restaurantId);
-                foreach (var menu in orders) 
-                    _kitchenOrderService.UpdateOrderItemStatus(id, menu.MenuItemId, OrderStatus.PROCESSING, restaurantId);
+                foreach (var menu in orders)
+                {
+                    if (menu.Status == OrderStatus.NEW_ORDER)
+                    {
+                        _kitchenOrderService.UpdateOrderItemStatus(id, menu.MenuItemId, OrderStatus.PROCESSING, restaurantId);
+                    }
+                }
+                   
 
                 KitchenOrderManager kitchenOrderManager = new KitchenOrderManager();
                 kitchenOrderManager.SetPendingOrders(_kitchenOrderService.GetMenuItemsOrder(OrderStatus.PROCESSING, id,restaurantId));

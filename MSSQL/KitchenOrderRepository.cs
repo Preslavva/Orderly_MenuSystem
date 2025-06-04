@@ -237,7 +237,7 @@ namespace MSSQL
                     }
                 }
             }
-            return items;
+            return items.Where(m=>m.MenuItem.Category != Category.Drinks).ToList();
         }
 
         public void RemoveOrderFromDashboard(List<int> orderIds, int restaurantId)

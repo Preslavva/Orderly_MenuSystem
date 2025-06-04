@@ -167,15 +167,23 @@ namespace Services
         {
             Dictionary<MenuItem, int> cart = GetCart(restaurantId);
 
-            foreach(var element in cart)
+            var newCart  = new Dictionary<MenuItem, int>();
+
+            foreach (var element in cart)
             {
+
                 var ingredients = _ingredientRepository.GetIngredientsForMenuItem(element.Key.Id, restaurantId);
                 MenuItem item = element.Key;
+                int quantity = element.Value;
                 item.SetIngredient(ingredients);
                 _ingredientService.SubstractStock(item, restaurantId);
+                newCart.Add(item,quantity);
+
+                
+
             }
             
-            return _checkoutService.FinalizeOrder(tableId, cart, restaurant);
+            return _checkoutService.FinalizeOrder(tableId, newCart, restaurant);
         }
 
         public bool CheckTimeBetweenOrders(int? orderId, int restaurantId)

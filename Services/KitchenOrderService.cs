@@ -25,15 +25,26 @@ namespace Services
             return order!;
         }
 
-        public List<Order> GetOrderByStatus(OrderStatus status, int restaurantId) // For new order
+        public List<Order> GetOrderByStatus(OrderStatus status, int restaurantId)
         {
             List<Order> orders = _kitchenOrderRepository.GetOrderHeadersByStatus(status, restaurantId);
             foreach (Order order in orders)
             {
                 order.SetMenuItems(_kitchenOrderRepository.GetOrderItemsByOrderId(order.Id, restaurantId));
             }
-            return orders;
+
+            return orders.Select(o =>
+                {
+                    o.SetMenuItems(o.Items
+                        .Where(i => i.MenuItem.Category != Category.Drinks)
+                        .ToList());
+                    return o;
+                })
+                .Where(o => o.Items.Any()) 
+                .ToList();
+
         }
+
 
         public List<OrderItem> GetMenuItemsOrder(OrderStatus status, int id, int restaurantId)
         {
