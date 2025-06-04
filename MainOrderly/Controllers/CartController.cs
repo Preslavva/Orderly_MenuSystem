@@ -10,17 +10,16 @@ namespace MainOrderly.WebApp.Controllers
     public class CartController : BaseController
     {
         private readonly CartService _cartService;
-        private readonly IngredientService _ingredientService;
         private readonly HistoryService _historyService;
         private readonly RestaurantService _restaurantService;
-
+     
         public CartController(CartService cartService, IngredientService ingredientService, 
             HistoryService historyService, RestaurantService restaurantService): base(restaurantService)
         {
             _cartService = cartService;
-            _ingredientService = ingredientService;
             _historyService = historyService;
             _restaurantService = restaurantService;
+          
         }
 
         private int? GetRestaurantId()
@@ -43,7 +42,9 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult OrderList()
         {
+           
             var restaurantId = GetRestaurantId();
+            ApplyStyling((int)restaurantId);
             ViewData["Page"] = "Order overview";
             List<CartViewModel> model = GetCartViewModel();
 
@@ -72,6 +73,7 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult OrderSummaryPage(Tip tipAmount, int customTip)    
         {
             var restaurantId = GetRestaurantId();
+            ApplyStyling((int)restaurantId);
             ViewData["Page"] = "Order summary";
             List<CartViewModel> viewModel = GetCartViewModel();
 
@@ -91,6 +93,7 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult PaymentConfirmationPage(int orderId)
         {
+            ApplyStyling((int)GetRestaurantId());
             ViewData["Page"] = "Order Confirmation Page";
             OrderViewModel orderModel = new OrderViewModel()
             {

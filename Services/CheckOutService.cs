@@ -19,20 +19,30 @@ namespace Services
         {
             int totalQuantity = 0;
             decimal totalPrice = 0;
+            bool hasNonDrinks = false;
+
             foreach (var kvp in cartItems)
             {
-                totalQuantity += kvp.Value;
-                totalPrice += kvp.Key.Price * kvp.Value;
+                if (kvp.Key.Category != Category.Drinks)
+                {
+                    totalQuantity += kvp.Value;
+                    totalPrice += kvp.Key.Price * kvp.Value;
+                }
             }
 
+          
             int newOrderId = _kitchenOrderRepository.CreateOrder(tableId, OrderStatus.NEW_ORDER, totalQuantity, totalPrice, restaurant.Id);
 
             foreach (var kvp in cartItems)
             {
-                _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value, OrderStatus.NEW_ORDER, restaurant.Id);
+                if (kvp.Key.Category != Category.Drinks)
+                {
+                    _cartRepository.AddMenuItemToOrder(newOrderId, kvp.Key.Id, kvp.Value, OrderStatus.NEW_ORDER, restaurant.Id);
+                }
             }
-                    
+
             return newOrderId;
         }
+
     }
 }

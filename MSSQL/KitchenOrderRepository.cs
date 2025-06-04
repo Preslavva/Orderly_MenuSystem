@@ -338,11 +338,13 @@ namespace MSSQL
         public void UpdateOrderItemStatus(int orderId, int menuItemId, OrderStatus newStatus, int restaurantId)
         {
             const string sql = @"
-        UPDATE Order_MenuItem
-        SET    OrderStatus = @Status
-        WHERE  OrderId     = @OrderId
-         AND  om.MenuItemId  = @MenuItemId
-          AND  o.RestaurantId = @RestaurantId";
+              
+            UPDATE Order_MenuItem
+            SET    OrderStatus = @Status
+            FROM Order_MenuItem as om
+            INNER JOIN MenuItem as m on m.Id = om.MenuItemId
+            WHERE  OrderId     = @OrderId AND  MenuItemId  = @MenuItemId
+            AND  m.RestaurantId = @RestaurantId";
 
             using var conn = new SqlConnection(_connectionString);
             using var cmd = new SqlCommand(sql, conn);

@@ -1,7 +1,5 @@
-﻿      
-using System.Net;               
-using System.Text.RegularExpressions;
-using System.Xml;
+﻿using System.Xml;
+using MainOrderly.WebApp.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Models.Entities;
@@ -18,26 +16,35 @@ namespace MainOrderly.WebApp.Controllers
             _restaurantService = restaurantService;
         }
 
-     
-    }
-
-    public static class SafeGoogleFont
-    {
-        private static readonly Regex _ok =
-            new(@"^[A-Za-z0-9\- ]{1,64}$", RegexOptions.Compiled);
-
-        public static string? ToGoogleParam(string? dbValue)
+        public void ApplyStyling(int restId)
         {
-            if (string.IsNullOrWhiteSpace(dbValue))
-                return null;
+            Restaurant restaurant = _restaurantService.GetRestaurantById(restId);
 
-            string trimmed = dbValue.Trim();
+            ViewBag.ColorDefault = restaurant.ColorDefault;
+            ViewBag.ColorButtons = restaurant.ColorButtons;
+            ViewBag.ColorBackground = restaurant.ColorBackground;
+            var parts = (restaurant.Font ?? string.Empty)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => s.Trim())
+                .ToList();
 
-            if (!_ok.IsMatch(trimmed))
-                return null;                  
+            string fontName = parts.ElementAtOrDefault(0) ?? "Arial";
+            string genericFamily = parts.ElementAtOrDefault(1) ?? "sans-serif";
 
-            return WebUtility.UrlEncode(trimmed)
-                             .Replace("%20", "+");
+            ViewBag.FontName = fontName;
+            ViewBag.FontFamily = genericFamily;
+
+            string? familyParam = SafeGoogleFont.ToGoogleParam(fontName);
+
+            ViewBag.GoogleFontLink = familyParam is null
+                ? null
+                : $"https://fonts.googleapis.com/css2?family={familyParam}&display=swap";
+
+            ViewBag.LogoDataUrl = restaurant.Logo is { Length: > 0 }
+                ? $"data:image/png;base64,{Convert.ToBase64String(restaurant.Logo)}"
+                : "/images/default-logo.png";
+
         }
+
     }
 }

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Services;
 
 namespace MainOrderly.WebApp.Extensions
@@ -16,6 +17,7 @@ namespace MainOrderly.WebApp.Extensions
                 return;
             }
 
+            
             string userJson = JsonSerializer.Serialize(user);
             session.SetString(AuthUserKey, userJson);
         }

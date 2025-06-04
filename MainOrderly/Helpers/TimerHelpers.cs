@@ -24,12 +24,11 @@ namespace MainOrderly.WebApp.Helpers
         }
             
         /* called when the order moves to PROCESSING ----------------- */
-        public void RecordStartTime(int orderId)
+        public void RecordStartTime(int orderId, int restaurantId)
         {
             _startTimes.TryAdd(orderId, DateTime.Now);
-
-            /* cache the largest prep-time among this order's items  */
-            int maxPrep = _kitchenOrderService.GetMenuItemsByOrderId(orderId, 1).Max(i => i.MenuItem.PrepTime);
+       
+            int maxPrep = _kitchenOrderService.GetMenuItemsByOrderId(orderId, restaurantId).Max(i => i.MenuItem.PrepTime);
             _maxPrepMinutes.AddOrUpdate(orderId, maxPrep, (_, __) => maxPrep);
         }
 

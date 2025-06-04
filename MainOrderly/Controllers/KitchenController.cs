@@ -147,7 +147,7 @@ namespace MainOrderly.WebApp.Controllers
             
             if (newStatus == OrderStatus.PROCESSING)
             {
-                _timerHelpers.RecordStartTime(id);
+                _timerHelpers.RecordStartTime(id,restaurantId);
             }
 
             if (newStatus == OrderStatus.COMPLETED)

@@ -73,41 +73,13 @@ namespace MainOrderly.WebApp.Controllers
 
             int? tableId = HttpContext.Session.GetInt32("TableId");
             int? restId = HttpContext.Session.GetInt32("RestaurantId");
-            
-            if(restId == null)
+
+            if (restId == null)
             {
                 restId = -1; // Default value if not set
             }
 
-            ///
-
-            Restaurant restaurant = _restaurantService.GetRestaurantById((int)restId);
-
-            ViewBag.ColorDefault = restaurant.ColorDefault;
-            ViewBag.ColorButtons = restaurant.ColorButtons;
-            ViewBag.ColorBackground = restaurant.ColorBackground;
-            var parts = (restaurant.Font ?? string.Empty)
-                .Split(',', StringSplitOptions.RemoveEmptyEntries)
-                .Select(s => s.Trim())
-                .ToList();
-
-            string fontName = parts.ElementAtOrDefault(0) ?? "Arial";
-            string genericFamily = parts.ElementAtOrDefault(1) ?? "sans-serif";
-
-            ViewBag.FontName = fontName;
-            ViewBag.FontFamily = genericFamily;
-
-            string? familyParam = SafeGoogleFont.ToGoogleParam(fontName);
-
-            ViewBag.GoogleFontLink = familyParam is null
-                ? null
-                : $"https://fonts.googleapis.com/css2?family={familyParam}&display=swap";
-
-            ViewBag.LogoDataUrl = restaurant.Logo is { Length: > 0 }
-                ? $"data:image/png;base64,{Convert.ToBase64String(restaurant.Logo)}"
-                : "/images/default-logo.png";
-
-            ///
+            ApplyStyling((int)restId);
 
             if (tableId.HasValue)
             {
@@ -183,22 +155,24 @@ namespace MainOrderly.WebApp.Controllers
         [HttpGet]
         public IActionResult GetItemInfo(int id, Category category)
         {
-            int restaurantId = HttpContext.Session.GetInt32("RestaurantId") ?? 1;
-            
-            var menuItem = _menuService.GetMenuItem(id, restaurantId);
+            int? restaurantId = HttpContext.Session.GetInt32("RestaurantId");
+            if (restaurantId == null)  throw new ArgumentNullException("RestaurantId is not set in session.");
+
+            ApplyStyling((int)restaurantId);
+            var menuItem = _menuService.GetMenuItem(id, (int)restaurantId);
             var menuItemViewModel = MenuItemViewModel.ConvertToViewModel(menuItem);
 
-            var nutritions = _nutritionService.GetNutritionForMenuItem(id, restaurantId);
+            var nutritions = _nutritionService.GetNutritionForMenuItem(id, (int)restaurantId);
             var nutritionViewModels = nutritions
                 .Select(NutritionViewModel.ConvertToViewModel)
                 .ToList();
 
-            var allergens = _allergenService.GetAllergenForMenuItem(id, restaurantId);
+            var allergens = _allergenService.GetAllergenForMenuItem(id, (int)restaurantId);
             var allergenViewModel = allergens
                 .Select(AllergenViewModel.ConvertToViewModel)
                 .ToList();
 
-            var ingredients = _ingredientService.GetIngredientsForItemOnlyName(id, restaurantId);
+            var ingredients = _ingredientService.GetIngredientsForItemOnlyName(id, (int)restaurantId);
             var ingredientViewModel = ingredients
                 .Select(IngredientViewModel.ConvertToViewModel)
                 .ToList();
@@ -241,5 +215,7 @@ namespace MainOrderly.WebApp.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+
     }
 }
