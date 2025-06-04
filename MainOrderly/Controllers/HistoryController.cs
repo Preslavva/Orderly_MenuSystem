@@ -14,7 +14,7 @@ namespace MainOrderly.WebApp.Controllers
         public IActionResult History()
         {
             ViewData["Page"] = "History";
-            var restaurantId = HttpContext.Session.GetInt32("restaurantId");
+            var restaurantId = HttpContext.Session.GetInt32("RestaurantId");
             ApplyStyling((int)restaurantId);
             List<OrderHistory> orders = historyService.GetHistory((int)restaurantId);
             List<OrderHistoryViewModel> historyViewModel = orders.Select(OrderHistoryViewModel.ConvertToViewModel).ToList();
