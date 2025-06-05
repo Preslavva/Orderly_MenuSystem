@@ -2,6 +2,7 @@
 using Services;
 using MainOrderly.WebApp.ViewModels;
 using MainOrderly.WebApp.Attributes;
+using MainOrderly.WebApp.Extensions;
 
 namespace MainOrderly.WebApp.Controllers
 {
@@ -42,7 +43,8 @@ namespace MainOrderly.WebApp.Controllers
         [HttpPost]
         public IActionResult DeliverOrder(int orderId)
         {
-            var restaurantId = HttpContext.Session.GetInt32("RestaurantId");
+            var user = HttpContext.Session.GetAuthenticatedUser();
+            int? restaurantId = user?.RestaurantId;
             var order = _orderService.GetOrderById(orderId,(int)restaurantId);
             var tableId = order.Table.Id;
             var tableNumber = _tableService.GetTableNumberById(tableId, (int)restaurantId);
