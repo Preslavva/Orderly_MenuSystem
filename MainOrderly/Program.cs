@@ -80,7 +80,7 @@ namespace MainOrderly.WebApp
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=LoadingPage}/{id?}");
+                pattern: "{controller=Business}/{action=Index}/{id?}");
 
             app.Run();
         }

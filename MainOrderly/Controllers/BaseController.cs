@@ -8,7 +8,7 @@ using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {
-    [RequireRole("Owner")]
+    //[RequireRole("Owner")]
     public class BaseController : Controller
     {
         private readonly RestaurantService _restaurantService;
