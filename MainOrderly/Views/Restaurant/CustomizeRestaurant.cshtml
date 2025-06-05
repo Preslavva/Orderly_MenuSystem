@@ -6,7 +6,6 @@
 }
 
 <head>
-    @* Load Google Fonts dynamically *@
     @foreach (var fontItem in Model.Fonts)
     {
         var fontFamilyForUrl = fontItem.Text.Replace(" ", "+");
@@ -14,7 +13,6 @@
     }
 
     <style>
-        @* Define CSS classes for each font option *@
         @foreach (var fontItem in Model.Fonts)
         {
             var fontFamily = fontItem.Text;
@@ -94,14 +92,14 @@
                         <div class="col-6 d-flex justify-content-start">
                             <div class="form-check">
                                 <input asp-for="IncludePayment" class="form-check-input" type="checkbox" />
-                                <label asp-for="IncludePayment" class="form-check-label"></label>
+                                <label asp-for="IncludePayment" class="form-check-label">Include Tipping System</label>
                                 <span asp-validation-for="IncludePayment" class="text-danger d-block"></span>
                             </div>
                         </div>
                         <div class="col-6 d-flex justify-content-end">
                             <div class="form-check">
                                 <input asp-for="IncludeAniAbuse" class="form-check-input" type="checkbox" />
-                                <label asp-for="IncludeAniAbuse" class="form-check-label"></label>
+                                <label asp-for="IncludeAniAbuse" class="form-check-label">Include Anti-abuse System</label>
                                 <span asp-validation-for="IncludeAniAbuse" class="text-danger d-block"></span>
                             </div>
                         </div>
