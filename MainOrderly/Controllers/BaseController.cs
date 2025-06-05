@@ -1,4 +1,5 @@
 ﻿using System.Xml;
+using MainOrderly.WebApp.Attributes;
 using MainOrderly.WebApp.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -7,6 +8,7 @@ using Services;
 
 namespace MainOrderly.WebApp.Controllers
 {
+    [RequireRole("Owner")]
     public class BaseController : Controller
     {
         private readonly RestaurantService _restaurantService;

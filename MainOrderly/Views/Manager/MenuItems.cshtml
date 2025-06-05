@@ -102,7 +102,7 @@
         <div class="row" id="menuItemsContainer">
             @foreach (var item in Model)
             {
-                <div class="col-md-3 mb-3 menu-item-card" data-category="@item.Category">
+                <div class="col-md-2 mb-2 menu-item-card" data-category="@item.Category">
                     <div class="card h-100">
                         <img src="@item.Picture" class="card-img-top menu-item-image" alt="@item.Name">
                         <div class="card-body">
@@ -152,6 +152,16 @@
     }
 </div>
 
+<style>
+    .menu-item-image {
+        height: 140px;
+        width: 100%;
+        object-fit: cover;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
